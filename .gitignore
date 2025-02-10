@@ -1,0 +1,14 @@
+/*
+
+# files
+!.gitignore
+!.python-version
+!pyproject.toml
+!README.md
+!uv.lock
+
+# folders
+!src
+
+# recursively reignore
+__pycache__

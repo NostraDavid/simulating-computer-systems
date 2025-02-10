@@ -1,0 +1,16 @@
+[project]
+name = "scs"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.2.2",
+]
+
+[project.scripts]
+scs = "scs.main:simulate_queue"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
