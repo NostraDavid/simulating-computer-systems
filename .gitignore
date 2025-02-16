@@ -9,6 +9,7 @@
 
 # folders
 !src
+!tests
 
 # recursively reignore
 __pycache__
