@@ -142,14 +142,15 @@ def put_elm(i: int):
 # Event scheduling
 def schedule(ev: int, te: float, tkn: int):
     """-------------- SCHEDULE EVENT ----------------"""
-    if te < 0.0:
-        error(4, 0)  # negative event time
+    global evl
+    if te < 0.0:  # negative event time
+        error(4, 0)
     i = get_elm()
     l2[i] = tkn
     l3[i] = ev
     l4[i] = 0.0
     l5[i] = clock + te
-    enlist(evl, i)
+    evl = enlist(evl, i)
     if tr:
         msg(1, tkn, "", ev, 0)
 
@@ -217,15 +218,19 @@ def suspend(tkn: int):
 
 # List processing
 def enlist(head: list, elm: int):
-    """-------------------- ENTER ELEMENT IN QUEUE OR EVENT LIST --------------------"""
+    """
+    -------------------- ENTER ELEMENT IN QUEUE OR EVENT LIST --------------------
+
+    'head' points to head of queue/event list
+    """
     pred = 0
-    succ = head[0]
+    succ = head
     arg = l5[elm]
     while True:
         if succ == 0:
             break  # End of list
         v = l5[succ]
-        if head[0] == evl:
+        if head == evl:
             # Event list
             if v > arg:
                 break
@@ -239,10 +244,11 @@ def enlist(head: list, elm: int):
         pred = succ
         succ = l1[pred]
     l1[elm] = succ
-    if succ != head[0]:
+    if succ != head:
         l1[pred] = elm
     else:
-        head[0] = elm
+        head = elm
+    return head
 
 
 # Facility definition, operation, and query
@@ -302,7 +308,7 @@ def request(f: int, tkn: int, pri: int) -> int:
 
 def enqueue(f: int, j: int, pri: int, ev: int, te: float):
     """-------------------- ENQUEUE TOKEN --------------------"""
-    global clock
+    global clock, l1, l2, l3, l4, l5
     l5[f + 1] += l3[f] * (clock - l5[f])
     l3[f] += 1
     l5[f] = clock
@@ -311,7 +317,7 @@ def enqueue(f: int, j: int, pri: int, ev: int, te: float):
     l3[i] = ev
     l4[i] = te
     l5[i] = float(pri)
-    enlist(l1[f + 1], i)
+    l1[f + 1] = enlist(l1[f + 1], i)
 
 
 def preempt(f: int, tkn: int, pri: int) -> int:
@@ -408,7 +414,7 @@ def release(f: int, tkn: int):
             if tr:
                 msg(12, -1, fname(f), l2[k], 0)
             l5[k] = clock + te
-            enlist(evl, k)
+            evl = enlist(evl, k)
             m = 5
     if tr:
         msg(m, -1, "", l3[k], 0)

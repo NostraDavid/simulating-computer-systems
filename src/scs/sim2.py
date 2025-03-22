@@ -22,7 +22,6 @@ def main() -> None:
     tn: float = 0.0  # last update time
 
     while time < te:
-        logger.info("time", time=time, n=n)
         if t1 < t2:  # event 1: arrival
             time = t1
             s += n * (time - tn)

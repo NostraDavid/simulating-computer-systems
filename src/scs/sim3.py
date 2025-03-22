@@ -1,4 +1,4 @@
-from scs.smpl.smpl import (
+from scs.smpl import (
     smpl,
     schedule,
     time,
