@@ -43,15 +43,15 @@ class Simulation:
         self.ta: float = ta
         self.ts: float = ts
         self.te: float = te
-        self.n: int = 0              # number of customers in the system
-        self.t1: float = 0.0         # next arrival time
-        self.t2: float = te          # next departure time
-        self.time: float = 0.0       # simulation time
-        self.s: float = 0.0          # cumulative number-in-system time
-        self.tn: float = 0.0         # last update time
-        self.C: float = 0.0          # number of departures (completed customers)
-        self.B: float = 0.0          # total busy time of server
-        self.tb: float = 0.0         # time when server became busy
+        self.n: int = 0  # number of customers in the system
+        self.t1: float = 0.0  # next arrival time
+        self.t2: float = te  # next departure time
+        self.time: float = 0.0  # simulation time
+        self.s: float = 0.0  # cumulative number-in-system time
+        self.tn: float = 0.0  # last update time
+        self.C: float = 0.0  # number of departures (completed customers)
+        self.B: float = 0.0  # total busy time of server
+        self.tb: float = 0.0  # time when server became busy
         # customers waiting or in service
         self.customers: list[Customer] = []
         # customers that have departed but are still animating off-screen
@@ -128,7 +128,12 @@ class Simulation:
         u: float = self.B / self.time if self.time > 0 else 0.0
         l: float = self.s / self.time if self.time > 0 else 0.0
         w: float = l / x if x > 0 else 0.0
-        return {"throughput": x, "utilization": u, "mean_in_system": l, "residence_time": w}
+        return {
+            "throughput": x,
+            "utilization": u,
+            "mean_in_system": l,
+            "residence_time": w,
+        }
 
 
 def main() -> None:

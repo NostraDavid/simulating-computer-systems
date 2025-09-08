@@ -633,9 +633,9 @@ def rept_page(fnxt: int) -> int:
     ]
 
     print(f"\n{headers[0]:>51}\n\n\n")
-    print(f"{' '*4}{headers[1]}{mname()} {headers[2]}{clock:11.3f}")
-    print(f"{' '*68}{headers[3]}{clock-start:11.3f}\n\n")
-    print(f"{' '*75}{headers[4]}")
+    print(f"{' ' * 4}{headers[1]}{mname()} {headers[2]}{clock:11.3f}")
+    print(f"{' ' * 68}{headers[3]}{clock - start:11.3f}\n\n")
+    print(f"{' ' * 75}{headers[4]}")
     print(f"{headers[5]} {headers[6]}")
 
     global lft
@@ -644,7 +644,7 @@ def rept_page(fnxt: int) -> int:
         n = sum(l3[i] for i in range(f + 2, f + l1[f] + 2))
         fname_str = fname(f) if l1[f] == 0 else f"{fname(f)}[{l1[f]}]"
         print(
-            f"{fname_str:<17} {U(f):6.4f} {B(f):10.3f} {Lq(f):13.3f} {n:11d} {int(l4[f+1]):9d} {int(l4[f]):7d}"
+            f"{fname_str:<17} {U(f):6.4f} {B(f):10.3f} {Lq(f):13.3f} {n:11d} {int(l4[f + 1]):9d} {int(l4[f]):7d}"
         )
         f = l2[f + 1]
     return f

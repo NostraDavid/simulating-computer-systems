@@ -45,6 +45,8 @@ def obs(y: float) -> int:
 
 def civals(mean: list, hw: list, nb: list):
     # Return batch means analysis results
-    mean[0] = Y  # NOTE: not sure if list works this way _ these args should be references
+    mean[0] = (
+        Y  # NOTE: not sure if list works this way _ these args should be references
+    )
     hw[0] = h
     nb[0] = k
