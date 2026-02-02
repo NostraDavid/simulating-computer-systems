@@ -8,8 +8,9 @@
 !uv.lock
 
 # folders
-!src
-!tests
+!src/
+!tests/
+!docs/
 
 # recursively reignore
 __pycache__
