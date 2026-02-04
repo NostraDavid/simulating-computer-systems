@@ -1,18 +1,46 @@
-\documentclass[11pt]{book}
+\documentclass[17pt]{extbook}
 
 \input{preamble}
 
 \title{Simulating Computer Systems}
-\author{Reconstruction draft}
+\author{M. H. MacDougall}
 \date{}
 
 \begin{document}
+\pagenumbering{gobble}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \pagecolor{coverblue}
+  \color{white}
+  \sffamily
+  \itshape
+  \raggedright
+  \makeatletter
+  {\large Computer Systems\par}
+  {\large Series\par}
+  \vspace{1.0em}
+  {\color{black}\rule{0.8\textwidth}{12pt}}\par
+  \vspace{3.8em}
+  {\LARGE\bfseries \@title\par}
+  \vspace{0.6em}
+  {\Large\bfseries Techniques and Tools\par}
+  \vspace{5.2em}
+  \noindent\hfill{\color{black}\rule{8em}{8pt}}\par
+  \vspace{0.5em}
+  \noindent\hfill{\large M. H. MacDougall\par}
+  \vfill
+  {\large The MIT Press\par}
+  \makeatother
+\end{titlepage}
+\nopagecolor
+\include{chapters/00_frontmatter}
 \frontmatter
-\maketitle
+\pagenumbering{roman}
 \tableofcontents
+\include{chapters/00_preface}
 
 \mainmatter
-\include{chapters/01_placeholder}
+\include{chapters/01_chapter1}
 
 \backmatter
 \end{document}

@@ -1,0 +1,266 @@
+% OCR draft from PDF pages 13, 15-20. Needs cleanup and verification.
+\chapter*{Series Foreword}
+\addcontentsline{toc}{chapter}{Series Foreword}
+
+\begingroup
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1.5em}
+
+This series is devoted to all aspects of computer systems. This means that
+subjects ranging from circuit components and microprocessors to architecture to
+supercomputers and systems programming will be appropriate. Analysis of
+systems will be appropriate as well. System theories are developing, theories
+that permit deeper understandings of complex interrelationships and their
+effects on performance, reliability, and usefulness.
+
+We expect to offer books that not only develop new material but also describe
+projects and systems. In addition to understanding concepts, we need to benefit
+from the decision making that goes into actual development projects; selection
+from various alternatives can be crucial to success. We are soliciting
+contributions in which several aspects of systems are classified and compared.
+A better understanding of both the similarities and the differences found in
+systems is needed.
+
+It is an exciting time in the area of computer systems. New technologies mean
+that architectures that were at one time interesting but not feasible are now
+feasible. Better software engineering means that we can consider several
+software alternatives, instead of "more of the same old thing," in terms of
+operating systems and system software. Faster and cheaper communications mean
+that intercomponent distances are less important. We hope that this series
+contributes to this excitement in the area of computer systems by chronicling
+past achievements and publicizing new concepts. The format allows publication
+of lengthy presentations that are of interest to a select readership.\\
+
+\noindent Herb Schwetman
+
+\endgroup
+
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+\section*{1. Nature of the Tools}
+
+This book is intended for computer and communication system designers who want
+to analyze the performance of their designs using simulation. It provides an
+introduction to discrete-event simulation, including model building and output
+data analysis, and presents a discrete-event simulation "language" called
+smpl.\footnote{Throughout this book, subsystem and module names appear in bold
+(e.g., smpl, mtr), file names appear in italics (smpl.c, math.h), and identifiers
+such as function and variable names appear in fixed-space type (smpl(), busy);
+function names are distinguished by appended parentheses.} Simulation modeling
+with smpl is discussed, using a variety of models as examples. The design of
+smpl and a C language implementation are described, and various modifications
+are considered.
+
+smpl is a functional extension of a general-purpose programming language called
+the host language. This extension takes the form of a set of library functions
+(the smpl simulation subsystem) which, together with the host language itself,
+compose an event-oriented simulation language. A smpl simulation model is
+implemented as a host language program: simulation operations are performed via
+calls on the functions of the simulation subsystem. This approach to
+discrete-event simulation is a venerable one. It provides a simulation
+capability suitable for small-to-medium scale models (process-oriented
+simulation languages are preferable for large-scale models) which can be
+implemented in most languages on most machines.
+
+The smpl simulation subsystem is part of a simulation environment called SMPL.
+SMPL provides additional tools, including debugging, data collection and
+plotting, and simulation output analysis functions, together with an interactive
+interface to simulation model execution called mtr. With the aid of mtr, the
+user can, at execution time, display and modify simulation parameters, set
+breakpoints and control tracing, display any simulation report or plot, initiate
+and monitor simulation output analysis, and initiate various graphics displays.
+An overview of the design of SMPL is given, and design details of some of its
+facilities are presented.
+
+\section*{2. Implementation}
+
+Versions of smpl have been implemented in languages including Basic, C,
+Fortran, Pascal, and PL/I on machines ranging from a microprocessor with 32K
+bytes of memory through an Amdahl 580 mainframe up to CRAY supercomputers. The
+C implementation described in this book runs on both microcomputers and
+mainframes: only the basic random number generator differs between systems. You
+should be able to take the smpl source code in the appendix, enter it in your
+system, and get it working with few changes.
+
+A version of the SMPL system, SMPL/PC, has been implemented for the IBM
+Personal Computer and compatible personal computers (PCs). The reader
+interested in simulation on a personal computer should be aware that the basic
+PC is of limited use: it is just too slow. To obtain meaningful results, each
+simulation run (i.e., each instance of model execution) may require simulation
+of anywhere from several thousand to hundreds of thousands of events. A
+simulation study may involve dozens of runs; on the basic PC, the execution
+time required can be measured in days. The availability of a floating point
+arithmetic coprocessor such as the Intel 8087 Numeric Data Processor
+significantly changes the situation. As an illustration, consider the execution
+time of the following statement:
+
+\texttt{z = -x*log(ranf());}
+
+%% TODO: Verify formula in source.
+
+which is used to generate a random variate z from a negative exponential
+distribution with mean x. On a basic PC (a PC without an 8087), 20,000
+executions of this statement required approximately 700 seconds; plugging in
+an 8087 reduced this time to 20 seconds. (These times reflect a specific
+implementation of the log and random number generator functions in addition to
+the code generation characteristics of the compiler used.) For any particular
+program, the performance improvement provided by the 8087 will depend on the
+relative frequency and type of floating point instructions in the program.
+However, the 8087 does transform the PC into a viable tool for a variety of
+small- to medium-scale simulations; this viability is enhanced by later model
+PCs with faster CPUs.
+
+Source code for the programs in this book, including smpl, is available on
+diskette. For information, write the author at P. O. Box 2089, Sunnyvale, CA
+94087-2089.
+
+\section*{3. Organization of the Book}
+
+This book is divided into two parts. The first part, Chapters 1-6, provides an
+introduction to discrete-event simulation using smpl. The second part, Chapters
+7-9, gives an overview of the SMPL simulation environment, describes the
+implementation of smpl, and presents various extensions. A source code listing
+of smpl is given in the appendix.
+
+Chapter 1 begins with a brief discussion of simulations and systems.
+Representation of work in a simulation model and methods for generation of
+simulation input parameters are reviewed. A simple queueing system simulation
+model is developed, and performance measures and operational laws are
+introduced in considering instrumentation for this model. In Chapter 2, smpl
+simulation operations are introduced, and a smpl model of a queueing network is
+presented and discussed. The development, debugging, verification, and
+validation of simulation models are discussed in Chapter 3, together with
+hybrid modeling and the use of analytic models in verification. Chapter 4
+describes methods of simulation output analysis with emphasis on replication
+and batch means methods. This is followed by a brief review of other aspects of
+problem analysis, such as the comparison of alternative designs. In Chapters 5
+and 6, two simulation models are studied in detail: a multiprocessor system
+model and an Ethernet model. These examples emphasize the joint use of
+simulation and analytic models, and further illustrate the use of smpl.
+
+Each of the chapters in the first part of this book concludes with problems. In
+several cases, solutions to problems in one chapter are needed in attacking
+problems in later chapters. The problems of Chapters 5 and 6 take the form of
+modeling projects; developing, debugging, and validating the models for these
+projects involves a fair amount of work. As in real-world design environments,
+no answers are provided.
+
+The second part of this book is concerned with tools. Chapter 7 gives an
+overview of the simulation run-time interface and reporting and debugging tools
+of the SMPL simulation environment. Chapter 8 provides a detailed description
+of the implementation of smpl: data structures are described, and the various
+simulation functions are discussed with reference to the smpl source listing.
+This description, coupled with the source listing itself, should be sufficient
+to implement smpl on any system. Chapter 9 discusses various extensions and
+modifications to smpl, and sketches the design of mtr, the interactive interface
+module of SMPL.
+
+\section*{4. Performance Analysis Tools and Texts}
+
+Computer performance analysis draws its tools from a number of fields,
+including probability, statistics, and queueing theory. Simulation modeling
+requires some knowledge of each of these subject areas, and this book assumes
+that the modeler is supported by appropriate references in these areas. There
+are a number of texts available covering these subjects in various
+combinations. Some of these are briefly discussed below (omissions are due to
+ignorance, not lack of recommendation).\footnote{Full citations are given in the
+References at the end of this book.} The modeler's library will need several of
+these: selections are inter-dependent because of differences in coverage and
+emphasis, so carefully review the contents of each potential acquisition.
+Subjects important to the beginning modeler are basic probability, basic
+statistics, statistical aspects of simulation, analysis of single queues, and
+analysis of queueing networks, together with the application of these subjects
+in performance evaluation of computer and communication systems.
+
+Two books on probability, statistics, and queueing theory with a computer
+orientation are Probability, Statistics, and Queueing Theory, [Allen 1978],
+and Probability \& Statistics with Reliability, Queueing, and Computer Science
+Applications [Trivedi 1982]. Both provide analysis of individual queues and
+some discussion of queueing networks, and either would be an adequate reference
+to basic probability and statistics, and analysis of individual queues. (There
+are numerous non-computer-oriented texts on these subjects. Some of these,
+particularly those with an engineering bent, are very good). Allen provides a
+very useful appendix of formulas for a number of queueing systems (but makes
+up for it with a collection of APL programs for queueing system analysis).
+Trivedi provides a more extensive introduction to queueing networks, a useful
+chapter on regression analysis, and lots of good examples. Modeling and
+Analysis: An Introduction to System Performance Evaluation Methodology
+[Kobayashi 1978] includes, among other topics, brief introductions to
+probability, statistics (including regression), analysis of individual queues,
+and queueing network analysis. Kobayashi covers a lot of ground; one would
+like to see this book updated and doubled in size. A comprehensive treatment
+of the analysis of individual queues is Queueing Systems. Vol. I: Theory,
+Vol. II: Computer Applications [Kleinrock 1975].
+
+In the last few years, there have been many advances in the analysis and
+application of networks of queues. Developments in mean value analysis (MVA)
+and in decomposition and approximation methods have substantially enhanced the
+utility and applicability of queueing network analysis. Recency of publication
+is important in selecting a text in this area. Quantitative System Performance
+[Lazowska et al 1984] provides a readable, practical discussion of MVA-based
+queueing network analysis with algorithms and applications, together with an
+introduction to operational laws and the analysis of performance bounds. It is
+strongly recommended for several reasons, including its operational approach
+to network analysis. Metamodeling [Agrawal 1985] summarizes approximation
+methods for queueing network analysis and provides a view of the state of the
+art in this area. Other sources include the Computer Performance Modeling
+Handbook [Lavenberg 1983] and Computer Systems Performance Modeling [Sauer and
+Chandy 1981].
+
+For a number of years, the standard text on simulation - at least on the
+statistical aspects - was Principles of Discrete Event Simulation [Fishman
+1978]; it continues to be a valuable reference. In recent years, several new
+books on the subject have appeared, including Simulation Modeling and Analysis
+[Law and Kelton 1982], A Guide to Simulation [Bratley et al 1983], and
+Discrete-Event System Simulation [Banks and Carson 1984]. Each provides good
+subject coverage with particular strengths. Law and Kelton is very readable
+and has good chapters on selecting input distributions, and on output data
+analysis. Bratley et al provide Fortran listings of random variate generators,
+and Banks and Carson provide summary descriptions of various queueing systems.
+All four are within easy reach of the author's chair and are frequently
+referenced. Kleijnen [1975] provides a comprehensive discussion of the
+statistical aspects of simulation. While dated in a few areas, this is a useful
+text; unfortunately, it is vastly over-priced.
+
+There are a number of books on computer performance evaluation, several of
+which have already been mentioned. Kobayashi [1978] covers a wide range of
+subjects, including probability, statistics, queueing, and simulation.
+Computer Systems Performance Evaluation [Ferrari 1978] emphasizes performance
+measurement methods and workload characterization in addition to simulation and
+analysis; its view is oriented toward the practitioner, rather than the
+theorist. Measurement and Tuning of Computer Systems [Ferrari et al 1983] is
+the best available reference on computer system workload characterization, also
+is good in the area of measurements, and provides a nice introduction to
+queueing network analysis. Lavenberg [1983] covers probability theory,
+individual queues, exact and approximate methods of queueing network analysis,
+and simulation. This book combines contributions from several authors; it is
+not very well unified but has several strong chapters, including a good
+presentation on statistical analysis of simulation results by Welch. Sauer and
+Chandy [1981] focus on queueing network models, and provide a comprehensive
+description of the implementation of a queueing network simulator. A Computer
+\& Communications Network Performance Analysis Primer [Stuck and Arthurs 1985]
+discusses estimation of performance and performance bounds for a variety of
+systems (and could be improved by better indexing).
+
+The major source of information on performance analysis methods and
+applications is technical journals and conferences, particularly those of the
+ACM (Association for Computing Machinery) and the IEEE (Institute of Electrical
+and Electronic Engineers) Computer Society and Communications Society. The
+Winter Simulation Conference, jointly sponsored by the ACM, IEEE, and several
+other professional societies, covers a wide range of simulation methods and
+applications. Proceedings for this and a number of other conferences are
+available through ACM and IEEE book services. Operations Research, the journal
+of ORSA (Operations Research Society of America), frequently publishes papers
+on statistical aspects of simulation.
+
+\section*{Acknowledgements}
+
+The author gratefully acknowledges the support of Bill Harding, who provided
+the initial impetus for this book, the help of Makoto Kobayashi and Bill
+McCormack, whose careful reading of the manuscript caught many errors and
+helped improve the presentation, and the many contributions of Yung-Li Lily
+Jow to the models and methods discussed here.
+
+M. MacDougall\\
+Sunnyvale, California

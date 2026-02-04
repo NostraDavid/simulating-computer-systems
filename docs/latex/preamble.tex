@@ -1,15 +1,56 @@
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{lmodern}
+\usepackage{fontspec}
 \usepackage{microtype}
+\usepackage[hang,flushmargin]{footmisc}
 \usepackage{geometry}
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{patterns,patterns.meta,arrows.meta}
+\pgfplotsset{compat=1.18}
 \usepackage{booktabs}
 \usepackage{amsmath,amssymb}
 \usepackage{hyperref}
 \usepackage{xcolor}
 
 \geometry{margin=1in}
+
+% Font setup (XeLaTeX/LuaLaTeX).
+\defaultfontfeatures{Ligatures=TeX}
+\IfFontExistsTF{Source Serif 4}
+  {\setmainfont{Source Serif 4}}
+  {\IfFontExistsTF{Source Serif Pro}
+    {\setmainfont{Source Serif Pro}}
+    {\setmainfont{Libertinus Serif}}}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{TeX Gyre Cursor}
+\IfFontExistsTF{Bastardo Grotesk}
+  {\newfontfamily\titlefont{Bastardo Grotesk}[
+    BoldFont=* Bold,
+    ItalicFont=* Italic,
+    BoldItalicFont=* Bold Italic
+  ]}
+  {\newfontfamily\titlefont{TeX Gyre Heros}}
+\newfontfamily\axisfont{TeX Gyre Heros}
+
+% Apply title font without changing sizes.
+\titleformat{\chapter}[display]{\titlefont\bfseries\Huge}{\chaptername\ \thechapter}{1ex}{}
+\titleformat{\section}{\titlefont\bfseries\Large}{\thesection}{1em}{}
+\titleformat{\subsection}{\titlefont\bfseries\large}{\thesubsection}{1em}{}
+
+% Cover color sampled from image.png (RGB 72, 104, 175).
+\definecolor{coverblue}{HTML}{4868AF}
+
+% Footnote rule thickness and paragraph indentation.
+\renewcommand{\footnoterule}{\kern -3pt \hrule height 2pt \kern 2.6pt}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.6\baselineskip}
+\setlength{\footnotemargin}{0pt}
+
+% Override class font size to 16pt (with 19pt baseline).
+\AtBeginDocument{\fontsize{15}{18}\selectfont}
 
 \hypersetup{
   colorlinks=true,

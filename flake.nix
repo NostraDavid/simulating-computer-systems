@@ -21,6 +21,8 @@
             pkgs.tectonic
             pkgs.poppler_utils
             pkgs.tesseract
+            pkgs.imagemagick
+            pkgs.unpaper
             pkgs.ghostscript
           ];
           LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
