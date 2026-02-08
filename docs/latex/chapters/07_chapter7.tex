@@ -1,0 +1,177 @@
+% OCR draft from PDF pages 220-234 (book chapter 7).
+\chapter{A Simulation Environment}
+\label{chap:simulation-environment}
+
+\section{Introduction}
+\label{sec:simenv-intro}
+
+This chapter presents a user-level view of the SMPL simulation environment.
+SMPL includes:
+\begin{itemize}
+\item the \texttt{smpl} subsystem from Chapter 2,
+\item debugging/analysis/reporting tools,
+\item an interactive run-time interface called \texttt{mtr}.
+\end{itemize}
+
+In the implementation described (SMPL/PC), \texttt{mtr} acts as the interactive
+front-end between user, simulation model, and support modules.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 7.1 placeholder (SMPL simulation environment)}}
+\caption{The SMPL Simulation Environment}
+\label{fig:smpl-environment}
+\end{figure}
+
+Main optional modules:
+\begin{itemize}
+\item \textbf{dump}: event list, queue contents, facility users/status.
+\item \textbf{table}: table definition, entry, reports, and plots.
+\item \textbf{bma}: batch means analysis for run-length control.
+\item \textbf{parms}: named parameter definition and access.
+\item \textbf{dis}: graphics display (time series and parameter plots).
+\end{itemize}
+
+\section{The Run-Time Interface}
+\label{sec:simenv-mtr}
+
+The simulation program chooses whether \texttt{mtr} is active (via
+\texttt{smpl()} options), so production runs can bypass interaction.
+
+When enabled, \texttt{mtr} pauses:
+\begin{enumerate}
+\item after initial \texttt{smpl} initialization (for parameter/table setup),
+\item after first event scheduling (when facilities exist; useful for display
+  setup).
+\end{enumerate}
+
+During execution, \texttt{mtr} can pause on user input, display completion,
+model breakpoints, or errors. While running, it monitors each event boundary:
+breakpoint checks, active analysis/display updates, and function-key polling.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 7.2 placeholder (SMPL/PC function keys)}}
+\caption{SMPL/PC Function Keys}
+\label{fig:smpl-function-keys}
+\end{figure}
+
+Representative controls include pause/continue, trace toggles, dump/report
+display, table/bma/dis setup, parameter display/edit, breakpoint control, stream
+selection, and optional user-defined display function invocation.
+
+\section{Parameters}
+\label{sec:simenv-parameters}
+
+SMPL parameters are named real-valued variables registered by the model and
+shared with \texttt{mtr} and modules via the \texttt{parms} registry.
+
+Benefits:
+\begin{itemize}
+\item reduces custom input/report coding in models,
+\item allows keyboard display/modification of selected model variables,
+\item provides direct inputs for table/bma/dis,
+\item supports parameter-based breakpoints.
+\end{itemize}
+
+\section{The \texttt{dump} Module}
+\label{sec:simenv-dump}
+
+\texttt{dump} displays the current simulator state:
+\begin{itemize}
+\item per-facility server state and reserving token/priority,
+\item queue contents (event/token/priority/time-left),
+\item queue activity timestamps,
+\item event list entries and last-caused event.
+\end{itemize}
+
+It can be invoked by model call, function key, or automatically on simulator
+error.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 7.3 placeholder (dump output example)}}
+\caption{\texttt{dump} Module Output Example}
+\label{fig:smpl-dump-example}
+\end{figure}
+
+\section{The \texttt{table} Module}
+\label{sec:simenv-table}
+
+\texttt{table} provides histogram-like collection/reporting:
+\begin{itemize}
+\item define value range and interval count,
+\item enter observations,
+\item report mean/stddev and interval frequencies/cumulative frequencies,
+\item optionally plot the table.
+\end{itemize}
+
+Tables can be model-defined (entries by function call) or \texttt{mtr}-defined
+(entries by parameter/count observation). A single \texttt{mtr}-driven table is
+supported to keep monitoring overhead low.
+
+\section{The Batch Means Analysis Module}
+\label{sec:simenv-bma}
+
+\texttt{bma} estimates run length for a target relative confidence-interval
+half-width on a discrete-time output variable.
+
+Workflow:
+\begin{enumerate}
+\item discard initial observations (\emph{warm-up}),
+\item collect initial batches and test lag autocorrelation,
+\item if dependent, merge adjacent batches (doubling batch size),
+\item when independence is acceptable, keep adding batches until target
+  relative half-width is met,
+\item optionally reduce final batch count (to improve coverage) while
+  preserving target accuracy.
+\end{enumerate}
+
+Input setup (from \texttt{mtr} or model code) includes output/count parameters,
+warm-up count, initial batch size/count, target relative half-width, confidence
+level, lag-count, significance level, and max-observation limit.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 7.4 placeholder (bma input/output displays)}}
+\caption{\texttt{bma} Input and Output Displays}
+\label{fig:smpl-bma}
+\end{figure}
+
+The chapter notes that batch-means methods are empirical tools and should be
+used with care; it references broader output-analysis comparisons.
+
+\section{The Graphics Display Module}
+\label{sec:simenv-dis}
+
+\texttt{dis} provides interactive plots, including:
+\begin{itemize}
+\item facility utilization vs.\ time,
+\item average queue length vs.\ time,
+\item current queue length vs.\ time,
+\item parameter vs.\ time,
+\item parameter vs.\ parameter/count.
+\end{itemize}
+
+Plots are configured from an input panel (option-specific parameters such as
+facility/parameter IDs, axis ranges, time span, plotting mode). Data can also be
+written to file for external plotting.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.5cm][c]{0.86\textwidth}{\centering Figure 7.5 placeholder (\texttt{dis} step-mode queue plot)}}
+\caption{\texttt{dis} ``step mode'' Plot}
+\label{fig:smpl-dis-step}
+\end{figure}
+
+Typical uses: warm-up estimation, ad hoc run-length checks, dynamic behavior
+inspection, and bug discovery via live trend observation.
+
+\section{Summary}
+\label{sec:simenv-summary}
+
+The chapter's core point is productivity: parameterization plus interactive
+control reduce code/compile/debug cycles and support rapid model experimentation.
+With \texttt{mtr}, \texttt{parms}, and optional analysis/display modules, many
+studies can be run with little or no model recoding. The implementation details
+are system-dependent mostly in UI/display glue, making portability practical.

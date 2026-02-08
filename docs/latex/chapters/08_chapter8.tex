@@ -1,0 +1,280 @@
+% OCR draft from PDF pages 235-258 (book chapter 8).
+\chapter{Implementing \texttt{smpl}}
+\label{chap:implementing-smpl}
+
+\section{Introduction}
+\label{sec:smpl-impl-intro}
+
+This chapter walks through the design and C implementation of the core
+\texttt{smpl} subsystem. The goal is practical understanding: enough detail to
+debug, validate, and extend the simulator.
+
+The source files discussed are:
+\begin{itemize}
+\item \texttt{smpl.c} (core simulation subsystem, excluding random variates),
+\item \texttt{rand.c} (random variate generation),
+\item \texttt{smpl.h} (external declarations and user directives),
+\item \texttt{stat.c} (normal and $t$ quantile support used by batch means).
+\end{itemize}
+
+The implementation intentionally favors simple arrays and indexes over C
+structs/pointers to keep correspondence with non-C implementations.
+
+\section{The Element Pool and Namespace}
+\label{sec:smpl-impl-pool}
+
+\texttt{smpl.c} uses one basic 5-field element type for nearly all dynamic
+structures (event-list entries, queue entries, descriptor pieces). A single
+global pool is reused in two phases:
+\begin{enumerate}
+\item initialization phase: contiguous blocks are carved out for descriptors;
+\item execution phase: remaining elements are linked as a free list for
+  schedule/queue activity.
+\end{enumerate}
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 8.1 placeholder (\texttt{smpl.c} function names by category)}}
+\caption{\texttt{smpl.c} Function Names}
+\label{fig:smpl-func-list}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 8.2 placeholder (element pool during initialization/execution)}}
+\caption{The \texttt{smpl} Element Pool}
+\label{fig:smpl-element-pool}
+\end{figure}
+
+Namespace strings (model/facility names) are stored in a shared character
+array; helper routines save and return pointers into this namespace.
+
+\section{Initialization}
+\label{sec:smpl-impl-init}
+
+The subsystem initializes through \texttt{smpl(m,s)}:
+\begin{itemize}
+\item sets clocks and measurement interval start to zero,
+\item initializes pool/namespace indexes,
+\item stores model name,
+\item selects random stream for the run,
+\item initializes monitor hooks (if \texttt{mtr} is enabled).
+\end{itemize}
+
+\texttt{reset()} reinitializes measurement accumulators without rebuilding model
+structures. It calls \texttt{resetf()} to clear facility/queue statistics and resets
+the interval start time to current simulation time.
+
+\section{Facility Definition}
+\label{sec:smpl-impl-facility-def}
+
+\texttt{facility(name,nservers)} allocates a descriptor of size $(n+2)$ elements:
+a 2-element header plus one element per server.
+
+Descriptors are obtained from contiguous pool blocks via \texttt{get\_blk()} and
+linked into a facility chain used later by reset/report processing.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][5.0cm][c]{0.86\textwidth}{\centering Figure 8.3 placeholder (facility descriptor and queue fields)}}
+\caption{\texttt{smpl} Facility Descriptor and Queue Structure}
+\label{fig:smpl-facility-structure}
+\end{figure}
+
+\section{Event Scheduling}
+\label{sec:smpl-impl-events}
+
+The simulation program schedules events through:
+\begin{itemize}
+\item \texttt{schedule(ev,te,tkn)}: allocate element, set event/time/token, insert
+  in event list.
+\item \texttt{cause(\&ev,\&tkn)}: pop earliest event, advance clock, return event and
+  token to model, recycle element.
+\item \texttt{cancel(ev)}: search and remove event by number.
+\item \texttt{suspend(tkn)}: remove scheduled event for token (used by preemption).
+\end{itemize}
+
+Event-list and queue insertion use \texttt{enlist()}, a generic sorted linked-list
+insert routine:
+\begin{itemize}
+\item event list sorted by ascending occurrence time,
+\item facility queues sorted by descending priority.
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.6cm][c]{0.86\textwidth}{\centering Figure 8.4 placeholder (\texttt{smpl} event list structure)}}
+\caption{\texttt{smpl} Event List Structure}
+\label{fig:smpl-event-list}
+\end{figure}
+
+When present, \texttt{mtr} interaction is triggered primarily from
+\texttt{cause()} at event boundaries.
+
+\section{Facility Reservation and Release}
+\label{sec:smpl-impl-reserve-release}
+
+Non-preemptive requests use \texttt{request(f,tkn,pri)}:
+\begin{itemize}
+\item if a server is free, reserve immediately;
+\item otherwise create queue entry (token, priority, current event, remaining time)
+  and insert into priority queue.
+\end{itemize}
+
+Preemptive requests use \texttt{preempt(f,tkn,pri)}:
+\begin{itemize}
+\item if free server exists, reserve;
+\item else compare against lowest-priority busy server;
+\item if not higher priority, queue as blocked request;
+\item if higher priority, suspend interrupted token's completion event, queue it as
+  preempted work, account preemption statistics, and reserve server for requestor.
+\end{itemize}
+
+\texttt{release(f,tkn)} frees one server reserved by token \texttt{tkn}, updates
+busy-period and release counters, and if queue is non-empty:
+\begin{itemize}
+\item dequeues highest-priority waiting entry,
+\item either reschedules blocked request's event routine (remaining time $=0$),
+\item or resumes preempted request with saved remaining time ($>0$).
+\end{itemize}
+
+The chapter notes one edge case: if preemption occurs exactly at planned
+completion, a tiny nonzero residual is used to distinguish preempted work from
+blocked work.
+
+\section{Facility Query Functions}
+\label{sec:smpl-impl-query}
+
+Single-argument facility query calls provide instantaneous or average measures:
+\begin{itemize}
+\item \texttt{status()}, \texttt{inq()} (instantaneous busy/queue state),
+\item \texttt{U()}, \texttt{B()}, \texttt{Lq()} (utilization, mean busy period, mean queue length).
+\end{itemize}
+
+These functions are used in built-in reporting and in model-specific output.
+
+\section{Debugging and Reporting Functions}
+\label{sec:smpl-impl-debug-report}
+
+\texttt{smpl} routes output through the current file pointer (\texttt{opf}) and
+tracks page/screen line counts. The model may change destination via
+\texttt{sendto()}.
+
+Trace control:
+\begin{itemize}
+\item \texttt{trace(0)} off,
+\item \texttt{trace(1..3)} on (with different pause/page behavior),
+\item \texttt{trace(4)} account program-generated trace line.
+\end{itemize}
+
+\texttt{msg()} formats trace records (time stamp, token, phrase, qualifier), while
+\texttt{end\_line()}, \texttt{newpage()}, and \texttt{endpage()} manage pagination or
+screen pausing.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 8.5 placeholder (trace message parameters and phrases)}}
+\caption{Trace Message Parameters and Phrases}
+\label{fig:smpl-trace-messages}
+\end{figure}
+
+\texttt{error()} prints diagnostics, optionally emits report output, and terminates.
+\texttt{report()} delegates to facility report generation (\texttt{reportf()},
+\texttt{rept\_page()}).
+
+\section{Random Variate Generation}
+\label{sec:smpl-impl-rand}
+
+Random support lives in \texttt{rand.c}:
+\texttt{ranf}, \texttt{stream}, \texttt{seed}, \texttt{random}, \texttt{expntl},
+\texttt{erlang}, \texttt{hyperx}, and \texttt{normal}.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.4cm][c]{0.86\textwidth}{\centering Figure 8.6 placeholder (\texttt{rand.c} function list)}}
+\caption{\texttt{rand.c} Functions}
+\label{fig:smpl-rand-functions}
+\end{figure}
+
+The base generator is multiplicative congruential:
+\begin{equation}
+I_{n+1} = a I_n \bmod M
+\label{eq:smpl-rng-main}
+\end{equation}
+with $a=16807$ and $M=2^{31}-1$.
+
+To avoid slow/awkward direct modulo arithmetic, the implementation computes:
+\begin{equation}
+Z = 16807I_n \bmod 2^{31}
+\label{eq:smpl-rng-z}
+\end{equation}
+\begin{equation}
+K = \left\lfloor \frac{16807I_n}{2^{31}} \right\rfloor
+\label{eq:smpl-rng-k}
+\end{equation}
+then combines them as:
+\begin{equation}
+I_{n+1} =
+\begin{cases}
+Z + K, & Z+K < M \\
+Z + K - M, & Z+K \ge M
+\end{cases}
+\label{eq:smpl-rng-combine}
+\end{equation}
+
+On 32-bit-long / 16-bit-short targets, a simulated double-precision multiply
+forms the 46-bit product.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 8.7 placeholder (simulated double-precision multiply)}}
+\caption{Simulated Double Precision Multiply Operands and Operations}
+\label{fig:smpl-sim-mul}
+\end{figure}
+
+Stream handling supports 15 seeds by default (\texttt{In[]} table), each stream
+offset in sequence space. \texttt{seed()} allows state save/restore.
+
+Distribution generators:
+\begin{itemize}
+\item \texttt{expntl(x)} for negative exponential mean $x$,
+\item \texttt{erlang(x,s)} via product/sum transform for stage count
+  $k \approx (x/s)^2$,
+\item \texttt{hyperx(x,s)} for a two-stage hyperexponential family,
+\item \texttt{normal(x,s)} using the Marsaglia-Bray polar method.
+\end{itemize}
+
+For Erlang generation:
+\begin{equation}
+V = -\frac{x}{k}\ln\left(\prod_{i=1}^{k} r_i\right)
+\label{eq:smpl-erlang}
+\end{equation}
+where $r_i$ are i.i.d.\ uniform variates from \texttt{ranf()}.
+
+\section{The \texttt{smpl.h} File}
+\label{sec:smpl-impl-header}
+
+\texttt{smpl.h} is intended for inclusion by all simulation programs. It provides:
+\begin{itemize}
+\item required includes (\texttt{stdio.h}, \texttt{math.h}),
+\item \texttt{typedef}/\texttt{\#define} conventions used by \texttt{smpl},
+\item extern declarations for non-\texttt{int}-returning subsystem functions.
+\end{itemize}
+
+As new subsystem functions are added, corresponding declarations should be
+kept in sync.
+
+\section{Summary}
+\label{sec:smpl-impl-summary}
+
+The chapter's implementation-level message is:
+\begin{enumerate}
+\item start from a known-good baseline (\texttt{smpl.c}/\texttt{rand.c}),
+\item change as little as possible initially (usually only \texttt{ranf()} porting),
+\item validate with simple analytically-checkable models,
+\item then extend/restructure with confidence.
+\end{enumerate}
+
+If results differ from the book's exact sample runs, determine whether the
+difference is functional or statistical (especially when substituting a different
+RNG). Trace analysis on small test models is the recommended first debug tool.

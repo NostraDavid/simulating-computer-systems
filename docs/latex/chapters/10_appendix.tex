@@ -1,0 +1,39 @@
+% OCR draft from PDF pages 280-298 (Appendix source listings).
+\chapter{Appendix}
+\label{chap:appendix-source}
+
+The following pages in the original book provide C source listings for four
+files:
+\begin{itemize}
+\item \texttt{smpl.c}: the SMPL simulation subsystem (excluding random variates),
+\item \texttt{rand.c}: random variate generation functions,
+\item \texttt{smpl.h}: external declarations and user-level directives,
+\item \texttt{stat.c}: normal and $t$-distribution quantile support.
+\end{itemize}
+
+An executable model is formed by compiling \texttt{smpl.c} and \texttt{rand.c}
+(or packaging them in a library), and compiling/linking the simulation model
+source that includes \texttt{smpl.h}.
+
+\section{Listing Overview}
+\label{sec:appendix-listing-overview}
+
+\begin{itemize}
+\item \textbf{\texttt{smpl.c}} (pp.~281--293 in the scan): initialization, element
+  pool management, event scheduling, queue/list processing, facility
+  operations, tracing, and report output.
+\item \textbf{\texttt{rand.c}} (pp.~294--297): stream/seed handling and variate
+  generators (\texttt{ranf}, \texttt{random}, \texttt{expntl}, \texttt{erlang},
+  \texttt{hyperx}, \texttt{normal}).
+\item \textbf{\texttt{stat.c}} (p.~298 onward): quantile routines used by analysis
+  modules.
+\end{itemize}
+
+\section{Implementation Notes}
+\label{sec:appendix-notes}
+
+The scanned appendix is code-heavy and OCR introduces substantial formatting
+noise (spacing, punctuation, and token corruption in identifiers/operators).
+For this draft, code is represented as structural overview text. A later pass can
+replace this with validated verbatim listings (or with cleaned source imported
+from trusted machine-readable files).

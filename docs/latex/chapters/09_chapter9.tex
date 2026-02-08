@@ -1,0 +1,238 @@
+% OCR draft from PDF pages 259-279 (book chapter 9).
+\chapter{Extending \texttt{smpl}}
+\label{chap:extending-smpl}
+
+\section{Introduction}
+\label{sec:ext-smpl-intro}
+
+This chapter outlines practical extensions to the base \texttt{smpl}
+implementation from Chapter 8:
+\begin{itemize}
+\item queue-management variants and extra queue operations,
+\item alternative event-scheduling data structures,
+\item new constructs: storages, tables, and distributions,
+\item a run-time interface architecture (\texttt{mtr}) plus parameter handling.
+\end{itemize}
+
+The focus is design guidance rather than drop-in source code.
+
+\section{Queueing}
+\label{sec:ext-smpl-queueing}
+
+\texttt{smpl} uses implicit queueing for facility requests. That is compact and
+effective for many models, but several cases require explicit model-side
+control:
+\begin{enumerate}
+\item \textbf{simultaneous reservation} of multiple resources,
+\item \textbf{exit-time disciplines} (e.g., SSTF-like behavior),
+\item \textbf{unqueueing} arbitrary entries (not just head-of-queue).
+\end{enumerate}
+
+The chapter illustrates this with a multi-path disk string where a transfer can
+start only when both control-unit and channel resources are available.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 9.1 placeholder (multi-path disk string)}}
+\caption{Multi-Path Disk String}
+\label{fig:ext-smpl-disk-string}
+\end{figure}
+
+In this style, model code can:
+\begin{itemize}
+\item perform all-or-nothing reservation logic (\texttt{connect()}),
+\item maintain explicit queue descriptors in model arrays,
+\item dequeue/reschedule on release (\texttt{disconnect()}),
+\item implement custom retry behavior (e.g., rotational retry).
+\end{itemize}
+
+For repeated use, the chapter recommends adding explicit subsystem queues:
+\begin{itemize}
+\item \texttt{q = queue(name)},
+\item \texttt{enq(q,tkn,pri)},
+\item \texttt{tkn = deq(q)}.
+\end{itemize}
+
+Two additional helper operations are suggested:
+\begin{itemize}
+\item \texttt{unqueue(f,tkn,\&te)}: remove arbitrary token and return remaining
+  event time,
+\item \texttt{gentry(f,n)}: return token at queue position $n$.
+\end{itemize}
+
+For FIFO-heavy environments, queue-tail pointers and queue-type flags can
+eliminate per-entry search overhead.
+
+\section{Event Scheduling}
+\label{sec:ext-smpl-events}
+
+The baseline \texttt{smpl} event list is a time-ordered linked list with average
+insert/remove cost proportional to $n$ (mean future-event count). Heap-like
+structures reduce that to $\log n$ asymptotically.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.6cm][c]{0.86\textwidth}{\centering Figure 9.2 placeholder (linked-list vs heap insert/remove times)}}
+\caption{Mean Insert/Remove Times for Linked Lists and Implicit Heaps}
+\label{fig:ext-smpl-event-performance}
+\end{figure}
+
+However, replacing the list is not always a net win:
+\begin{itemize}
+\item same-time FIFO ordering may need secondary keys,
+\item event cancellation by event/token is naturally easy on lists,
+\item if future-event count is small, list overhead is often acceptable.
+\end{itemize}
+
+The chapter recommends measuring typical list size and considering model
+reformulation before changing core data structures.
+
+\section{Storages}
+\label{sec:ext-smpl-storages}
+
+Storages model finite pools (memory, buffers, etc.) and are conceptually similar
+to facilities but capacity-based.
+
+Suggested API:
+\begin{itemize}
+\item \texttt{s = storage(name, n)},
+\item \texttt{r = alloc(s, tkn, m)} (allocate $m$ units; queue if unavailable),
+\item \texttt{dealloc(s, k)} (free $k$ units),
+\item \texttt{m = avail(s)} (current free units).
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 9.3 placeholder (storage descriptor and queue structure)}}
+\caption{Storage Descriptor and Queue Structure}
+\label{fig:ext-smpl-storage-structure}
+\end{figure}
+
+Key implementation points:
+\begin{itemize}
+\item descriptor can be built as a facility-structure variant,
+\item queue-length and storage-utilization accumulators mirror facility logic,
+\item deallocation may admit multiple waiting requests (discipline-dependent).
+\end{itemize}
+
+The text discusses FIFO, priority, and best-fit queue variants and the need to
+extend reset/trace/report code paths accordingly.
+
+\section{Tables}
+\label{sec:ext-smpl-tables}
+
+Tables collect empirical distributions of output variables (response time,
+queueing delay, etc.).
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][5.0cm][c]{0.86\textwidth}{\centering Figure 9.4 placeholder (sample table report output)}}
+\caption{\texttt{smpl} Table Report}
+\label{fig:ext-smpl-table-report}
+\end{figure}
+
+Definition and entry interface:
+\begin{itemize}
+\item \texttt{t = table(from, to, n, opt, name)},
+\item \texttt{enter(v, t)}.
+\end{itemize}
+
+Descriptor fields include lower bound, interval width, option flags, number of
+cells, entry count, sums for mean/variance, and underflow/overflow counters.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 9.5 placeholder (table descriptor layout)}}
+\caption{Table Descriptor}
+\label{fig:ext-smpl-table-descriptor}
+\end{figure}
+
+On each \texttt{enter()}, the code updates:
+\begin{itemize}
+\item count, sum, sum-of-squares,
+\item min/max,
+\item underflow/overflow or selected cell count.
+\end{itemize}
+
+The chapter notes that fixed ranges can be inconvenient when location/shape are
+unknown; adaptive histogram methods are possible alternatives.
+
+\section{Distributions}
+\label{sec:ext-smpl-distributions}
+
+Distribution definition is separated from sampling:
+\begin{itemize}
+\item \texttt{d = distr(type, p1, p2)},
+\item \texttt{v = sample(d)}.
+\end{itemize}
+
+This decoupling improves parameterized model setup, debugging, and supports
+variance-reduction patterns.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][4.4cm][c]{0.86\textwidth}{\centering Figure 9.6 placeholder (distribution descriptor)}}
+\caption{Distribution Descriptor}
+\label{fig:ext-smpl-distribution-descriptor}
+\end{figure}
+
+Each distribution can maintain its own stream seed. That enables:
+\begin{itemize}
+\item common random numbers across alternatives,
+\item antithetic variants (via complemented seed handling).
+\end{itemize}
+
+An example type set is proposed:
+\texttt{constant}, \texttt{uniform}, \texttt{normal}, \texttt{expntl}
+(with Erlang/expntl/hyperexponential selection from mean/stddev relation).
+
+\section{A Run-Time Interface}
+\label{sec:ext-smpl-runtime}
+
+The chapter emphasizes that a run-time interface is usually the highest-leverage
+extension. In SMPL/PC this role is handled by \texttt{mtr}.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox[c][5.0cm][c]{0.86\textwidth}{\centering Figure 9.7 placeholder (\texttt{mtr} initialization/control flow)}}
+\caption{\texttt{mtr} Initialization and Control Functions}
+\label{fig:ext-smpl-mtr-flow}
+\end{figure}
+
+Integration points:
+\begin{itemize}
+\item \texttt{init\_mtr()} called twice from \texttt{smpl} init path
+  (before and after facility definition),
+\item \texttt{mtr()} called during execution (typically from \texttt{cause()}),
+\item optional pause/error hooks.
+\end{itemize}
+
+Suggested first features:
+\begin{itemize}
+\item trace control,
+\item report display/reset,
+\item parameter display and editing.
+\end{itemize}
+
+Parameter support (\texttt{parms} module) uses calls like:
+\begin{itemize}
+\item \texttt{pdef(num, ptr, name)},
+\item lookup helpers by number/pointer.
+\end{itemize}
+
+These parameters are then reused by breakpoints, table setup, analysis displays,
+and run-time experimentation.
+
+\section{In Conclusion}
+\label{sec:ext-smpl-conclusion}
+
+The chapter closes with two practical recommendations:
+\begin{enumerate}
+\item build a usable run-time interface early, then grow extensions around it;
+\item use \texttt{smpl} for small-to-medium models and as a compact simulation
+  kernel for specialized tooling.
+\end{enumerate}
+
+For large, highly detailed models, process-oriented languages are generally more
+natural. Regardless of language, begin with small/high-leverage models early in
+design and scale detail incrementally.

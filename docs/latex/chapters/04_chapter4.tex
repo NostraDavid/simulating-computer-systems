@@ -1,0 +1,1620 @@
+% OCR draft from PDF pages 114-118. Needs cleanup and verification.
+\chapter{Output and Problem Analysis}
+\label{chap:output-problem-analysis}
+
+\section{Introduction}
+\label{sec:output-introduction}
+
+Sooner or later in the simulation process we have to answer the question
+"How long should the simulation run?". It tends to be posed in this way
+because we have to explicitly specify the time or activity count at which
+simulation program execution is to terminate. However, implicit in this
+question is the qualifying phrase "to achieve a specified accuracy", and it is
+only with the inclusion of this phrase that the question makes sense. It is not
+an easy question, and so often is ignored in its entirety. Simulations
+frequently are run "long enough", as determined by intuition, patience, or
+budget, and the output values from a single run are assumed to be the "true"
+solutions to the problem with no idea of their accuracy.
+
+In this chapter, we'll look at considerations in and some approaches to
+estimating and controlling simulation output accuracy. This subject is called
+simulation output analysis. Simulation inputs are obtained by generating
+random samples, or variates, from probability distributions; simulation
+outputs are functions of these random variates, so output analysis is a
+statistical problem. There are a number of approaches to this problem, some
+requiring more statistical sophistication than others. We'll review those
+best suited for the designer--modeler, and list references for further study.
+The last part of this chapter outlines certain aspects of problem analysis,
+such as methods for the comparison of design alternatives.
+
+\paragraph{Types of simulations.}
+Simulation run length is, in some cases, determined by the problem itself; the
+measure of interest is defined in terms of the time required to accomplish a
+specific set of activities or perhaps in terms of the number of activities
+required to reach a specified state, given initial conditions determined by the
+problem. From an output analysis perspective, this type of simulation is called
+a terminating, or transient, simulation. Simulation of a computer system's
+initial program load ("cold start") process would be a transient simulation.
+For this type of simulation, the question becomes one of how many times the
+simulation must be repeated (with different random number streams) to achieve
+a specified accuracy.
+
+In a steady-state simulation, both the initial conditions and the length of the
+simulation are determined by the modeler, and the measure of interest is
+defined in terms of a limiting value reached as the length of the simulation
+run goes to infinity. Suppose we are interested in the mean waiting time in a
+queueing system; theoretically, as the length of a simulation of this system
+approaches infinity, the distribution of waiting times becomes unchanging and
+the mean waiting time converges to a limiting value. Practically, run lengths
+are finite and simulation provides only a sample set of values from this
+distribution; one of our problems is to determine how close the mean estimated
+from these sample values is to the true mean of this underlying distribution.
+In a steady-state simulation, by definition, output values should be
+independent of initial conditions (achieving this is a second problem).
+
+Most simulations in a computer system design environment are of the steady-
+state type, just as most analytic models in this environment are concerned with
+equilibrium behavior. Except where noted, our discussion deals with output
+analysis for steady-state simulations.
+
+\paragraph{Types of measures.}
+Most of the time, the performance measure of interest is the mean (average)
+value of a simulation output variable. This variable may represent a
+discrete-time or a continuous-time random process (random, because it depends
+on random values of input variables). For a discrete-time process, the
+simulation produces a sequence of $n$ sample values $X_1, X_2, \ldots, X_n$
+whose mean (denoted by $\bar{X}$) is
+
+\begin{equation}
+\bar{X} = \sum_{i=1}^{n} X_i / n
+\label{eq:output-mean-discrete}
+\end{equation}
+
+For a continuous-time process, the output variable $X$ has a sample value $X_t$
+at any instant $t$ in time and the mean is
+
+\begin{equation}
+\bar{X} = \int_{0}^{T} X_t \, dt / T
+\label{eq:output-mean-continuous}
+\end{equation}
+
+where $T$ is the period of time simulated. $\bar{X}$ is called the sample mean.
+Because it is a function of random variables, it also is a random variable;
+different sample sequences or periods will produce different values of
+$\bar{X}$.
+
+However, as $n$ approaches infinity in (\ref{eq:output-mean-discrete}), or $T$
+approaches infinity in (\ref{eq:output-mean-continuous}), $\bar{X}$ converges to
+a limiting value $E[X]$, called the expectation of $X$. For conciseness, we'll
+represent $E[X]$ by $\mu$. $\mu$ can be thought of as the true mean of the
+distribution of $X$: we'll call it the distribution mean.
+
+Mean queueing or mean system residence times are examples of means of
+discrete-time processes. While the underlying distribution of queueing times
+or system residence times usually is continuous, simulation produces a set of
+discrete values. Probability measures also are means of discrete-time (or
+continuous-time) processes. For example, suppose it is desired to determine
+the probability that a customer arriving in a queueing system finds the server
+busy. Define an output variable (called an indicator variable) $X_i$ which is
+set to 1 if arriving customer $i$ finds the server busy and 0 otherwise, and
+simulate $n$ arrivals; the mean value of $X$, as given by
+(\ref{eq:output-mean-discrete}), is an estimate of the desired probability.
+
+Mean queue lengths and facility utilizations are the most common examples of
+means of continuous-time processes. If $X_t$ is the number of customers in
+queue at time $t$, then the mean number of customers in the queue is given by
+(\ref{eq:output-mean-continuous}). If $X_t$ is the state of a single-server
+facility at time $t$, where the state is defined as 1 if the facility is busy
+and 0 if it is not, then the utilization of the facility is given by
+(\ref{eq:output-mean-continuous}). Other system state measures can be similarly
+defined. While queue lengths and facility states change at discrete points in
+time, their values are defined continuously over time. (In smpl, the
+integration of (\ref{eq:output-mean-continuous}) is accomplished by summing
+length-time products in the case of queue lengths and busy periods in the case
+of facility utilizations; sums are accumulated only on state changes, so
+reported mean queue lengths and utilizations may not be exact because of edge
+effects.)
+
+Measures other than the mean sometimes are important. For example, an estimate
+of the mean response time in a model of an interactive system doesn't tell us
+all we want to know; we'd also like to know something about the distribution
+of response times. The variance is a measure of the dispersion of a
+distribution. The variance of a set of $n$ sample values $X_1, X_2, \ldots, X_n$
+is
+
+\begin{equation}
+s^2 = \sum_{i=1}^{n} (X_i - \bar{X})^2 / (n - 1)
+\label{eq:output-variance}
+\end{equation}
+
+$s^2$ is called the sample variance. As $n$ approaches infinity, $s^2$
+converges to a limiting value $E[s^2] = E[(X - \mu)^2]$, denoted by $\sigma^2$.
+Thus, $\bar{X}$ and $s^2$ are the sample mean and variance, and $\mu$ and
+$\sigma^2$ are the distribution mean and variance. (In
+(\ref{eq:output-variance}), $\sum (X_i - \bar{X})^2$ is divided by $n - 1$, not
+$n$, so that $E[s^2]$ will indeed be equal to $E[(X - \mu)^2]$: see Kobayashi
+[1978], p.\ 322.) The square root of the variance is the standard deviation,
+and the ratio of the standard deviation to the mean is called the coefficient
+of variation.
+
+Any of these three measures let us assess, in a comparative sense, the
+dispersion of a distribution. However, at least in the case of response times,
+what we'd really like to do is estimate quantiles of the distribution. (A
+quantile is equivalent to a percentile: the 0.9 quantile is the same as the
+90th percentile.) For example, we'd like to determine a value $t$ for which 90
+percent of response times are equal to or less than $t$, or perhaps estimate
+the median response time (the value of $t$ at the 50th percentile). Quantile
+estimation is a difficult task, both computationally (the entire output
+sequence has to be stored) and statistically. However, it is fairly easy to do
+the inverse -- estimate the proportion of values equal to or less than $t$ --
+using an indicator variable as described earlier, and this may be an adequate
+measure of variability in practice.
+
+We'll have our hands full here with output analysis for means, and won't
+consider variance or quantile estimation. Our simulation texts aren't much help
+on these topics: see Welch [1983] for discussion and references.
+
+\section{Confidence Intervals}
+\label{sec:confidence-intervals}
+
+To reiterate, our problem is to estimate how close the sample mean obtained
+from a finite-length simulation is to the distribution mean $\mu$ or,
+equivalently, how long run lengths have to be to obtain a sample mean
+arbitrarily close to $\mu$.
+
+Let's consider a particular problem: estimation of the mean queueing time in
+an M/M/1 queueing system. (We'll use this system because a great deal is known
+about it and because we already have a smpl model of it (Section 1.7). This
+model can be instrumented to collect queueing times, or the mean queueing time
+can be computed from the mean queue length given in the simulation report
+using equation (1.12).) Assume the mean interarrival time $T_a$ is 125, the
+mean service time $T_s$ is 100, let $X_i$ represent the queueing time of
+customer $i$, and let $\bar{X}$ be the mean queueing time resulting from a
+simulation of 5000 customers. How close is $\bar{X}$ to $\mu$?
+
+Ten simulation runs, using a different smpl random number stream for each run,
+gave the following mean queueing times.
+
+\begin{center}
+\begin{tabular}{ll}
+(1) 331.993 & (6) 447.532 \\
+(2) 366.052 & (7) 420.853 \\
+(3) 403.524 & (8) 355.909 \\
+(4) 464.856 & (9) 492.144 \\
+(5) 393.393 & (10) 389.200 \\
+\end{tabular}
+\end{center}
+
+Run (and stream) numbers are in parentheses. The means range from about 332 to
+about 492, illustrating the kind of the error we can make by using the mean
+from a single run as the "true" solution to an analysis problem. The mean for
+the ten runs is 406.554; how close is this to $\mu$?
+
+We can answer this question by computing a measure called a confidence
+interval. Suppose we have a set of $N$ sample values $Y_1, Y_2, \ldots, Y_N$
+from a distribution with true (but unknown) mean $\mu$. The sample mean is
+
+\begin{equation}
+\bar{Y} = \sum_{i=1}^{N} Y_i / N
+\label{eq:output-mean-y}
+\end{equation}
+
+Define $1 - \alpha$ as the probability that the absolute value of the
+difference between the sample mean and $\mu$ is equal to or less than $H$:
+
+\begin{equation}
+P[|\bar{Y} - \mu| < H] = 1 - \alpha
+\label{eq:output-ci-def}
+\end{equation}
+
+Then a confidence interval for the mean is defined as\footnote{A measure such
+as the mean, which is a single number, often is called a point estimator; the
+confidence interval is called an interval estimator.}
+
+\begin{equation}
+P[\bar{Y} - H < \mu < \bar{Y} + H] = 1 - \alpha
+\label{eq:output-ci}
+\end{equation}
+
+The interval $\bar{Y} - H$ to $\bar{Y} + H$ is called the confidence interval,
+$H$ is called the confidence interval half-width, and $1 - \alpha$ is called
+the confidence level or confidence coefficient, typical values of which are
+0.90 or 0.95. The confidence level $1 - \alpha$ is specified by the analyst;
+$H$ then is determined by the sample values, number of samples, and the value
+of $\sigma$.
+
+$H$ is a function of random variables and so is a random variable itself;
+consequently, the interval $\bar{Y} \pm H$ is a random interval. Different
+experiments, producing different sets of values of $Y$, will have different
+confidence intervals. (\ref{eq:output-ci}) states that if we perform a large
+number of such experiments and compute a confidence interval for each
+experiment, the proportion of intervals containing $\mu$ is $1 - \alpha$. A
+confidence interval containing the distribution mean $\mu$ is said to cover
+the mean, and $1 - \alpha$ is called the nominal coverage probability or,
+simply, the nominal coverage.
+
+When $Y_1, Y_2, \ldots, Y_N$ are independent random variables from a normal
+distribution with mean $\mu$, $H$ is given by
+
+\begin{equation}
+H = t_{\alpha/2,\,N-1}\, s / \sqrt{N}
+\label{eq:output-ci-halfwidth}
+\end{equation}
+
+where $t_{\alpha/2,\,N-1}$ is the upper $\alpha/2$ quantile of the $t$
+distribution with $N-1$ degrees of freedom and $s^2$ is the sample variance:
+
+\begin{equation}
+s^2 = \sum_{i=1}^{N} (Y_i - \bar{Y})^2 / (N - 1)
+\label{eq:output-sample-variance}
+\end{equation}
+
+$s^2$ is the estimated variance of the distribution of the sample values
+$Y_i$. $s^2 / N$ is the estimated variance of the distribution of the sample
+mean $\bar{Y}$, and $s / \sqrt{N}$ is the standard deviation of the
+distribution of the sample mean; the last sometimes is called the standard
+error of the mean.
+
+Under the assumptions of independence and normality, the sample mean is
+distributed in accordance with a $t$ distribution. The standard $t$
+distribution is defined to have a mean of 0 and a standard deviation of 1;
+$100(\alpha/2)$ percent of sample values from this distribution are more than
+$+t_{\alpha/2,\,N-1}$ standard deviations from the mean, and an equal
+percentage are more than $-t_{\alpha/2,\,N-1}$ standard deviations from the
+mean. Therefore, $100(1-\alpha)$ percent are within
+$\pm t_{\alpha/2,\,N-1}$ unit standard deviations of the mean. In
+(\ref{eq:output-ci-halfwidth}), then, $H$ is computed by multiplying the
+number of unit standard deviations specified by $\alpha$ and $N-1$ by the
+standard deviation of the sample mean. $N-1$ is called the number of degrees
+of freedom; the shape of the $t$ distribution and the quantile associated
+with a given standard deviation change as $N-1$ changes.
+
+Table 4.1 is an abbreviated tabulation of values of $t_{\alpha/2,\,N-1}$. More
+extensive tabulations are provided in Law and Kelton [1982], Banks and Carson
+[1984], and in most statistics texts. Fishman [1978] provides Fortran
+subroutines to compute quantiles of the $t$ and normal distributions. C
+functions based on these subroutines are included in the appendix; these were
+used to generate Table 4.1. As $N$ increases, the $t$ distribution approaches
+the normal distribution, quantiles of which (denoted by $z_{\alpha/2}$) often
+are used when $N$ is greater than 25 or 30. The values of $z_{.05}$ and
+$z_{.025}$ are, respectively, 1.65 and 1.96.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rcc rcc}
+\toprule
+\multicolumn{1}{c}{$N-1$} & $t_{.05}$ & $t_{.025}$ &
+\multicolumn{1}{c}{$N-1$} & $t_{.05}$ & $t_{.025}$ \\
+\midrule
+4  & 2.13 & 2.78 & 15 & 1.75 & 2.13 \\
+5  & 2.02 & 2.57 & 16 & 1.75 & 2.12 \\
+6  & 1.94 & 2.45 & 17 & 1.74 & 2.11 \\
+7  & 1.90 & 2.36 & 18 & 1.73 & 2.10 \\
+8  & 1.86 & 2.31 & 19 & 1.73 & 2.09 \\
+9  & 1.83 & 2.26 & 20 & 1.72 & 2.09 \\
+10 & 1.81 & 2.23 & 21 & 1.72 & 2.08 \\
+11 & 1.80 & 2.20 & 22 & 1.72 & 2.07 \\
+12 & 1.78 & 2.18 & 23 & 1.71 & 2.07 \\
+13 & 1.77 & 2.16 & 24 & 1.71 & 2.06 \\
+14 & 1.76 & 2.14 & $\infty$ & 1.65 & 1.96 \\
+\bottomrule
+\end{tabular}
+\caption{Selected Values of $t_{\alpha/2,\,N-1}$}
+\end{table}
+
+If we define $Y_i$ as the mean queueing time from run $i$, we can use
+(\ref{eq:output-mean-y})--(\ref{eq:output-sample-variance}) to compute a
+confidence interval for the mean queueing time from the ten simulation runs.
+The independence assumption is satisfied because each simulation run used a
+different random number stream. The assumption of normality is based on the
+Central Limit Theorem which (loosely) states that means of random samples of
+size $n$ from any distribution with finite variance are approximately normally
+distributed for large $n$. (We'll revisit this in Section 4.4.)
+
+The computation of a 95 percent confidence interval for the mean queueing time
+from the M/M/1 queueing system simulations is outlined below.
+
+\begin{center}
+\begin{tabular}{ll}
+$1-\alpha = 0.95$, so $\alpha = 0.05$ & \\
+sample mean $\bar{Y}$ & $= 406.55$ \\
+sample variance $s^2$ & $= 2540.08$ \\
+standard deviation of the sample mean $s/\sqrt{N}$ & $= 15.94$ \\
+$t_{.05/2,9}$ (from Table 4.1) & $= 2.26$ \\
+confidence interval half-width $H$ & $= 2.26 \times 15.94 = 36.02$ \\
+confidence interval & $= 406.55 \pm 36.02$ \\
+\end{tabular}
+\end{center}
+
+Thus, we are 95 percent confident that the true mean queueing time is between
+370.53 and 442.47. (The theoretical mean is 400.) Remember the interpretation
+of this: if we repeat this experiment many times, computing a confidence
+interval each time, 95 percent of these confidence intervals will contain the
+true mean. This confidence is based on results from a set of ten simulation
+runs: note that only four of these ten runs produced a mean contained in the
+confidence interval.
+
+Sometimes the confidence interval is described in relative terms as a
+percentage of the mean. In this example, the relative confidence interval
+half-width is about 8.86 percent of the sample mean. Subject to the
+interpretation emphasized above, we can view this as a measure of the
+accuracy of our estimate of the mean queueing time; since we are 95 percent
+confident that this interval contains $\mu$, we are equally confident that
+$\bar{Y}$ is within 8.86 percent of $\mu$.
+
+In our analysis of the M/M/1 queue, simulation of 50,000 customer completions
+(10 runs of 5000 completions) provided a relative half-width of 8.86 percent.
+What would it take to cut that in half? Let's look back at
+(\ref{eq:output-ci-halfwidth}). $H$ is the product of three terms:
+$t_{\alpha/2,\,N-1}$, $s$, and $N^{-1/2}$. The first term is a function of $N$,
+but decreases by only fifteen percent or so as $N$ becomes infinite. For fixed
+$s$, then, we would have to increase $N$ by a factor of almost four to reduce
+$H$ by a factor of 2 -- make 40 runs of 5000 completions. We also could reduce
+$s$ by increasing $n$, the length of each run; it can be shown that $s$
+decreases with the square root of $n$. Thus, a $2\times$ increase in accuracy
+requires a $4\times$ increase in total simulation run length; a total of about
+200,000 customer service completions would be needed to cut $H$ in half.
+
+Estimation of a confidence interval is what simulation output analysis is all
+about. The foregoing discussion should be supplemented by further reading. A
+good introductory statistics text, such as Mendenhall and Scheaffer [1973],
+will provide a conceptual introduction to confidence interval estimation and
+its relation to hypothesis testing. A succinct introduction to the subject is
+provided by Kobayashi [1978]. Simulation-related references are given later in
+this chapter.
+
+\section{The Effect of Correlation}
+\label{sec:effect-of-correlation}
+
+The method of confidence interval estimation described in the preceding
+section can't be applied directly to a sequence of simulation output variables
+because these are correlated and the requisite assumption of independence does
+not hold. The correlated behavior of queueing times in our M/M/1 queue
+simulation (with $T_a = 125$ and $T_s = 100$) is illustrated in Figure 4.1,
+which plots customer queueing time versus customer number for the first 1000
+service completions of simulation run 1. Note how the queueing times tend to
+cluster into sequences of very long and very short times (the mean queueing
+time for these 1000 customers was 253.1). Since service times are
+exponentially distributed, the majority of service times are short, less than
+the mean, but a few are very much longer. When one of these long service times
+occurs, customers back up at the server and incur long delays. Eventually a
+long inter-arrival time occurs, the server catches up, and delays diminish.
+Thus, delays tend to be positively correlated; a long delay is more likely to
+be followed by another long delay than by a short delay, and conversely. Many
+computer systems and subsystems behave in a similar way. As a result of this
+correlation, $s^2/N$ underestimates the variance of the sample mean, and so
+(\ref{eq:output-ci-halfwidth}) underestimates the confidence interval
+half-width.\footnote{This figure was generated using SMPL's time series
+display, described in Chapter 7.}
+
+\begin{figure}[ht]
+\centering
+% TODO: Recreate Figure 4.1 (queueing time vs. customer number) from the PDF.
+\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.1 placeholder}}
+\caption{A Queueing Time Sequence in an M/M/1 Queue}
+\end{figure}
+
+We can intuitively see why the estimated variance of the sample mean is
+affected. With independent samples, two sample values $X_i$ and $X_{i+1}$
+provide two different pieces of information for constructing this estimate.
+However, if $X_i$ and $X_{i+1}$ are correlated, the two values together may
+provide only a little more information than a single value provides, so $N$
+correlated samples provide less information than $N$ independent samples. How
+much less depends on the degree of correlation.
+
+For an analytic perspective, suppose $X_1, X_2, \ldots, X_n$ are a sequence of
+sample values from a discrete-time random process with mean $\mu$ and variance
+$\sigma^2$. Under certain conditions, the autocovariance function of the
+process is defined as
+
+\begin{equation}
+R_j = E[(X_i - \mu)(X_{i+j} - \mu)]
+\label{eq:output-autocovariance}
+\end{equation}
+
+$R_j$ is the expectation of the product of deviations from the mean of values
+spaced $j$ samples, or lags, apart. Note that $R_0 = E[(X_i - \mu)^2] =
+\sigma^2$, and $|R_j| < R_0$. We'll assume that $R_j$ is a function only of
+$j$, the difference between positions in the sequence, and not of the
+positions themselves: the sequence then is said to be covariance stationary.
+(For simulation output, this is true only if "warmup" effects either are
+eliminated from the output sequence or are insignificant.)
+
+The autocorrelation function is defined as
+
+\begin{equation}
+\rho_j = R_j / R_0
+\label{eq:output-autocorrelation}
+\end{equation}
+
+The value of $\rho_j$ for a given $j$ is called the $j$th lag autocorrelation
+(or serial correlation) coefficient. Note that $-1 < \rho_j < +1$, and
+$\rho_0 = 1$. If $X_{i+j}$ tends to be large when $X_i$ is large and small when
+$X_i$ is small, $\rho_j$ will be positive. If $X_{i+j}$ tends to be small when
+$X_i$ is large and conversely, $\rho_j$ will be negative. If neither tendency
+exists, $\rho_j$ will be 0 (for $j > 0$).
+
+Whether or not the sample values are correlated, the best estimate of $\mu$ is,
+as before, the sample mean
+
+\begin{equation}
+\bar{X} = \sum_{i=1}^{n} X_i / n
+\label{eq:output-mean-x}
+\end{equation}
+
+The variance of the sample mean, $\mathrm{Var}(\bar{X})$, can be shown to be
+
+\begin{equation}
+\mathrm{Var}(\bar{X}) =
+\left[1 + 2 \sum_{j=1}^{n-1} \left(1 - \frac{j}{n}\right) \rho_j \right]
+\sigma^2 / n
+\label{eq:output-variance-mean}
+\end{equation}
+
+For $n$ large enough so that $\rho_j$ becomes 0 as $j$ approaches $n$,
+
+\begin{equation}
+\mathrm{Var}(\bar{X}) = \xi \, \sigma^2 / n
+\label{eq:output-variance-mean-xi}
+\end{equation}
+
+where
+
+\begin{equation}
+\xi = 1 + 2 \sum_{j=1}^{\infty} \rho_j
+\label{eq:output-xi}
+\end{equation}
+
+If the sample values are independent (uncorrelated), $\xi = 1$ and
+$\mathrm{Var}(\bar{X}) = \sigma^2 / n$. In this case, the variance of the
+sample mean can be estimated from the
+sample variance $s^2/n$, as we did in the previous section. If the sample
+values are positively correlated, which usually is true for computer system
+simulation model output values, $\xi > 1$ and $\mathrm{Var}(\bar{X}) >
+\sigma^2/n$. In this case, a confidence interval based on estimating the
+variance of the sample mean as $s^2/n$ would underestimate the width of the
+confidence interval and give a false idea of the accuracy of the simulation
+results.
+
+$\xi$ can be viewed as the number of correlated samples equivalent to one
+independent sample; $n/\xi$ sometimes is called the effective sample size.
+$\xi$ rarely is known, and the various simulation output analysis methods
+proposed in the literature either try to estimate it or make it approximately
+1 (i.e., obtain independent samples).
+
+Queueing times in an M/M/1 queueing system represent one of the few processes
+for which $\xi$ can be analytically determined. For this process, Daley
+[1968] shows
+
+\begin{equation}
+\xi = \frac{1 + r}{1 - r} + \frac{2r(3 - r)}{(2 - r)(1 - r)^2}
+\label{eq:output-xi-mm1}
+\end{equation}
+
+where $r$ is the traffic intensity -- the mean service time divided by the
+mean inter-arrival time. For the M/M/1 queue, the server utilization is equal
+to the traffic intensity. (The traffic intensity traditionally is represented
+by the symbol $\rho$, but that symbol is used in this chapter to represent the
+serial correlation coefficient -- also by tradition.)
+
+It is instructive to use (\ref{eq:output-xi-mm1}) to determine the simulation
+run length required to achieve a specified accuracy for the mean queueing time
+in an M/M/1 queueing system. Let's assume that the sample size $n$ is large
+enough so that we can use the normal, rather than the $t$, distribution in
+forming the confidence interval. The confidence interval half-width then is
+
+\begin{equation}
+H = z_{\alpha/2} \left[\xi \sigma^2 / n \right]^{1/2}
+\label{eq:output-ci-halfwidth-normal}
+\end{equation}
+
+where $z_{\alpha/2}$ is the upper $\alpha/2$ quantile of the normal
+distribution and $\sigma^2$ is the variance of the queueing time distribution
+(since $\sigma^2$ is known for the M/M/1 queue, we use it here rather than an
+estimator).
+
+Suppose we want to obtain a 5 percent relative confidence interval half-width
+at a 95 percent confidence level for the mean queueing time. Then,
+$H = .05\mu$, $\alpha = 0.05$, $z_{\alpha/2} = 1.96$, and
+
+\begin{equation}
+.05\mu = 1.96 \left[\xi \sigma^2 / n \right]^{1/2}
+\label{eq:output-ci-relative}
+\end{equation}
+
+which, after some rearrangement, gives
+
+\begin{equation}
+n = \xi \left[39.2 \, \sigma/\mu \right]^2
+\label{eq:output-sample-size}
+\end{equation}
+
+Note that $\sigma/\mu$ is the coefficient of variation. For the M/M/1 queue,
+the mean and variance of the queueing time distribution are (see, for example,
+Allen [1978])
+
+\begin{equation}
+\mu = r T_s / (1 - r)
+\label{eq:output-mm1-mean}
+\end{equation}
+
+\begin{equation}
+\sigma^2 = r(2 - r)\left[T_s/(1 - r)\right]^2
+\label{eq:output-mm1-variance}
+\end{equation}
+
+where $T_s$ is the mean service time. The ratio $\sigma/\mu$ is
+
+\begin{equation}
+\sigma/\mu = \left[(2 - r)/r\right]^{1/2}
+\label{eq:output-mm1-cv}
+\end{equation}
+
+For a given traffic intensity $r$, we can use (\ref{eq:output-xi-mm1}) to
+compute $\xi$, (\ref{eq:output-mm1-cv}) to compute $\sigma/\mu$, and then
+compute $n$ from (\ref{eq:output-sample-size}).
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rccc}
+\toprule
+$r$ & sum of correlation coefficients ($\xi$) & coefficient of variation & required sample size $n$ \\
+\midrule
+.05 & 1.273 & 6.245 &  76290 \\
+.10 & 1.599 & 4.359 &  46685 \\
+.20 & 2.472 & 3.000 &  34187 \\
+.30 & 3.802 & 2.381 &  33126 \\
+.40 & 5.944 & 2.000 &  36535 \\
+.50 & 9.667 & 1.732 &  44564 \\
+.60 & 16.857 & 1.526 & 60354 \\
+.70 & 33.188 & 1.363 & 94703 \\
+.80 & 82.333 & 1.225 & 189774 \\
+.90 & 362.636 & 1.105 & 680948 \\
+\bottomrule
+\end{tabular}
+\caption{Required Sample Sizes for 5\% Accuracy in M/M/1 Queueing Time Estimation}
+\end{table}
+
+Values of $r$, $\xi$, $\sigma/\mu$, and $n$ are tabulated in Table 4.2. This
+table is interesting in several respects. First, note that correlation, as
+represented by $\xi$, increases as the traffic intensity increases. This makes
+intuitive sense: higher traffic means that more customers are likely to arrive
+during a long service time and incur long -- and correlated -- delays, as
+discussed at the start of this section. The coefficient of variation, on the
+other hand, decreases as the traffic increases: while both $\mu$ and
+$\sigma^2$ increase, $\mu^2$ increases faster. As the traffic increases, more
+and more customers incur delays, reducing the variability of delays. Note
+that, as a result of the interaction between $\xi$ and $\sigma/\mu$, required
+sample sizes increase as $r$ becomes very small as well as when $r$ becomes
+large.
+
+Values of $n$ in Table 4.2 are relevant only to queueing times in the M/M/1
+queue: the important point is their magnitude. Sample sizes often have to be
+on the order of tens of thousands, rather than thousands, to achieve the
+accuracy we desire. The required size will depend on the structure of the
+system being modeled, the output variable being estimated, and the values of
+model input parameters for any particular run.\footnote{For specified accuracy
+in estimation of similar parameters, open systems (Section 2.7) tend to
+require longer runs than closed systems -- but each experiment is unique.} We
+can't determine the sample size required for one experiment and expect it to
+apply to other experiments involving model structure or parameter changes.
+The sample size required to achieve a given accuracy cannot be determined in
+advance (except in a few cases, such as the M/M/1 queue, where the expected
+results are known anyway), but has to be determined from the experimental
+data. Thus, with a pre-determined sample size, we can estimate the accuracy
+but not control it.
+
+In the two output analysis methods of interest to us here, we collect $N$
+independent estimates of the mean value of the output parameter of interest
+and use (\ref{eq:output-mean-y})--(\ref{eq:output-sample-variance}) to compute
+a confidence interval estimate. To achieve independence, we use independent
+runs, as we'll discuss in Section 4.6, or we use subruns of a single long run,
+making the subruns long enough so that means of consecutive subruns are
+approximately independent (discussed in Section 4.7). In addition to
+independence, our confidence interval estimation procedure is based on the
+assumption that the means of individual runs or subruns are normally
+distributed.
+
+\section{The Question of Normality}
+\label{sec:question-of-normality}
+
+The Central Limit Theorem assures us that the mean of $n$ independent and
+identically distributed random variables is approximately normally
+distributed for large $n$: the distribution of the sample mean is said to be
+asymptotically normal. Output variables from an individual run or subrun may
+be identically distributed (in the absence of warmup effects) but, as we've
+just seen, are unlikely to be independent. We might ask, then, how lack of
+independence affects this assumption, and how $n$, approximate normality, and
+confidence interval accuracy are related.
+
+With regard to the first question, asymptotic normality is assumed to hold
+even though the output process is correlated. This has been demonstrated in a
+general way for certain types of processes (see Law [1983] for references) and
+has been shown to be true for output parameters of certain queueing systems.
+With regard to the second question, the consensus seems to be that warmup
+effects, in the case of individual runs, and correlation effects, in the case
+of subruns are the most serious concerns; when $n$ is made large enough to
+overcome these, it also will be large enough to provide approximate
+normality. The normality of the means from individual runs or subruns can be
+examined analytically using the Shapiro--Wilk test (see Fishman [1978] or
+Bratley et al.\ [1983]), or graphically (see Kobayashi [1978]). Finally,
+interval estimates for $\mu$ based on the normality of the sample mean are
+known to be robust -- insensitive to moderate departures from normality.
+
+\section{Output Analysis Methods}
+\label{sec:output-analysis-methods}
+
+A number of methods for estimating a confidence interval for the mean of a
+simulation output variable have been described in the literature. These
+include methods called (1) replication, (2) batch means, (3) regeneration,
+(4) autoregression, (5) spectral analysis, and (6) standardized time series.
+Methods (1)--(3) try to eliminate the effects of correlation, while methods
+(4) and (5) try to estimate them. Method (6), which is relatively new,
+estimates a confidence interval based on properties of a transformation of the
+simulation output sequence. The easiest methods for the beginning modeler to
+deal with from a conceptual standpoint are those of replication, batch means,
+and regeneration.
+
+The regenerative method exploits the fact that, at a random point in
+simulation time called a regeneration point, a model returns to the same state
+it was in at a previous regeneration point and, in a probabilistic sense,
+restarts or regenerates its behavior from that point. The interval between
+successive regeneration points is called a regeneration cycle. Since these
+points represent identical model states, the behavior of one cycle is
+independent of that of other cycles. Output variables, such as means, of
+different cycles are independent and identically distributed random
+variables, which provides a basis for confidence interval estimation. Because
+cycle lengths are random, the procedure for confidence interval estimation
+differs from that described earlier.
+
+The fact that cycles are clearly independent and identically distributed
+gives the regenerative method a stronger theoretical basis than most other
+methods. It can be hard to define a regeneration point in a complex model --
+at least one which occurs frequently enough to result in a reasonable number
+of cycles -- and this problem has to be solved every time a new model is
+developed. Consequently, we'll concentrate here on the replication and batch
+means methods. However, if you have occasion to develop a model that will
+receive extensive use, you should consider the regenerative method. Brief
+introductions are given by Bratley et al.\ [1983], Kobayashi [1978], Law and
+Kelton [1982], and Welch [1983]. For a more extensive introduction, see Crane
+and Lemoine [1977] or Iglehart [1978].
+
+Law [1983] surveys all six methods listed above and provides extensive
+references supplemented by a bibliography.
+
+Approaches to confidence interval estimation can be classified as fixed sample
+size procedures or as sequential procedures. Most output analysis methods can
+be adapted to either procedure. In a fixed sample size procedure, a simulation
+experiment of fixed total length is performed and the confidence interval
+estimated from the results of the experiment upon its completion. As noted
+earlier, a fixed sample size procedure lets us estimate the accuracy of the
+result, but not control it: what we see upon computing the confidence interval
+is what we get. In a sequential procedure, the desired accuracy is specified,
+confidence interval estimates are computed at selected intervals, and the
+experiment continued until the desired accuracy is obtained. Sequential
+procedures can be manual or can be automated. We'll consider both procedures
+in our discussion of the replication and batch means methods of output
+analysis.
+
+\section{Replication}
+\label{sec:replication}
+
+Replication is, at least conceptually, the easiest method of output analysis.
+Suppose we make $k$ runs (replications), each generating $m$ sample values of
+an output variable $y$, using a different random number stream for each
+run.\footnote{For simplicity, our discussion assumes a discrete-time process
+and describes run or subrun lengths in terms of the number of sample values
+generated (number of observations). Analysis methods for a continuous-time
+process are essentially the same, except that lengths are measured in time,
+not counts.} Let $Y_1, Y_2, \ldots, Y_k$ be the means of the $k$ runs. The means
+are independent, since a different random number stream was used for each run
+and, for sufficiently large $m$, will be approximately normally distributed.
+confidence interval for the mean then can be constructed as described in
+Section 4.2.
+
+\begin{equation}
+\text{sample mean: } \bar{Y} = \sum_{i=1}^{k} Y_i / k
+\label{eq:output-rep-mean}
+\end{equation}
+
+\begin{equation}
+\text{sample variance: } s^2 = \sum_{i=1}^{k} (Y_i - \bar{Y})^2 / (k - 1)
+\label{eq:output-rep-var}
+\end{equation}
+
+\begin{equation}
+s^2 = \left[\left(\sum_{i=1}^{k} Y_i^2\right) - k\bar{Y}^2\right] / (k - 1)
+\label{eq:output-rep-var-alt}
+\end{equation}
+
+\begin{equation}
+\text{half-width: } H = t_{\alpha/2,\,k-1}\, s / \sqrt{k}
+\label{eq:output-rep-halfwidth}
+\end{equation}
+
+\begin{equation}
+\text{confidence interval: } \bar{Y} \pm H
+\label{eq:output-rep-ci}
+\end{equation}
+
+Remember that the $Y_i$ here represents the means of individual runs, and
+$\bar{Y}$ is the mean of the means of these runs. $\bar{Y}$ sometimes is
+called the grand mean. It usually is easier to compute the sample variance
+with (\ref{eq:output-rep-var-alt}) than with (\ref{eq:output-rep-var}).
+
+In a fixed sample size procedure based on replication, the total number of
+observations $n = mk$ is determined in advance. This commonly is done by
+constructing the simulation program with the model proper as a subprogram
+which executes a run of length $m$ and returns a mean $Y_i$, calling this
+subprogram $k$ times with the random number stream incremented on each call,
+and computing the confidence interval as shown above. In deciding how to
+divide $n$ between $m$ and $k$, it is best to keep $k$ relatively small, on the
+order of 5 or 10, and $m$ relatively large. The trade is between confidence
+interval width and coverage probability. As we can see from
+(\ref{eq:output-rep-var-alt}), smaller values of $k$ tend to increase $H$;
+however, they permit a larger value of $m$ for a given $n$. Larger values of
+$m$ tend to reduce $s^2$ and consequently $H$, and so compensate to some
+degree for the effect of a small number of replications of $H$. Also, larger
+values of $m$ reduce warmup effects and improve normality, both of which
+improve confidence interval coverage (i.e., increase the probability that
+$\bar{Y} \pm H$ contains $\mu$ to a value closer to the theoretical coverage of
+$1 - \alpha$).
+
+Replication also can be employed in a sequential procedure, increasing either
+$m$ or $k$ until the desired value of $H$ is obtained. The recommended way of
+doing this is to make $k$ runs of initial length $m = m_0$, saving the state of
+the simulation at the end of each run, compute $H$ and, if $H$ is larger than
+desired, increase $m$, restart each run, and compute $H$ again. This keeps $k$
+small, but has the practical disadvantage of requiring a save/restart
+capability. It also is possible to keep adding replications until the desired
+value of $H$ is obtained. If this approach is used, results should be
+interpreted conservatively, since the actual coverage generally will be less
+than $1 - \alpha$. This decrease is inherent in the sequential sampling
+process, and may be compounded by warmup effects if the run length is too
+small. For a discussion of the sequential sampling problem, see section V.A.4
+in Kleijnen [1975]; also see the recommendations of section 2.9 in Fishman
+[1978].
+
+\paragraph{The warmup problem.}
+As a matter of programming convenience, it is customary to initialize a
+simulation with the simulated system in an "empty-idle" state. For example,
+the queueing network model of Section 2.7 is initialized with all facilities
+idle and all tokens scheduled for event 1, so that all tokens are queued for
+(or using) the CPU at simulation time 0. This (probably) is an uncommon state
+for this system, and it takes some time for the model to "warm up" -- for
+tokens to be distributed among facilities in a more representative way.
+Values of output variables collected during this warmup period may not be
+representative of steady-state behavior and, if the run length is not
+sufficiently large, may bias $Y_i$. Instead of $Y_i$ being an estimator of
+$\mu$, it is an estimator of $\mu(m,0)$: the expected value of $Y$ for the
+first $m$ customers given an empty system at time 0. This problem is called
+the warmup problem, the initial transient problem, or the initialization bias
+problem.
+
+In replication analysis, there are three approaches to overcoming this
+problem:
+
+\begin{itemize}
+\item prevent it by establishing initial conditions representative of steady
+state behavior,
+\item eliminate its effect by deleting the first $\ell$ initial (and
+presumably biased) sample values of a run, or
+\item reduce its effect on $Y_i$ to an insignificant level by making $m$
+sufficiently large.
+\end{itemize}
+
+There are two difficulties in establishing representative initial conditions.
+First, it isn't clear how they should be defined. For example, let $p_n$ be
+the proportion of time during which a single-server queueing system contains
+$n$ customers, and let $\bar{n}$ be the average number of customers in the
+system. Suppose we make a pilot run and obtain $p_0 = .4$, $p_0 > p_n$ for
+$n>0$, and $\bar{n} = 1.5$. To establish representative initial conditions,
+should we start with 0, 1, or 2 customers in the queue? 0 represents the most
+probable state, while 1 or 2 (depending on how we round) represents the
+average length. There is no established procedure. Law [1983] shows, for an
+M/M/1 queue, how the expected queueing time after $i$ completions is affected
+by the number in the system at time 0: the most rapid convergence resulted
+with an initial number much greater than the mean. The problem becomes much
+harder for systems with multiple queues, since their joint behavior has to be
+considered.
+
+The second difficulty is that, even if we have a satisfactory definition of
+representative initial conditions and a means of estimating their values,
+creating these conditions might require considerable programming effort. For
+example, consider a computer system model representing a CPU, memory,
+channels, and disks, and what would have to be done to distribute tasks
+across these resources and their queues in a predetermined way. The easiest
+way to deal with both difficulties is to run the model long enough to reach
+steady state. This suggests the second approach: delete the values collected
+during this initialization period and continue execution.
+
+The effect of deletion on the initial transient is illustrated in Figure 4.2.
+This figure plots the mean CPU queueing time versus the number of CPU
+requests for class 0 (low priority) tokens in our queueing network model.
+Results are shown for two simulation runs, one without deletion and one with
+values for the first 50 CPU requests deleted. Note the initial bias in the
+mean caused by starting the simulation with all tokens scheduled for the CPU,
+and the reduction in this bias resulting from deletion. (The expected mean
+CPU queueing time is 20.) Also, note that the effect of this bias
+
+\begin{figure}[ht]
+\centering
+% TODO: Recreate Figure 4.2 (mean CPU queueing time vs. request number).
+\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.2 placeholder}}
+\caption{Mean Queueing Time in a Queueing Network Simulation}
+\end{figure}
+
+becomes insignificant as the run length increases, illustrating the third
+approach to the warmup problem.
+
+As such things go, our queueing network model is relatively well behaved:
+convergence of the mean queueing time towards its expected value occurs
+fairly quickly. 10 runs of 1000 requests each produce a relative half-width
+of about 10 percent at a 95 percent confidence level. Our M/M/1 queueing
+system model is a different story. Figure 4.3 plots mean queueing time versus
+customer number for this model with $T_a = 125$ and $T_s = 100$ (a traffic
+intensity of 0.8). The run represented in this figure began with the system
+empty, and no values were deleted. Here we see very slow convergence of the
+mean towards its expected value (of 400), due in large part to the
+correlation of queueing times. For the first several thousand customers, the
+mean is far below its expected value (again illustrating the danger of using
+the result from a single run).
+
+\begin{figure}[ht]
+\centering
+% TODO: Recreate Figure 4.3 (mean queueing time vs. customer number, single run).
+\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.3 placeholder}}
+\caption{Mean Queueing Time in an M/M/1 Queue Simulation (Single Run)}
+\end{figure}
+
+Figure 4.4 is more encouraging. This figure again plots mean queueing time
+versus customer number, this time with the mean queueing time after $n$
+customer completions averaged over a set of 10 simulation runs. Two sets of
+runs are represented: one without deletion and one with deletion of the first
+150 queueing times. (For the runs with deletion, the total run length was
+4150 queueing times). Without deletion, the effect of initialization bias is
+evident in the slow upward climb of the mean toward its expected value.
+
+\begin{figure}[ht]
+\centering
+% TODO: Recreate Figure 4.4 (mean queueing time, 10 runs).
+\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.4 placeholder}}
+\caption{Mean Queueing Time in an M/M/1 Queue Simulation (10 Runs)}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+% TODO: Recreate Figure 4.5 (mean queueing time, 200 runs).
+\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.5 placeholder}}
+\caption{Mean Queueing Time in an M/M/1 Queue Simulation (200 Runs)}
+\end{figure}
+
+However, with deletion, the mean becomes close to the expected value after
+about 2000 sample values.
+
+Figure 4.5 plots the mean queueing time after $n$ customer completions
+averaged over 200 runs, with and without deletion. With sample variations
+largely smoothed out, the effects of initialization bias are very clear. Note,
+though, that even with 150 deletions there appears to be some bias in the
+mean.
+
+The difficulty in the deletion approach is in determining the number of
+values to delete or, equivalently, when steady state is reached. For an
+overall run length of $m$ and a deletion amount $\ell$, $m-\ell$ sample values are
+collected in a run. If $\ell$ is too small, coverage will be reduced because the
+sample mean is biased, as we've seen, and so a confidence interval around it
+has less likelihood of containing $\mu$. If $\ell$ is larger than necessary, the
+sample variance is increased, increasing the width of the confidence interval;
+this, while clearly undesirable, is less risky than reduced coverage. In the
+absence of a reliable means of identifying steady state, our best tactic is to be
+generous with both $\ell$ and $m$. Considerable research has been done on deletion
+and on recognition of steady-state behavior: an excellent summary and
+references are given by Law [1983].
+
+The trade between run length $m$ and number of replications $k$ was
+mentioned earlier in this section: for a given $n = mk$, smaller values of $k$
+improve coverage at the expense of increased confidence interval width.
+This is illustrated by the data of Tables 4.3 and 4.4. These tables summarize
+the results of 3000 simulation runs for the M/M/1 queueing system with a
+traffic intensity of 0.8. Runs were made without deletion. For each run, the
+mean queue time was recorded at 500, 1000, 2000, and 4000 customer
+completions. The runs were grouped into 600 sets of 5 replications, 300 sets of
+10 replications, and 150 sets of 20 replications. For each set, a 95 percent
+confidence interval was computed. The average relative half-widths
+($H/\bar{Y}$) of these intervals are shown in Table 4.3, and the proportions of
+intervals which actually contained $\mu$ are shown in Table 4.4. Diagonal entries
+in these tables represent equal values of $mk$.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rccc}
+\toprule
+ & \multicolumn{3}{c}{number of replications $k$} \\
+\cmidrule(lr){2-4}
+$m$ run length & 5 & 10 & 20 \\
+\midrule
+500  & .475 & .294 & .204 \\
+1000 & .363 & .224 & .153 \\
+2000 & .270 & .165 & .111 \\
+4000 & .194 & .118 & .079 \\
+\bottomrule
+\end{tabular}
+\caption{Relative Half-Widths for M/M/1 Queue Simulations}
+\end{table}
+
+Table 4.3 shows that doubling the number of replications results in a
+greater reduction in the width of the confidence interval than doubling the
+run length. Note, though, that for a given $mk$, increasing $k$ from 5 to 10
+reduces the relative half-width by about 20 percent, while increasing $k$ from
+10 to 20 reduces it by only about 10 percent. Also note that large values of $mk$
+are required to obtain accuracies in the vicinity of 10 percent.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rccc}
+\toprule
+ & \multicolumn{3}{c}{number of replications $k$} \\
+\cmidrule(lr){2-4}
+$m$ run length & 5 & 10 & 20 \\
+\midrule
+500  & .883 & .853 & .853 \\
+1000 & .893 & .897 & .913 \\
+2000 & .937 & .940 & .960 \\
+4000 & .952 & .947 & .953 \\
+\bottomrule
+\end{tabular}
+\caption{Measured Coverages for M/M/1 Queue Simulations}
+\end{table}
+
+Now look at Table 4.4, which shows measured coverages -- the proportions of
+confidence intervals actually containing $\mu$ -- for this experiment;
+remember that the nominal coverage was 0.95. Note that, for a given $mk$,
+making the run length large results in better coverage than does making the
+number of replications large. In fact, if the run length is too small, making a
+large number of replications can even reduce coverage because it results in a
+smaller interval around a biased mean. We can see this in the coverages for
+run lengths of 500. Consequently, this model requires run lengths of several
+thousand sample values, independent of the number of replications, to obtain
+coverage near the nominal value. This again indicates that we need to be
+generous in specifying run lengths. Also, with a sequential approach based
+on replication, it is crucial to make the run length sufficiently large.
+
+Table 4.3 suggests that something more than 40{,}000 sample values are
+needed to obtain an accuracy of 10 percent. It is interesting to compare this
+with the required sample size predicted in the analysis of Section 4.3. For
+$H = .10\mu$ and $\alpha = 0.05$, equation (\ref{eq:output-sample-size}) becomes
+
+\begin{equation}
+n = \xi \left[19.66 \, \sigma/\mu \right]^2
+\label{eq:output-sample-size-10}
+\end{equation}
+
+substituting the values of $\xi$ and $\sigma/\mu$ corresponding to a traffic
+intensity of 0.8 in Table 4.2 gives $n = 47463$. (While we're looking at
+Table 4.2, note the required sample size for 5 percent accuracy at this
+traffic intensity!)
+
+\paragraph{Recommendations for replication.}
+To achieve comparable accuracy, our M/M/1 queue simulation requires run
+lengths some four times greater than those of our queueing network model. An
+infinite-population, high-utilization queueing system, such as the M/M/1
+queue, presents one of the more difficult problems in simulation estimation
+(which, in addition to its potential for analytic confirmation, is why the
+M/M/1 queue invariably is used in studies of output analysis methods).
+Fortunately, most smpl computer system models will be better behaved than our
+M/M/1 model because of controls and limits inherent in the systems themselves.
+Unfortunately, it isn't safe to conclude this in advance: each model and each
+set of input parameter values present unique run length requirements.
+
+The wide spectrum of simulation model behavior makes it tempting to
+equivocate on specific run length recommendations. However, the beginning
+modeler needs numbers, not caveats, so the following recommendations are
+offered for a sequential procedure using replication. These assume a desired
+accuracy (relative half width) of 10 percent at a 95 percent confidence level
+for an output variable $y$.
+
+\begin{enumerate}
+\item Use a basic run length of 2500 sample values. If the input variables
+  which are major contributors to the value of $y$ have coefficients of
+  variation greater than 1, increase this to 4000. For open systems with high
+  utilizations (traffic intensities in the 0.6--0.9 range), increase the run
+  length to 5000.
+\item Make 5 replications and compute the confidence interval half width
+  $H_5$.
+\item If $H_5 < .10Y$, the desired accuracy has been obtained. Otherwise, make
+  $k^* - 5$ additional replications, where
+\end{enumerate}
+
+\begin{equation}
+k^* = \left\lceil 5\left(H_5/.10Y\right)^2 \right\rceil
+\label{eq:output-kstar}
+\end{equation}
+
+\footnote{$\lceil x \rceil$ denotes the ceiling function of $x$ -- the smallest
+integer equal to or greater than $x$.}
+
+\begin{enumerate}
+\setcounter{enumi}{3}
+\item For a continuous-time process in which the run length is specified in
+  terms of time, as in estimation of mean queue length, set the run time long
+  enough to encompass a number of activities comparable to the counts
+  recommended above. In the case of mean queue length, for example, use a run
+  time which will result in 2500--5000 requests for the facility of interest.
+\end{enumerate}
+
+The basis for the run length recommendations largely is empirical; the
+suggested increases try to compensate for effects of high variability and
+high correlation. Total sample sizes based on these recommendations will be
+larger than necessary for some models, but it is always better to err in the
+direction of improved coverage.
+
+The basis for (\ref{eq:output-kstar}) is as follows. Suppose $Y_5$, $s_5$, and
+$H_5$ are the mean, standard deviation, and half width obtained from 5
+replications, $k$ is the number of replications which will produce the desired
+half width, and $Y_k$, $s_k$, and $H_k$ are the mean, standard deviation, and
+half width obtained from $k$ replications. Then, from
+(\ref{eq:output-ci-halfwidth}),
+
+\begin{align}
+H_5 &= t_{0.025;4}\, s_5/5^{1/2} \\
+H_k &= t_{0.025;k-1}\, s_k/k^{1/2} = .10Y_k
+\end{align}
+
+Assume $t_{0.025;4} = t_{0.025;k-1}$, $s_5 = s_k$, and $Y_5 = Y_k = Y$. Then,
+
+\begin{equation}
+\frac{H_5}{H_k} = \frac{H_5}{.10Y} = \left(\frac{k}{5}\right)^{1/2}
+\end{equation}
+
+which, rearranged, gives (\ref{eq:output-kstar}). Since
+$t_{0.025;k-1} < t_{0.025;4}$, the estimated number of additional replications
+should be conservative.
+
+A recommendation for deletion is not given because the suggested run lengths
+should be long enough to eliminate warmup effects. However, deletion amounts
+on the order of 5 percent of the run length may help and certainly won't hurt.
+
+\paragraph{Replication with SMPL.}
+SMPL's graphics display facility, \texttt{dis}, described in Chapter 7, can help
+make a rough estimate of required run length. (This facility was used to
+generate most of the figures in this chapter.) With \texttt{dis}, we can watch the
+behavior of the mean and decide when steady-state has been reached -- a task
+which is somewhat easier when the mean behaves as in Figure 4.2 than when
+its behavior resembles that shown in Figure 4.3 -- and set the run length at
+some conservatively longer value. SMPL also permits replication to be
+controlled from the keyboard without simulation program modification. At the
+start of each instance of model execution, we can select a new random number
+stream and set a breakpoint for a count or time via the SMPL run-time
+interface. When the breakpoint pause occurs, we can delete accumulated sums
+and counts, set another breakpoint for run termination, and, at the end of the
+run, report the appropriate measures, all from the keyboard.
+
+\section{Batch Means}
+\label{sec:batch-means}
+
+The batch means method circumvents the warmup problem by dividing one long
+run into a set of $k$ subruns of length $m$, called batches, computing a
+separate sample mean for each batch, and using these batch means to compute
+the grand mean and the confidence interval. Assuming deletion is used to
+achieve steady state initial conditions for the first batch, each subsequent
+batch begins with the system in steady state. If the batch size $m$ is
+sufficiently large, the batch means will be approximately independent and
+normally distributed; a confidence interval then can be computed just as in
+replication, with batch means taking the place of run means. Since warmup
+effects have to be dealt with only once, rather than $k$ times as in the case
+of replication, the batch means method is potentially more efficient: fewer
+sample values may be needed to achieve a given accuracy.
+
+The behavior of a batch means analysis for our M/M/1 simulation model
+is illustrated in Figure 4.6. The data represented in this figure is from a
+simulation with the first 200 sample values deleted and a batch size of 2000
+(using a random number stream different from that used to produce Figure
+4.3). Batch means are shown as e's, the upper and lower limits of the
+confidence interval are represented by the dotted lines, and the grand sample
+mean is represented by the solid line. Note the slow convergence of the
+confidence interval toward the mean.
+
+\begin{figure}[ht]
+\centering
+% TODO: Recreate Figure 4.6 (batch means analysis output for M/M/1 queue).
+\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.6 placeholder}}
+\caption{Batch Means Analysis Output for an M/M/1 Queue Simulation}
+\end{figure}
+
+Implementation of a sequential procedure for batch means analysis is
+straightforward. Figure 4.7 shows a simple batch means analysis module which
+can be linked with a simulation model to analyze any discrete-time output
+variable. The \texttt{stat.c} file included in this module provides the
+\texttt{T()} function to compute quantiles of the $t$ distribution (see Appendix).
+
+\begin{figure}[ht]
+\centering
+\begin{verbatim}
+#include <smpl.h>
+#include <stat.c>
+
+static int d, k, m, n;
+static real smy, smY, smY2, Y, h;
+
+init_bm(m0, mb)
+int m0, mb;
+{ /* set deletion amount & batch size */
+  d = m0; m = mb; smy = smY = smY2 = 0.0; k = n = 0;
+}
+
+obs(vy)
+real vy;
+{
+  int r = 0; real var;
+  if (d) { d--; return (r); }
+  smy += vy; n++;
+  if (n == m) {
+    /* batch complete: update sums & counts */
+    smy /= n; smY += smy; smY2 += smy * smy; k++;
+    smy = 0.0; n = 0;
+    if (k >= 10) {
+      /* compute grand mean & half width */
+      Y = smY / k; var = (smY2 - k * Y * Y) / (k - 1);
+      h = T(0.025, k - 1) * sqrt(var / k);
+      if (h / Y <= 0.1) { r = 1; }
+    }
+  }
+  return (r);
+}
+
+civals(mean, hw, nb)
+real *mean, *hw; int *nb;
+{ /* return batch means analysis results */
+  *mean = Y; *hw = h; *nb = k;
+}
+\end{verbatim}
+\caption{Batch Means Analysis Module}
+\end{figure}
+
+At the start of the simulation, the \texttt{init\_bm()} function is called to
+specify the number of values to be deleted $m_0$ (actually, in this case, the
+number to be ignored before starting data collection) and the batch size $m_b$.
+The \texttt{obs()} function is called each time the model generates a new value
+of the output variable. If the deletion count is non-zero, \texttt{obs()}
+decrements it and returns. Once the deletion count has been reduced to zero,
+values of the variable are summed until a full batch is accumulated. The batch
+mean is computed, added to the batch mean sum, and its square added to the mean
+squared sum. If ten or more batches have been collected, the grand sample mean
+and the confidence interval half width are computed. If the relative half width
+is 0.10 or less, the function return value $r$ is set to 1 to advise the model
+that the desired accuracy has been obtained. The model can obtain values of the
+mean, half width, and number of batches by a call to the \texttt{civals()}
+function.
+
+Collection of a minimum of ten batches is based on recommendations made by
+Schmeiser [1982] whose analysis showed that, for a fixed total sample size
+$n = mk$, 10 to 30 batches provides a reasonable compromise between confidence
+interval coverage and width. The module of Figure 4.7 is ``hardwired'' for an
+accuracy of 10 percent at a confidence level of 95 percent, but can easily be
+modified to permit specifying the desired accuracy and confidence level as
+initialization parameters. One caution: the number of sample values generated
+in a batch means analysis may be large, so int overflow in smpl may be a
+concern.
+
+You'll find it useful to develop a similar module (or extend this module)
+for analysis of continuous-time process means, such as mean queue length or
+mean number in system. For a continuous-time process, the batch ``size'' is
+specified as a time interval $t$, so it is convenient to schedule an event for
+execution every $t$ time units to compute the current batch mean and confidence
+interval, and update accumulators. With regard to the last, some care is
+needed in updating the length-time product sum at batch end time. To see what
+needs to be done, look at Figure 1.5 and imagine the time axis to be divided
+into fixed intervals. Try using this module with the M/M/1 simulation program
+of Figure 1.7 to estimate the mean queue length.
+
+One modest extension is worth considering. A trace option to display the
+batch number, batch mean, and current half-width at the end of each batch
+will help keep track of the progress of the simulation (and will keep you
+from worrying about whether or not your model is stuck in a loop).
+
+\paragraph{Recommendations for batch means analysis.}
+The batch means method can be used in a fixed sample size procedure or in a
+sequential procedure; we'll generally use the latter. Since we don't have to
+worry about warmup effects (except for the first batch), we can use a batch
+size which is shorter than the run length we'd use in replication and use a
+starting number of batches larger than the starting number of replications.
+This may provide quicker convergence of the half width to the desired value
+for some processes. However, in specifying the batch size, we also need to be
+concerned about independence and normality. Since successive values of output
+variables usually will be correlated, successive batch means also will be
+correlated if the batch size is too small, resulting in under-estimation of the
+half-width. Also, means produced using a small batch size are less likely to
+satisfy the assumption of approximate normality, resulting in reduced
+coverage.
+
+These considerations lead to the following recommendations for a sequential
+procedure using batch means analysis. These recommendations assume a desired
+accuracy of 10 percent at a 95 percent confidence level.
+
+\begin{enumerate}
+\item Use a batch size $m$ equal to one-half the run length for replication
+  recommended in the preceding section.
+\item Delete $\ell = 0.1m$ initial observations.
+\item Collect $k = 10$ batches and compute the confidence interval half-width
+  $H$.
+\item If the desired accuracy has not been obtained, collect another batch and
+  compute $H$ again. Repeat as necessary.
+\end{enumerate}
+
+These recommendations will result in a total run length larger than needed
+for some models, but it is best to be conservative.
+
+\paragraph{Effect of a sequential procedure on coverage.}
+The previous section noted that use of a sequential procedure will result in a
+reduction in coverage. Results quoted in Section 2.9 of Fishman [1978]
+indicate that the reduction is not severe; under certain specific conditions,
+a sequential procedure based on a confidence level of 0.95 can be shown to
+result in a coverage of 0.928. In an empirical examination of the effect on
+coverage, 300 simulations of the M/M/1 queue with $T_a = 125$, $T_s = 100$,
+were performed using the batch means analysis algorithm of Figure 4.7 to
+estimate the mean queueing time. The specified accuracy was 10 percent, the
+specified confidence level was 95 percent, and the batch size was 2000 with
+200 sample values deleted.
+
+The distribution of the means obtained in these 300 runs is plotted in
+Figure 4.8. The true mean queueing time $\mu$ is 400, so estimated means in the
+range 360--440 represent an accuracy of 10 percent. The proportion of runs
+with means in this range was 0.927, very close to the 0.928 coverage mentioned
+above. Interestingly, the majority (78 percent) of means outside this range
+were low, suggesting the possibility that some initialization bias remains.
+The number of batches per run varied from 10 to 45; the average was 22. Thus,
+some 44{,}200 sample values are required to obtain 10 percent accuracy in this
+case, about the same number as required for replication.
+
+\begin{figure}[ht]
+\centering
+% TODO: Recreate Figure 4.8 (distribution of means).
+\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.8 placeholder}}
+\caption{Distribution of Means for 300 M/M/1 Queue Simulations}
+\end{figure}
+
+\section{Improving Simulation Efficiency}
+\label{sec:improving-efficiency}
+
+The efficiency of a simulation is a measure of the number of sample values
+needed to achieve a given accuracy, and this number depends on the sample
+variance. We can see this clearly by rewriting (\ref{eq:output-ci-halfwidth})
+as
+
+\begin{equation}
+k = \left[\frac{t_{\alpha/2;k-1}}{H}\right]^2 s^2
+\label{eq:output-k-variance}
+\end{equation}
+
+where $k$ is the number of replications or batches, each of which comprises $m$
+sample values. For a given accuracy and confidence level (and ignoring the
+variation of $t$ with $k$)
+
+\begin{equation}
+n = mk = c s^2
+\label{eq:output-n-variance}
+\end{equation}
+
+where $c$ is a constant. Thus, the sample size required for given accuracy is
+proportional to the sample variance; we can improve the efficiency of a
+simulation if we can find some means of reducing the variance.
+
+A number of variance reduction techniques have been developed; if you find
+yourself working with very long run lengths, you should explore these. Of our
+simulation texts, Law and Kelton [1982] and Bratley et al.\ [1983] provide the
+best coverage of this subject. Chapter III of Kleijnen [1975] provides a
+comprehensive discussion of the subject and of related statistical issues. The
+basic notions underlying some commonly-cited variance reduction techniques are
+described below.
+
+\paragraph{Indirect estimation.}
+When a problem requires estimation of a mean value $V_1$, it may be more
+efficient to estimate a related value $V_2$ by simulation and compute $V_1$ from
+$V_2$ using an operational law (Section 1.4), rather than estimate $V_1$
+directly by simulation. Carson and Law [1980] show that, for GI/G/$s$ queueing
+systems (which encompass a wide range of single-queue open systems), it is more
+efficient to compute the mean system residence time and mean number in system
+from the estimated mean queueing time than it is to estimate them directly.
+They reported variance reductions ranging from 0 to 99 percent with,
+unfortunately, the reduction falling off as traffic intensity increases.
+However, their results do suggest that, when a problem analysis requires many
+runs, some initial exploration of alternative estimators may be worthwhile. A
+brief discussion of this approach is given by Law and Kelton [1982].
+
+\paragraph{Antithetic variates.}
+Suppose $y$ is an output variable of a particular simulation model, $Y_1$ is the
+mean of $y$ obtained from one replication of the model and $Y_2$ is the mean of
+$y$ for a second replication. The mean value of $y$, averaged over the two runs,
+is $Y = (Y_1 + Y_2)/2$. $Y_1$ and $Y_2$ are random variables; from the basic law
+for the sum of two random variables, the variance of $Y$ is
+
+\begin{equation}
+\mathrm{Var}(Y) = [\mathrm{Var}(Y_1) + \mathrm{Var}(Y_2) + 2\mathrm{Cov}(Y_1,Y_2)]/4
+\label{eq:output-antithetic}
+\end{equation}
+
+Usually we make independent replications, so that the covariance of $Y_1$ and
+$Y_2$ is 0. However, if we can make the covariance negative, the variance of $Y$
+will be less than that would result from two independent replications and, by
+pooling the $Y$'s from a number of pairs of replications, we should be able to
+achieve a given accuracy with fewer total replications than would otherwise be
+needed. To make the covariance negative, we try to create a negative
+correlation between corresponding output values in the two runs.
+
+Suppose $y_1^{(i)}$ and $y_2^{(i)}$ represent the system residence times of the
+$i$th customer in replications 1 and 2 of an M/M/1 queue simulation. If, when
+customer $i$ has a long service time in replication 1, we insure that it has a
+short service time in replication 2, and conversely, the system residence times
+should be negatively correlated. $y_i$ is a random variate from a negative
+exponential distribution which, as shown in Section 1.2, can be generated by
+the function $-T \ln r_i$, where $T$ is the mean service time and $r_i$ is a
+uniform random variate. We can create the desired negative correlation by
+making sure the same sequence of random numbers is used to generate sample
+service times on both replications, using $r_i$ to generate $y_1^{(i)}$, and
+using $1-r_i$ -- the antithetic of $r_i$ -- to generate $y_2^{(i)}$.
+
+The antithetic variate method is difficult to use in complex models. Also, it
+doesn't work in all cases and can even increase variance, so it can't be used
+blindly (see the discussions in the references cited above).
+
+\paragraph{Common random numbers.}
+Suppose we want to analyze the effect of two alternative designs on a model
+output variable $y$, and two simulation runs, one using alternative 1 and the
+second using alternative 2, produce means $Y_1$ and $Y_2$. We are interested in
+estimating the difference $D = Y_1 - Y_2$, whose variance is
+
+\begin{equation}
+\mathrm{Var}(D) = \mathrm{Var}(Y_1) + \mathrm{Var}(Y_2) - 2\mathrm{Cov}(Y_1,Y_2)
+\label{eq:output-common-rn}
+\end{equation}
+
+Here, we can reduce the variance of the estimate if we can make the covariance
+positive. We should be able to accomplish this in many cases by using identical
+input parameter values for corresponding customers in the two runs. One way to
+do this is to create a file of input parameter values, with the $i$th record in
+the file providing attribute values for the $i$th customer in both runs (thus
+mimicking a trace-driven simulation). Another way is to use a common random
+number sequence to generate values of a particular parameter for both runs, so
+that the $i$th customer has the same value of this parameter on both runs. As
+with antithetic variates, we use a number of pairs of runs to achieve the
+desired accuracy. (We'll discuss estimation of a confidence interval for the
+difference between two means in the next section.)
+
+This method has the intuitive appeal of providing a ``controlled''
+environment for the comparison; $D$ is less affected by run-to-run parameter
+sample value variations than would be the case in independent runs, and so
+should better reflect actual design differences. While we can't be sure in
+advance that this method will provide a worthwhile (or any) increase in
+efficiency, it should definitely be considered when the need for variance
+reduction arises.
+
+Both antithetic variates and common random numbers require that different
+random number streams be used to generate sample values of different model
+input parameters. We'll discuss smpl extensions to accomplish this in
+Chapter 9.
+
+\paragraph{Control variables.}
+Again, suppose that the objective of a simulation experiment is to produce an
+estimate of the mean of an output variable $y$. A control variable is a random
+variable which is correlated with $y$ and whose expectation is known. For
+example, $y$ might be a system residence time (whose expectation we presumably
+don't know); however, system residence times should be correlated with service
+times (whose expectation is a model input parameter). We know that some of the
+variance of $y$ is due to service time variation; the method of control
+variables exploits this knowledge to obtain an estimate of $y$ which has lower
+variance than the usual estimate. Details of the method are provided in the
+references cited earlier.
+
+The control variable method involves some statistical complexity, and isn't
+recommended for the beginning modeler. Implementation of this method is very
+much model-specific, so it is best suited for high-use general-purpose
+simulation models such as queueing network simulators. Lavenberg et al.\ [1977],
+[1982] describe its application and performance in this context.
+
+There are other techniques for variance reduction: some of these were
+developed for other forms of simulation (e.g., integral evaluation), and may
+or may not have application in our area of interest. Kleijnen [1975] provides
+an extensive discussion. The best choice for the beginning modeler is the
+common random number method.
+
+\section{Problem Analysis}
+\label{sec:problem-analysis}
+
+Up to now we've primarily been concerned with estimating a single measure for
+a single simulation experiment. However, in practice, we often want to
+estimate several different performance measures for a particular design and
+compare performance measures for different designs. This brings us to a new
+subject area: the statistical analysis of experiments. We can only touch on a
+couple of points here, and give some references for further reading.
+
+\paragraph{Multiple measures.}
+Suppose we collect $r$ different performance measures in a simulation
+experiment and compute a $100(1-\alpha)$ percent confidence interval for each
+measure. The probability that all $r$ intervals simultaneously contain the
+true mean $\mu$ of each measure is
+
+\begin{equation}
+\Pr(\text{all intervals contain } \mu) > 1 - \sum_{i=1}^{r} \alpha_i
+\label{eq:output-multiple-measures}
+\end{equation}
+
+Thus, if 95 percent confidence intervals were computed for three different
+measures, the probability that all three intervals contain the true means of
+those measures may be as low as $1 - 3 \times 0.05 = 0.85$.
+
+(\ref{eq:output-multiple-measures}) is called the Bonferroni inequality. It
+implies that if we want an overall confidence level of $100(1-\alpha)$ percent,
+we should choose values of $\alpha_i$ for the individual measures so that
+$\sum \alpha_i = \alpha$. The values of the $\alpha_i$ don't have to be the same;
+we can assign higher values to the more important measures. However, in any
+case, multiple measures impose either longer run lengths or wider confidence
+intervals.
+
+\paragraph{Comparing two designs.}
+In modeling computer and communication systems, we'll often be asked to
+evaluate two alternative designs. There are many ways to do this; we'll look at
+just one, a paired comparison method for estimating a confidence interval for
+the difference between two means.
+
+Suppose $y$ is the output variable on which the comparison is to be based. For
+each design, we obtain estimates of the mean $Y$ for each of $k$ replications or
+for each of $k$ batches. If we're using a sequential procedure to achieve a
+specified accuracy for $Y$, the number of replications or batches may be larger
+for one design than for the other; if this happens, the extra means are
+discarded. Let $Y_{1i}$ and $Y_{2i}$ be the means obtained on the $i$th
+replication or batch for designs 1 and 2, and $D_i$ be the difference between
+these means: $D_i = Y_{1i} - Y_{2i}$. A confidence interval half-width $H_D$ for
+the overall mean difference $D$ can be computed in the same way as a
+confidence interval for the mean.
+
+\begin{equation}
+D = \sum_{i=1}^{k} D_i / k
+\label{eq:output-mean-d}
+\end{equation}
+
+\begin{equation}
+s^2 = \sum_{i=1}^{k} (D_i - D)^2 / (k - 1)
+\label{eq:output-var-d}
+\end{equation}
+
+\begin{equation}
+H_D = t_{\alpha/2;k-1} \, s / k^{1/2}
+\label{eq:output-ci-d}
+\end{equation}
+
+$Y_{1i}$ and $Y_{2i}$ do not have to be independent (nor do their variances have
+to be equal, which is required by some methods). Consequently, this method
+accommodates the use of common random numbers to reduce the variance of $D$ and
+thus obtain a ``tighter'' confidence interval.
+
+Some methods of computing a confidence interval for $D$ do not pair means for
+the two designs and do not require that the number of means be the same for
+both designs. For a discussion of these and other methods, see Law and Kelton
+[1982], Kleijnen [1975], or an experimental statistics text such as Box et al.\
+[1978].
+
+\paragraph{Multiple comparisons and experimental design.}
+Things get more complicated when we want to compare more than two design
+alternatives; Law and Kelton [1982] describe methods for selecting the best of
+$n$ designs and for selecting a subset of given size containing the best of $n$
+designs; the latter can be used in a pilot study to select the best candidates
+for further analysis. Some studies potentially require a very large number of
+experiments. For example, consider an operating system design study which
+involves three different processor scheduling algorithms and two different
+paging algorithms, each combination of which is to be evaluated for a range of
+values of several workload parameters. A direct approach to this problem
+requires a very large number of simulation runs; however, through the use of
+the appropriate experimental design methodology, this number can be
+substantially reduced. Law and Kelton [1982] and Banks and Carson [1984]
+provide an introduction to experimental design in simulation, and an extensive
+discussion is given by Kleijnen [1975]. There are a number of good texts on the
+statistical design of experiments, such as Box et al.\ [1978].
+
+\section{Summary}
+\label{sec:output-summary}
+
+This chapter has presented basic methods for estimating simulation accuracy
+and for achieving a desired accuracy. We've seen that the one-run, one-number
+approach to simulation can produce results that are substantially in error.
+There is no excuse, other than ignorance, for this approach. Computing cost
+seldom is an issue today, but even if cost is a problem, the production of
+cheap but wrong results hardly is the solution. Compared to model development
+and programming costs, the cost of output analysis usually is small and
+certainly is insignificant compared to the cost of making a bad design
+decision. The batch means analysis module of Section 4.7 easily can be (and,
+routinely, should be) incorporated into your simulation models.
+
+While the importance of proper output analysis cannot be over-emphasized, it
+is equally important not to succumb to the siren song of $x$ percent accuracy
+at a $y$ percent confidence level. Output analysis methods help us obtain an
+accurate estimate of a performance measure for a model; how accurately that
+measure represents system performance depends on the validity of the
+assumptions used to construct the model and characterize its workload.
+
+\section{Problems}
+\label{sec:output-problems}
+
+Note: confidence interval estimates in the following problems are to be
+computed using a 95 percent confidence level.
+
+\begin{enumerate}
+\item Make 5 simulation runs of the timesharing system simulation model of
+  problem 5, Chapter 2, using a different random number stream for each run.
+  Record the throughput and response time from each run. Compute a relative
+  confidence interval half-width for each estimate, using equations
+  (4.22)--(4.26). Which estimate has the larger relative half-width? Suppose a
+  relative confidence interval half-width also had been computed for the mean
+  number in the system; how would you expect it to compare with those for
+  throughput and response time?
+
+\item Design and implement a simulation run control function you can use with
+  any smpl model based on the sequential replication procedure of Section 4.6.
+  This function should compute and display the current mean and relative
+  half-width of a selected output variable at the end of each run (after the
+  first). At the end of the fifth run, it should compute $k^*$, and display a
+  warning message and pause if $k^*$ is greater than 15 (the number of smpl
+  random number streams). The function should terminate the simulation when an
+  accuracy of 10\% is reached, even if the number of runs is less than $k^*$;
+  however, a minimum of 5 runs should be executed.
+
+  Use this function to control execution of the M/M/2 queue simulation model of
+  problem 1, Chapter 2 (with $T_a = 125.0$), in estimating the mean system
+  residence time $W$. To determine what run length to use, compute the expected
+  mean utilization per server. Make three sets of runs, terminating each set
+  after the fifth run. Use streams 1--5 for the first set, streams 6--10 for the
+  second set, and streams 11--15 for the third set. (Make an explicit
+  \texttt{stream()} call after each \texttt{smpl()} call in a run to set the
+  desired stream number, since smpl will otherwise use its own stream number.)
+  Record the mean, relative half-width, and $k^*$ values displayed at the end of
+  each set of runs. Note the differences in the relative half-widths obtained
+  in five runs (and the consequences of using a fixed sample size procedure).%
+  \footnote{Your results will depend on the random number generator used;
+  relative half-widths of 0.199, 0.096, and 0.110 were obtained on the three
+  sets of runs using the version of \texttt{ranf()} given in the Appendix.}
+
+  For comparison with your estimated means, the theoretical mean residence
+  time in the M/M/2 queue is $T_s/(1-\rho^2)$, where $\rho = T_s/(2T_a)$.
+
+\item Modify your simulation model of the timesharing system of problem 3,
+  Chapter 2, to use exponential disk service times with the same mean service
+  time as the original model. Run the simulation with $N = 4, 8, 12, 16, 20$ and
+  24 terminals, using the batch means analysis module of Figure 4.7 to obtain a
+  relative half-width $H/R$ of 10\% or less for the mean response time $R$ of
+  this system. (If time is a constraint, limit your runs to $N = 8, 16,$ and
+  20.) Use the recommendations of Section 4.7 to determine the batch size and
+  initial deletion amount. Plot the values of $R+H$ and $R-H$, together with the
+  mean response time computed using the MVA function of Figure 3.5, versus $N$.
+  Since this function uses a minimum of 10 batches, the accuracy obtained in a
+  given run may be better than the specified 10\%. How does the actual accuracy
+  vary with $N$?
+
+  If your confidence intervals for these runs cover the mean response times
+  computed using the MVA function, and you obtain similar coverage for
+  throughput, you can assume that your simulation model has been satisfactorily
+  verified by comparison with an analytic model. What would you do if the
+  confidence interval for one of the runs did not contain the mean computed
+  using MVA?
+
+\item Design and implement a batch means analysis module to provide a
+  sequential procedure for estimating means of continuous-time processes, such
+  as mean queue length. (See the discussion in Section 4.7.) This can be a
+  companion module to that of Figure 4.7; however, you'll end up with a more
+  useful tool if you integrate the two modules. Instrument the module to
+  display each batch mean as it is computed. Test the module by using it to
+  estimate the mean number in queue and service, $L$, in the M/M/2 queue whose
+  mean system residence time was studied in problem 2. Make three runs, each
+  with a different stream; for each run, use the displayed batch means to
+  compute the grand mean and its relative half-width. For verification
+  purposes, the theoretical value of $L$ can be computed from the theoretical
+  value of $W$ using Little's Law.
+
+\item Describe how you would obtain a 10\% confidence interval for the
+  probability that a binary search of the table described in problem 7,
+  Chapter 1, requires 4 or more comparisons.
+
+\item Describe how you would obtain a 10\% confidence interval for the
+  probability that two or more customers are in queue and service in the M/M/2
+  queue of problem 4.
+\end{enumerate}
+
+% TODO: Continue from PDF page 151 (Chapter 5).
