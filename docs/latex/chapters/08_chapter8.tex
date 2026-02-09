@@ -34,14 +34,36 @@ global pool is reused in two phases:
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 8.1 placeholder (\texttt{smpl.c} function names by category)}}
+\begin{tabular}{ll}
+\toprule
+Category & Representative functions in \texttt{smpl.c} \\
+\midrule
+Initialization & \texttt{smpl}, \texttt{reset}, \texttt{set\_model}, \texttt{save\_name} \\
+Descriptors & \texttt{facility}, \texttt{get\_blk}, \texttt{get\_elm}, \texttt{put\_elm} \\
+Event scheduling & \texttt{schedule}, \texttt{cause}, \texttt{cancel}, \texttt{suspend}, \texttt{enlist} \\
+Facility control & \texttt{request}, \texttt{preempt}, \texttt{release}, \texttt{inq}, \texttt{status} \\
+Statistics & \texttt{U}, \texttt{B}, \texttt{Lq}, \texttt{report}, \texttt{reportf} \\
+Debug/UI hooks & \texttt{trace}, \texttt{msg}, \texttt{dump}, \texttt{error}, \texttt{sendto} \\
+\bottomrule
+\end{tabular}
 \caption{\texttt{smpl.c} Function Names}
 \label{fig:smpl-func-list}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 8.2 placeholder (element pool during initialization/execution)}}
+\begin{tikzpicture}[x=0.95cm,y=0.95cm,>=Latex]
+  \draw[line width=1pt] (0,0) rectangle (12,1.2);
+  \draw[line width=0.9pt] (3.8,0) -- (3.8,1.2);
+  \draw[line width=0.9pt] (8.2,0) -- (8.2,1.2);
+  \node at (1.9,0.6) {\small model/facility headers};
+  \node at (6.0,0.6) {\small descriptor blocks};
+  \node at (10.1,0.6) {\small free list};
+  \draw[decorate,decoration={brace,amplitude=5pt}] (0,-0.25) -- (8.2,-0.25)
+    node[midway,below=6pt]{\small initialization phase allocations};
+  \draw[decorate,decoration={brace,amplitude=5pt}] (8.2,-0.25) -- (12,-0.25)
+    node[midway,below=6pt]{\small execution-time dynamic elements};
+\end{tikzpicture}
 \caption{The \texttt{smpl} Element Pool}
 \label{fig:smpl-element-pool}
 \end{figure}
@@ -76,7 +98,37 @@ linked into a facility chain used later by reset/report processing.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5.0cm][c]{0.86\textwidth}{\centering Figure 8.3 placeholder (facility descriptor and queue fields)}}
+\begin{tikzpicture}[>=Latex]
+  \draw[line width=1pt] (0,0) rectangle (5.8,3.8);
+  \draw[line width=0.8pt] (0,3.0) -- (5.8,3.0);
+  \draw[line width=0.8pt] (0,2.2) -- (5.8,2.2);
+  \draw[line width=0.8pt] (0,1.4) -- (5.8,1.4);
+  \draw[line width=0.8pt] (3.0,0) -- (3.0,3.8);
+  \node[font=\small] at (1.5,3.4) {name ptr};
+  \node[font=\small] at (4.4,3.4) {queue head};
+  \node[font=\small] at (1.5,2.6) {nservers};
+  \node[font=\small] at (4.4,2.6) {busy count};
+  \node[font=\small] at (1.5,1.8) {area stats};
+  \node[font=\small] at (4.4,1.8) {time marks};
+  \node[font=\small] at (1.5,1.0) {server[1]};
+  \node[font=\small] at (4.4,1.0) {token, pri};
+  \node[font=\small] at (1.5,0.4) {server[n]};
+  \node[font=\small] at (4.4,0.4) {token, pri};
+
+  \draw[line width=1pt] (7.2,0.3) rectangle (12.5,3.2);
+  \draw[line width=0.8pt] (7.2,2.5) -- (12.5,2.5);
+  \draw[line width=0.8pt] (7.2,1.8) -- (12.5,1.8);
+  \draw[line width=0.8pt] (7.2,1.1) -- (12.5,1.1);
+  \draw[line width=0.8pt] (9.7,0.3) -- (9.7,3.2);
+  \node[font=\small] at (8.45,2.85) {event};
+  \node[font=\small] at (11.1,2.85) {token};
+  \node[font=\small] at (8.45,2.15) {priority};
+  \node[font=\small] at (11.1,2.15) {time left};
+  \node[font=\small] at (8.45,1.45) {next};
+  \node[font=\small] at (11.1,1.45) {prev};
+  \node[font=\small] at (9.85,0.75) {queue element};
+  \draw[->,line width=0.9pt] (5.9,2.8) -- (7.1,2.8);
+\end{tikzpicture}
 \caption{\texttt{smpl} Facility Descriptor and Queue Structure}
 \label{fig:smpl-facility-structure}
 \end{figure}
@@ -103,7 +155,22 @@ insert routine:
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.6cm][c]{0.86\textwidth}{\centering Figure 8.4 placeholder (\texttt{smpl} event list structure)}}
+\begin{tikzpicture}[>=Latex]
+  \foreach \x/\lab in {
+    0.8/{head},
+    3.2/{(t=12.1,e=3,tk=7)},
+    7.2/{(t=12.8,e=1,tk=2)},
+    11.2/{(t=13.5,e=4,tk=9)},
+    15.2/{tail}
+  } {
+    \draw[line width=0.95pt] (\x,0) rectangle ++(2.7,1.1);
+    \node[font=\small] at (\x+1.35,0.55) {\lab};
+  }
+  \draw[->,line width=0.9pt] (3.5,0.55) -- (7.1,0.55);
+  \draw[->,line width=0.9pt] (7.5,0.55) -- (11.1,0.55);
+  \draw[->,line width=0.9pt] (11.5,0.55) -- (15.1,0.55);
+  \node[font=\small] at (9.0,-0.5) {event list sorted by ascending event time};
+\end{tikzpicture}
 \caption{\texttt{smpl} Event List Structure}
 \label{fig:smpl-event-list}
 \end{figure}
@@ -173,7 +240,18 @@ screen pausing.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 8.5 placeholder (trace message parameters and phrases)}}
+\begin{tabular}{lll}
+\toprule
+Trace field & Meaning & Example \\
+\midrule
+time & current simulation clock & 15200.217 \\
+token & active entity identifier & 17 \\
+event phrase & action mnemonic & ARRIVE / REQUEST / RELEASE \\
+qualifier & facility/event identifier & cpu\#2 / e=4 \\
+queue state & optional occupancy info & qlen=3 \\
+note & optional model text & warmup complete \\
+\bottomrule
+\end{tabular}
 \caption{Trace Message Parameters and Phrases}
 \label{fig:smpl-trace-messages}
 \end{figure}
@@ -191,7 +269,16 @@ Random support lives in \texttt{rand.c}:
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.4cm][c]{0.86\textwidth}{\centering Figure 8.6 placeholder (\texttt{rand.c} function list)}}
+\begin{tabular}{ll}
+\toprule
+Group & \texttt{rand.c} functions \\
+\midrule
+Core RNG & \texttt{ranf}, \texttt{random}, \texttt{stream}, \texttt{seed} \\
+Exponential family & \texttt{expntl}, \texttt{erlang}, \texttt{hyperx} \\
+Normal family & \texttt{normal} (Marsaglia-Bray polar method) \\
+Support & stream seed table \texttt{In[]}, helper constants \\
+\bottomrule
+\end{tabular}
 \caption{\texttt{rand.c} Functions}
 \label{fig:smpl-rand-functions}
 \end{figure}
@@ -227,7 +314,28 @@ forms the 46-bit product.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.8cm][c]{0.86\textwidth}{\centering Figure 8.7 placeholder (simulated double-precision multiply)}}
+\begin{tikzpicture}[>=Latex]
+  \draw[line width=0.95pt] (0,1.8) rectangle (2.5,2.8);
+  \draw[line width=0.95pt] (2.5,1.8) rectangle (5.0,2.8);
+  \node at (1.25,2.3) {$a_h$};
+  \node at (3.75,2.3) {$a_l$};
+
+  \draw[line width=0.95pt] (0,0.2) rectangle (2.5,1.2);
+  \draw[line width=0.95pt] (2.5,0.2) rectangle (5.0,1.2);
+  \node at (1.25,0.7) {$b_h$};
+  \node at (3.75,0.7) {$b_l$};
+
+  \draw[->,line width=0.9pt] (5.2,2.3) -- (7.2,2.3) node[midway,above,font=\small] {$a_h b_h$};
+  \draw[->,line width=0.9pt] (5.2,1.9) -- (7.2,1.3) node[midway,right,font=\small] {$a_h b_l$};
+  \draw[->,line width=0.9pt] (5.2,1.1) -- (7.2,1.7) node[midway,right,font=\small] {$a_l b_h$};
+  \draw[->,line width=0.9pt] (5.2,0.7) -- (7.2,0.7) node[midway,below,font=\small] {$a_l b_l$};
+
+  \draw[line width=0.95pt] (7.4,0.2) rectangle (11.8,2.8);
+  \node[font=\small] at (9.6,2.45) {carry combine};
+  \node[font=\small] at (9.6,1.75) {high word};
+  \node[font=\small] at (9.6,1.05) {low word};
+  \node[font=\small] at (9.6,0.4) {mod $2^{31}$ adjustment};
+\end{tikzpicture}
 \caption{Simulated Double Precision Multiply Operands and Operations}
 \label{fig:smpl-sim-mul}
 \end{figure}

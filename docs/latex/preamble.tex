@@ -8,7 +8,7 @@
 \usepackage{titlesec}
 \usepackage{tikz}
 \usepackage{pgfplots}
-\usetikzlibrary{patterns,patterns.meta,arrows.meta,positioning}
+\usetikzlibrary{patterns,patterns.meta,arrows.meta,positioning,decorations.pathreplacing,shapes.geometric}
 \pgfplotsset{compat=1.18}
 \usepackage{booktabs}
 \usepackage{amsmath,amssymb}
@@ -31,6 +31,7 @@
     {\setmainfont{Libertinus Serif}}}
 \setsansfont{TeX Gyre Heros}
 \setmonofont{TeX Gyre Cursor}
+\newfontfamily\verbatimfont{TeX Gyre Cursor}[FakeBold=0.25]
 \IfFontExistsTF{Bastardo Grotesk}
   {\newfontfamily\titlefont{Bastardo Grotesk}[
     BoldFont=* Bold,
@@ -39,6 +40,11 @@
   ]}
   {\newfontfamily\titlefont{TeX Gyre Heros}}
 \newfontfamily\axisfont{TeX Gyre Heros}
+
+% Slightly thicken only verbatim blocks without affecting inline \texttt.
+\makeatletter
+\def\verbatim@font{\normalfont\verbatimfont}
+\makeatother
 
 % Apply title font without changing sizes.
 \titleformat{\chapter}[display]{\titlefont\bfseries\Huge}{\chaptername\ \thechapter}{1ex}{}

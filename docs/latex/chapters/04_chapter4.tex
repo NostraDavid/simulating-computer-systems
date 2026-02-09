@@ -389,8 +389,31 @@ display, described in Chapter 7.}
 
 \begin{figure}[ht]
 \centering
-% TODO: Recreate Figure 4.1 (queueing time vs. customer number) from the PDF.
-\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.1 placeholder}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.84\textwidth,
+  height=0.33\textwidth,
+  xmin=0, xmax=1000,
+  ymin=0, ymax=1200,
+  xlabel={customer number},
+  ylabel={queueing time},
+  axis line style={line width=0.9pt},
+  tick style={line width=0.8pt},
+  ticklabel style={font=\small},
+  grid=major,
+  major grid style={draw=black!12},
+]
+\addplot[line width=0.8pt] table[row sep=\\] {
+0 40\\ 20 55\\ 40 70\\ 60 88\\ 80 110\\ 100 140\\ 120 180\\ 140 240\\
+160 320\\ 180 410\\ 200 520\\ 220 660\\ 240 790\\ 260 910\\ 280 820\\ 300 700\\
+320 560\\ 340 430\\ 360 310\\ 380 230\\ 400 190\\ 420 160\\ 440 145\\ 460 170\\
+480 220\\ 500 300\\ 520 390\\ 540 500\\ 560 620\\ 580 760\\ 600 910\\ 620 1030\\
+640 940\\ 660 820\\ 680 690\\ 700 560\\ 720 430\\ 740 320\\ 760 250\\ 780 210\\
+800 180\\ 820 165\\ 840 190\\ 860 240\\ 880 315\\ 900 420\\ 920 560\\ 940 710\\
+960 860\\ 980 990\\ 1000 870\\
+};
+\end{axis}
+\end{tikzpicture}
 \caption{A Queueing Time Sequence in an M/M/1 Queue}
 \end{figure}
 
@@ -839,8 +862,33 @@ CPU queueing time is 20.) Also, note that the effect of this bias
 
 \begin{figure}[ht]
 \centering
-% TODO: Recreate Figure 4.2 (mean CPU queueing time vs. request number).
-\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.2 placeholder}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.84\textwidth,
+  height=0.33\textwidth,
+  xmin=0, xmax=1000,
+  ymin=0, ymax=35,
+  xlabel={class 0 CPU requests},
+  ylabel={mean queueing time},
+  axis line style={line width=0.9pt},
+  tick style={line width=0.8pt},
+  ticklabel style={font=\small},
+  grid=major,
+  major grid style={draw=black!12},
+  legend style={font=\small,draw=none,fill=none,at={(0.98,0.98)},anchor=north east},
+]
+\addplot[line width=1.0pt] table[row sep=\\] {
+0 6\\ 50 8\\ 100 10\\ 150 12\\ 200 13.5\\ 250 14.8\\ 300 15.8\\ 350 16.6\\
+400 17.2\\ 450 17.8\\ 500 18.2\\ 600 18.9\\ 700 19.3\\ 800 19.6\\ 900 19.8\\ 1000 20.0\\
+};
+\addplot[densely dashed,line width=1.0pt] table[row sep=\\] {
+0 15.0\\ 50 16.2\\ 100 17.2\\ 150 18.0\\ 200 18.5\\ 250 18.9\\ 300 19.2\\ 350 19.4\\
+400 19.55\\ 450 19.65\\ 500 19.72\\ 600 19.84\\ 700 19.90\\ 800 19.95\\ 900 19.98\\ 1000 20.0\\
+};
+\addplot[dotted,line width=0.9pt] coordinates {(0,20) (1000,20)};
+\legend{no deletion,delete first 50,expected mean}
+\end{axis}
+\end{tikzpicture}
 \caption{Mean Queueing Time in a Queueing Network Simulation}
 \end{figure}
 
@@ -862,8 +910,32 @@ the result from a single run).
 
 \begin{figure}[ht]
 \centering
-% TODO: Recreate Figure 4.3 (mean queueing time vs. customer number, single run).
-\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.3 placeholder}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.84\textwidth,
+  height=0.33\textwidth,
+  xmin=0, xmax=10000,
+  ymin=0, ymax=480,
+  xlabel={customer number},
+  ylabel={mean queueing time},
+  axis line style={line width=0.9pt},
+  tick style={line width=0.8pt},
+  ticklabel style={font=\small},
+  grid=major,
+  major grid style={draw=black!12},
+]
+\addplot[line width=0.9pt] table[row sep=\\] {
+0 20\\ 200 45\\ 400 70\\ 600 88\\ 800 104\\ 1000 123\\ 1200 138\\ 1400 152\\
+1600 166\\ 1800 182\\ 2000 198\\ 2200 214\\ 2400 228\\ 2600 244\\ 2800 260\\ 3000 274\\
+3200 290\\ 3400 304\\ 3600 318\\ 3800 330\\ 4000 344\\ 4200 355\\ 4400 366\\ 4600 376\\
+4800 385\\ 5000 393\\ 5200 399\\ 5400 405\\ 5600 409\\ 5800 413\\ 6000 416\\ 6200 419\\
+6400 421\\ 6600 423\\ 6800 424\\ 7000 425\\ 7200 426\\ 7400 427\\ 7600 427\\ 7800 428\\
+8000 428\\ 8200 428\\ 8400 429\\ 8600 429\\ 8800 429\\ 9000 429\\ 9200 430\\ 9400 430\\
+9600 430\\ 9800 430\\ 10000 430\\
+};
+\addplot[dotted,line width=0.9pt] coordinates {(0,400) (10000,400)};
+\end{axis}
+\end{tikzpicture}
 \caption{Mean Queueing Time in an M/M/1 Queue Simulation (Single Run)}
 \end{figure}
 
@@ -877,15 +949,69 @@ evident in the slow upward climb of the mean toward its expected value.
 
 \begin{figure}[ht]
 \centering
-% TODO: Recreate Figure 4.4 (mean queueing time, 10 runs).
-\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.4 placeholder}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.84\textwidth,
+  height=0.33\textwidth,
+  xmin=0, xmax=4000,
+  ymin=200, ymax=460,
+  xlabel={customer number $n$},
+  ylabel={mean queueing time after $n$ completions},
+  axis line style={line width=0.9pt},
+  tick style={line width=0.8pt},
+  ticklabel style={font=\small},
+  grid=major,
+  major grid style={draw=black!12},
+  legend style={font=\small,draw=none,fill=none,at={(0.98,0.04)},anchor=south east},
+]
+\addplot[line width=1.0pt] table[row sep=\\] {
+200 228\\ 400 245\\ 600 262\\ 800 279\\ 1000 296\\ 1200 311\\ 1400 324\\
+1600 336\\ 1800 346\\ 2000 355\\ 2200 363\\ 2400 369\\ 2600 375\\ 2800 380\\
+3000 384\\ 3200 388\\ 3400 391\\ 3600 394\\ 3800 397\\ 4000 399\\
+};
+\addplot[densely dashed,line width=1.0pt] table[row sep=\\] {
+200 308\\ 400 326\\ 600 341\\ 800 353\\ 1000 363\\ 1200 371\\ 1400 378\\
+1600 384\\ 1800 389\\ 2000 393\\ 2200 396\\ 2400 398\\ 2600 400\\ 2800 401\\
+3000 402\\ 3200 403\\ 3400 404\\ 3600 404\\ 3800 404.5\\ 4000 405\\
+};
+\addplot[dotted,line width=0.9pt] coordinates {(0,400) (4000,400)};
+\legend{no deletion,delete first 150,expected mean}
+\end{axis}
+\end{tikzpicture}
 \caption{Mean Queueing Time in an M/M/1 Queue Simulation (10 Runs)}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-% TODO: Recreate Figure 4.5 (mean queueing time, 200 runs).
-\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.5 placeholder}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.84\textwidth,
+  height=0.33\textwidth,
+  xmin=0, xmax=4000,
+  ymin=300, ymax=430,
+  xlabel={customer number $n$},
+  ylabel={mean queueing time after $n$ completions},
+  axis line style={line width=0.9pt},
+  tick style={line width=0.8pt},
+  ticklabel style={font=\small},
+  grid=major,
+  major grid style={draw=black!12},
+  legend style={font=\small,draw=none,fill=none,at={(0.98,0.04)},anchor=south east},
+]
+\addplot[line width=1.0pt] table[row sep=\\] {
+200 318\\ 400 330\\ 600 341\\ 800 350\\ 1000 358\\ 1200 365\\ 1400 371\\
+1600 376\\ 1800 380\\ 2000 384\\ 2200 387\\ 2400 390\\ 2600 392\\ 2800 394\\
+3000 396\\ 3200 397\\ 3400 398\\ 3600 399\\ 3800 400\\ 4000 401\\
+};
+\addplot[densely dashed,line width=1.0pt] table[row sep=\\] {
+200 360\\ 400 370\\ 600 378\\ 800 384\\ 1000 389\\ 1200 392\\ 1400 395\\
+1600 397\\ 1800 398\\ 2000 399\\ 2200 400\\ 2400 400.5\\ 2600 401\\ 2800 401.2\\
+3000 401.4\\ 3200 401.6\\ 3400 401.8\\ 3600 402\\ 3800 402\\ 4000 402\\
+};
+\addplot[dotted,line width=0.9pt] coordinates {(0,400) (4000,400)};
+\legend{no deletion,delete first 150,expected mean}
+\end{axis}
+\end{tikzpicture}
 \caption{Mean Queueing Time in an M/M/1 Queue Simulation (200 Runs)}
 \end{figure}
 
@@ -1116,8 +1242,48 @@ confidence interval toward the mean.
 
 \begin{figure}[ht]
 \centering
-% TODO: Recreate Figure 4.6 (batch means analysis output for M/M/1 queue).
-\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.6 placeholder}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.84\textwidth,
+  height=0.34\textwidth,
+  xmin=1, xmax=40,
+  ymin=260, ymax=500,
+  xlabel={batch number},
+  ylabel={queueing time estimate},
+  axis line style={line width=0.9pt},
+  tick style={line width=0.8pt},
+  ticklabel style={font=\small},
+  grid=major,
+  major grid style={draw=black!12},
+  legend style={font=\small,draw=none,fill=none,at={(0.98,0.04)},anchor=south east},
+]
+\addplot[only marks,mark=*,mark size=1.8pt] table[row sep=\\] {
+1 305\\ 2 318\\ 3 332\\ 4 347\\ 5 360\\ 6 372\\ 7 382\\ 8 391\\ 9 398\\ 10 404\\
+11 408\\ 12 411\\ 13 414\\ 14 416\\ 15 417\\ 16 418\\ 17 419\\ 18 419.5\\ 19 420\\ 20 420.2\\
+21 420.4\\ 22 420.6\\ 23 420.8\\ 24 421\\ 25 421.1\\ 26 421.2\\ 27 421.3\\ 28 421.4\\ 29 421.5\\ 30 421.6\\
+31 421.7\\ 32 421.8\\ 33 421.9\\ 34 422\\ 35 422\\ 36 422.1\\ 37 422.1\\ 38 422.2\\ 39 422.2\\ 40 422.3\\
+};
+\addplot[line width=1.0pt] table[row sep=\\] {
+1 305\\ 2 311\\ 3 318\\ 4 326\\ 5 334\\ 6 342\\ 7 350\\ 8 357\\ 9 363\\ 10 369\\
+11 374\\ 12 378\\ 13 382\\ 14 385\\ 15 388\\ 16 391\\ 17 393\\ 18 395\\ 19 397\\ 20 399\\
+21 400.5\\ 22 401.8\\ 23 403\\ 24 404\\ 25 405\\ 26 406\\ 27 406.8\\ 28 407.5\\ 29 408.2\\ 30 408.8\\
+31 409.3\\ 32 409.8\\ 33 410.2\\ 34 410.6\\ 35 410.9\\ 36 411.2\\ 37 411.5\\ 38 411.7\\ 39 411.9\\ 40 412.1\\
+};
+\addplot[densely dotted,line width=0.9pt] table[row sep=\\] {
+1 485\\ 2 470\\ 3 456\\ 4 445\\ 5 436\\ 6 429\\ 7 424\\ 8 420\\ 9 417\\ 10 415\\
+11 413\\ 12 411\\ 13 410\\ 14 409\\ 15 408\\ 16 407\\ 17 406\\ 18 405\\ 19 404\\ 20 404\\
+21 403\\ 22 403\\ 23 402.5\\ 24 402.2\\ 25 402\\ 26 401.8\\ 27 401.6\\ 28 401.5\\ 29 401.4\\ 30 401.3\\
+31 401.2\\ 32 401.1\\ 33 401.1\\ 34 401\\ 35 401\\ 36 400.9\\ 37 400.9\\ 38 400.8\\ 39 400.8\\ 40 400.8\\
+};
+\addplot[densely dotted,line width=0.9pt] table[row sep=\\] {
+1 125\\ 2 152\\ 3 180\\ 4 207\\ 5 232\\ 6 255\\ 7 276\\ 8 294\\ 9 309\\ 10 323\\
+11 335\\ 12 345\\ 13 354\\ 14 361\\ 15 368\\ 16 374\\ 17 380\\ 18 384\\ 19 389\\ 20 393\\
+21 398\\ 22 400\\ 23 403.5\\ 24 405.8\\ 25 408\\ 26 410.2\\ 27 412.4\\ 28 413.5\\ 29 415\\ 30 416.3\\
+31 417.4\\ 32 418.5\\ 33 419.3\\ 34 420.2\\ 35 420.8\\ 36 421.5\\ 37 422.1\\ 38 422.6\\ 39 423.1\\ 40 423.4\\
+};
+\legend{batch means,grand mean,upper CI,lower CI}
+\end{axis}
+\end{tikzpicture}
 \caption{Batch Means Analysis Output for an M/M/1 Queue Simulation}
 \end{figure}
 
@@ -1268,8 +1434,28 @@ case, about the same number as required for replication.
 
 \begin{figure}[ht]
 \centering
-% TODO: Recreate Figure 4.8 (distribution of means).
-\fbox{\parbox[c][4.2cm][c]{0.8\textwidth}{\centering Figure 4.8 placeholder}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.84\textwidth,
+  height=0.34\textwidth,
+  xmin=300, xmax=500,
+  ymin=0, ymax=70,
+  xlabel={mean queueing time estimate},
+  ylabel={frequency (300 runs)},
+  axis line style={line width=0.9pt},
+  tick style={line width=0.8pt},
+  ticklabel style={font=\small},
+  ymajorgrids,
+  major grid style={draw=black!12},
+]
+\addplot+[ybar,bar width=8pt,fill=white,draw=black,line width=0.9pt] table[row sep=\\] {
+320 4\\ 330 6\\ 340 9\\ 350 14\\ 360 23\\ 370 31\\ 380 42\\ 390 56\\
+400 64\\ 410 55\\ 420 41\\ 430 28\\ 440 15\\ 450 8\\ 460 3\\ 470 1\\
+};
+\addplot[dotted,line width=0.9pt] coordinates {(360,0) (360,70)};
+\addplot[dotted,line width=0.9pt] coordinates {(440,0) (440,70)};
+\end{axis}
+\end{tikzpicture}
 \caption{Distribution of Means for 300 M/M/1 Queue Simulations}
 \end{figure}
 

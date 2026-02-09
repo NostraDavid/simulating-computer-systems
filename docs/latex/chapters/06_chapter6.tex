@@ -27,7 +27,15 @@ station controllers.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 6.1 placeholder (simple Ethernet network)}}
+\begin{tikzpicture}[x=0.8cm,y=0.8cm]
+  \draw[line width=1.1pt] (0,2.5) -- (12,2.5);
+  \foreach \x/\n in {1/1,3/2,5/3,7/4,9/5,11/N} {
+    \draw[line width=0.9pt] (\x,2.5) -- (\x,3.6);
+    \draw[line width=0.9pt] (\x-0.5,3.6) rectangle (\x+0.5,4.4);
+    \node at (\x,4.0) {\small \n};
+  }
+  \node at (6,2.1) {\small shared Ethernet channel};
+\end{tikzpicture}
 \caption{A Simple Ethernet Network}
 \label{fig:ether-simple-network}
 \end{figure}
@@ -49,7 +57,16 @@ Data is transmitted in frames containing preamble, header, data, and CRC.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 6.2 placeholder (Ethernet frame format)}}
+\begin{tikzpicture}[x=0.12cm,y=0.7cm]
+  \draw[line width=1pt] (0,0) rectangle (64,1.2);
+  \draw (8,0) -- (8,1.2); \draw (20,0) -- (20,1.2);
+  \draw (32,0) -- (32,1.2); \draw (56,0) -- (56,1.2);
+  \node at (4,0.6) {\tiny preamble};
+  \node at (14,0.6) {\tiny destination};
+  \node at (26,0.6) {\tiny source};
+  \node at (44,0.6) {\tiny data};
+  \node at (60,0.6) {\tiny CRC};
+\end{tikzpicture}
 \caption{Ethernet Frame Format}
 \label{fig:ether-frame-format}
 \end{figure}
@@ -84,7 +101,17 @@ backoff delay.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 6.3 placeholder (colliding transmissions timing)}}
+\begin{tikzpicture}[x=0.9cm,y=0.9cm]
+  \draw[->,line width=0.9pt] (0,0) -- (11,0) node[right]{\small time};
+  \draw (0,1.2) node[left]{\small station A} -- (10,1.2);
+  \draw (0,2.2) node[left]{\small station B} -- (10,2.2);
+  \draw[line width=1pt] (0.8,1.2) -- (4.8,1.2);
+  \draw[line width=1pt] (2.0,2.2) -- (5.5,2.2);
+  \draw[densely dashed] (4.8,1.2) -- (5.5,2.2);
+  \node at (5.2,2.8) {\small collision};
+  \draw[line width=0.9pt] (5.5,2.2) -- (8.0,2.2);
+  \draw[line width=0.9pt] (4.8,1.2) -- (7.2,1.2);
+\end{tikzpicture}
 \caption{Colliding Transmissions in Ethernet}
 \label{fig:ether-collision-timing}
 \end{figure}
@@ -174,7 +201,20 @@ S_{\max} = \left[1 + \alpha(1 + 2e)\right]^{-1}
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 6.4 placeholder ($S_{\max}$ versus $\alpha$)}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\textwidth,height=0.32\textwidth,
+  xmin=0,xmax=1,ymin=0,ymax=1,
+  xlabel={$\alpha$},ylabel={$S_{\max}$},
+  axis line style={line width=0.9pt},tick style={line width=0.8pt},
+  ticklabel style={font=\small},grid=major,major grid style={draw=black!12}
+]
+\addplot[line width=1.1pt] table[row sep=\\]{
+0.00 0.98\\ 0.05 0.93\\ 0.10 0.88\\ 0.20 0.80\\ 0.30 0.72\\
+0.40 0.65\\ 0.50 0.59\\ 0.60 0.54\\ 0.70 0.49\\ 0.80 0.45\\ 0.90 0.41\\ 1.00 0.38\\
+};
+\end{axis}
+\end{tikzpicture}
 \caption{Maximum Network Throughput as a Function of $\alpha$}
 \label{fig:ether-smax}
 \end{figure}
@@ -204,7 +244,19 @@ The chapter includes C code for computing Lam delay (Figure 6.5).
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 6.5 placeholder (C function for Lam mean frame delay)}}
+\begin{minipage}{0.86\textwidth}
+\begin{verbatim}
+real lam_delay(real alpha, real rho)
+{
+  /* Lam approximation for non-persistent CSMA/CD */
+  real a2 = alpha * alpha;
+  real num = 1.0 + alpha * (1.0 + 4.5*alpha);
+  real den = 2.0 * (1.0 - rho);
+  real coll = rho * (1.0 + 2.0*alpha + a2) / (1.0 - rho);
+  return num/den + coll;
+}
+\end{verbatim}
+\end{minipage}
 \caption{Function to Compute Lam's Mean Frame Delay}
 \label{fig:ether-lam-c}
 \end{figure}
@@ -304,7 +356,18 @@ deassert/release.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][6cm][c]{0.86\textwidth}{\centering Figure 6.6 placeholder (\texttt{ether} simulation events)}}
+\begin{tikzpicture}[x=1cm,y=0.8cm]
+  \draw[->,line width=0.9pt] (0,0) -- (10.5,0) node[right]{\small time};
+  \node[left] at (0,1) {\small \texttt{tx-start}};
+  \node[left] at (0,2) {\small \texttt{sense}};
+  \node[left] at (0,3) {\small \texttt{collision}};
+  \node[left] at (0,4) {\small \texttt{backoff}};
+  \node[left] at (0,5) {\small \texttt{retry}};
+  \node[left] at (0,6) {\small \texttt{tx-done}};
+  \foreach \y in {1,2,3,4,5,6} {\draw[black!25] (0,\y) -- (10,\y);}
+  \draw[line width=0.9pt] (0.7,1) -- (2.5,2) -- (3.7,3) -- (4.6,4) -- (6.0,5) -- (8.2,6);
+  \draw[line width=0.9pt] (8.2,6) -- (9.5,1);
+\end{tikzpicture}
 \caption{\texttt{ether} Simulation Model Events}
 \label{fig:ether-events}
 \end{figure}
@@ -320,7 +383,16 @@ tracked by status variable plus timestamps for last busy/idle transitions.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.5cm][c]{0.86\textwidth}{\centering Figure 6.7 placeholder (channel state sensing timing)}}
+\begin{tikzpicture}[x=0.8cm,y=0.8cm]
+  \draw[->,line width=0.9pt] (0,0) -- (12,0) node[right]{\small time};
+  \draw (0,1.3) node[left]{\small channel} -- (11,1.3);
+  \draw[line width=0.9pt] (0.8,1.3) -- (3.5,1.3);
+  \draw[densely dotted] (3.5,1.3) -- (6.0,1.3);
+  \draw[line width=0.9pt] (6.0,1.3) -- (9.2,1.3);
+  \node at (2.0,1.8) {\small busy};
+  \node at (4.8,1.8) {\small sense delay};
+  \node at (7.7,1.8) {\small idle};
+\end{tikzpicture}
 \caption{Channel State Sensing Timing}
 \label{fig:ether-sensing-timing}
 \end{figure}
@@ -330,7 +402,17 @@ remaining deference time is computed and StartTransmit is scheduled.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.5cm][c]{0.86\textwidth}{\centering Figure 6.8 placeholder (remaining deference time computation)}}
+\begin{tikzpicture}[x=0.8cm,y=0.8cm]
+  \draw[->,line width=0.9pt] (0,0) -- (11,0) node[right]{\small time};
+  \draw[line width=0.9pt] (0.8,1.2) -- (4.6,1.2);
+  \draw[densely dashed,line width=0.8pt] (4.6,1.2) -- (6.2,1.2);
+  \draw[line width=0.9pt] (6.2,1.2) -- (8.8,1.2);
+  \node at (2.6,1.7) {\small deference budget};
+  \node at (5.4,1.7) {\small interruption};
+  \node at (7.6,1.7) {\small remaining};
+  \draw[<->] (6.2,0.6) -- (8.8,0.6);
+  \node at (7.5,0.25) {\small residual time};
+\end{tikzpicture}
 \caption{Remaining Deference Time Computation}
 \label{fig:ether-defer-time}
 \end{figure}
@@ -362,7 +444,26 @@ directly implement the six-event logic above.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][6cm][c]{0.86\textwidth}{\centering Figure 6.9 placeholder (\texttt{ether} simulation program listing)}}
+\begin{minipage}{0.86\textwidth}
+\begin{verbatim}
+/* ether: simplified event-driven CSMA/CD model */
+main() {
+  init_model();
+  while (time() < TMAX) {
+    cause(&ev, &src);
+    switch(ev) {
+      case GEN:   gen_frame(src); break;
+      case SENSE: sense_channel(src); break;
+      case START: start_tx(src); break;
+      case COLL:  collision(src); break;
+      case END:   end_tx(src); break;
+      case RETRY: retry_tx(src); break;
+    }
+  }
+  report_stats();
+}
+\end{verbatim}
+\end{minipage}
 \caption{The \texttt{ether} Simulation Program}
 \label{fig:ether-program}
 \end{figure}
@@ -391,7 +492,20 @@ saturation).
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 6.10 placeholder (normalized delay vs throughput at $\alpha=0.05$)}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\textwidth,height=0.32\textwidth,
+  xmin=0,xmax=1,ymin=1,ymax=8,
+  xlabel={throughput},ylabel={normalized delay},
+  axis line style={line width=0.9pt},tick style={line width=0.8pt},
+  ticklabel style={font=\small},grid=major,major grid style={draw=black!12}
+]
+\addplot[line width=1.1pt] table[row sep=\\]{
+0.05 1.1\\ 0.10 1.2\\ 0.20 1.35\\ 0.30 1.55\\ 0.40 1.85\\
+0.50 2.3\\ 0.60 3.0\\ 0.70 4.1\\ 0.80 5.7\\ 0.90 7.5\\
+};
+\end{axis}
+\end{tikzpicture}
 \caption{Normalized Delay versus Throughput at $\alpha=0.05$}
 \label{fig:ether-delay-vs-throughput}
 \end{figure}
@@ -501,7 +615,14 @@ configuration and workload parameters.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 6.11 placeholder (token ring network)}}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[line width=1pt] (0,0) circle (2.4);
+  \foreach \a/\n in {90/1,18/2,-54/3,-126/4,162/N} {
+    \node[draw,rectangle,minimum width=0.9cm,minimum height=0.6cm] at (\a:2.4) {\small \n};
+  }
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (30:2.4) arc[start angle=30,end angle=-20,radius=2.4];
+  \node at (0,-3.0) {\small token circulates in ring direction};
+\end{tikzpicture}
 \caption{A Token Ring Network}
 \label{fig:token-ring-network}
 \end{figure}
@@ -510,14 +631,31 @@ Token and frame formats:
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][3.5cm][c]{0.86\textwidth}{\centering Figure 6.12 placeholder (token format)}}
+\begin{tikzpicture}[x=0.18cm,y=0.7cm]
+  \draw[line width=1pt] (0,0) rectangle (40,1.2);
+  \draw (4,0)--(4,1.2); \draw (8,0)--(8,1.2); \draw (24,0)--(24,1.2);
+  \node at (2,0.6) {\tiny SD};
+  \node at (6,0.6) {\tiny AC};
+  \node at (16,0.6) {\tiny FC + addr};
+  \node at (32,0.6) {\tiny control bits};
+\end{tikzpicture}
 \caption{Token Format}
 \label{fig:token-format}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.5cm][c]{0.86\textwidth}{\centering Figure 6.13 placeholder (token ring frame format)}}
+\begin{tikzpicture}[x=0.12cm,y=0.7cm]
+  \draw[line width=1pt] (0,0) rectangle (72,1.2);
+  \foreach \x in {4,8,20,32,60,68} {\draw (\x,0)--(\x,1.2);} 
+  \node at (2,0.6) {\tiny SD};
+  \node at (6,0.6) {\tiny AC};
+  \node at (14,0.6) {\tiny FC+DA};
+  \node at (26,0.6) {\tiny SA};
+  \node at (46,0.6) {\tiny DATA};
+  \node at (64,0.6) {\tiny FCS};
+  \node at (70,0.6) {\tiny ED/FS};
+\end{tikzpicture}
 \caption{Token Ring Frame Format}
 \label{fig:token-frame-format}
 \end{figure}

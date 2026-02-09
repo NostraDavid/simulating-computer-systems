@@ -18,7 +18,30 @@ front-end between user, simulation model, and support modules.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 7.1 placeholder (SMPL simulation environment)}}
+\begin{tikzpicture}[>=Latex,node distance=1.3cm and 1.6cm]
+  \node[draw,minimum width=2.8cm,minimum height=1cm] (user) {User};
+  \node[draw,minimum width=3.4cm,minimum height=1cm,right=of user] (mtr) {\texttt{mtr} interface};
+  \node[draw,minimum width=3.3cm,minimum height=1cm,right=of mtr] (model) {Simulation model};
+  \node[draw,minimum width=3.0cm,minimum height=1cm,below=of model] (smpl) {\texttt{smpl} core};
+  \node[draw,minimum width=2.3cm,minimum height=0.9cm,below=of user] (dump) {\texttt{dump}};
+  \node[draw,minimum width=2.3cm,minimum height=0.9cm,right=0.8cm of dump] (table) {\texttt{table}};
+  \node[draw,minimum width=2.3cm,minimum height=0.9cm,right=0.8cm of table] (bma) {\texttt{bma}};
+  \node[draw,minimum width=2.3cm,minimum height=0.9cm,right=0.8cm of bma] (dis) {\texttt{dis}};
+  \node[draw,minimum width=2.3cm,minimum height=0.9cm,below=0.9cm of table] (parms) {\texttt{parms}};
+
+  \draw[<->,line width=0.95pt] (user) -- (mtr);
+  \draw[<->,line width=0.95pt] (mtr) -- (model);
+  \draw[<->,line width=0.95pt] (model) -- (smpl);
+  \draw[<->,line width=0.9pt] (mtr.south) -- (dump.north);
+  \draw[<->,line width=0.9pt] (mtr.south) -- (table.north);
+  \draw[<->,line width=0.9pt] (mtr.south) -- (bma.north);
+  \draw[<->,line width=0.9pt] (mtr.south) -- (dis.north);
+  \draw[<->,line width=0.9pt] (mtr.south) -- (parms.north);
+  \draw[<->,line width=0.9pt] (smpl.west) -- ++(-0.9,0) |- (dump.east);
+  \draw[<->,line width=0.9pt] (smpl.west) -- ++(-0.4,0) |- (table.east);
+  \draw[<->,line width=0.9pt] (smpl.east) -- ++(0.4,0) |- (bma.west);
+  \draw[<->,line width=0.9pt] (smpl.east) -- ++(0.9,0) |- (dis.west);
+\end{tikzpicture}
 \caption{The SMPL Simulation Environment}
 \label{fig:smpl-environment}
 \end{figure}
@@ -51,7 +74,22 @@ breakpoint checks, active analysis/display updates, and function-key polling.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 7.2 placeholder (SMPL/PC function keys)}}
+\begin{tabular}{lll}
+\toprule
+Key & Action & Typical use \\
+\midrule
+F1 & Pause/continue & Enter interactive mode at runtime \\
+F2 & Toggle trace & Event-by-event debugging \\
+F3 & \texttt{dump} display & Inspect facilities/queues/events \\
+F4 & Report display & View cumulative performance measures \\
+F5 & Table setup & Configure distribution sampling \\
+F6 & BMA setup & Configure sequential run-length control \\
+F7 & Graphics setup & Configure \texttt{dis} plotting mode \\
+F8 & Parameter edit & Change model parameters during run \\
+F9 & Breakpoint control & Stop on condition/time/event \\
+F10 & User display hook & Invoke model-defined display routine \\
+\bottomrule
+\end{tabular}
 \caption{SMPL/PC Function Keys}
 \label{fig:smpl-function-keys}
 \end{figure}
@@ -90,7 +128,21 @@ error.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 7.3 placeholder (dump output example)}}
+\fbox{%
+\begin{minipage}{0.9\textwidth}
+\small\verbatimfont
+time = 15200.00 \quad last event = 2 \quad token = 17\\
+------------------------------------------------------------\\
+FACILITY STATUS\\
+cpu\#1 : busy by token 17 \quad qlen=3 \quad util=0.87\\
+cpu\#2 : idle \quad qlen=0 \quad util=0.55\\
+disk\#1: busy by token 09 \quad qlen=1 \quad util=0.71\\
+disk\#2: busy by token 21 \quad qlen=2 \quad util=0.68\\
+------------------------------------------------------------\\
+EVENT LIST (next 6)\\
+(t=15201.32,e=2,tk=17)\quad (t=15202.04,e=1,tk=41)\\
+(t=15202.67,e=4,tk=09)\quad (t=15203.90,e=2,tk=21)\\
+\end{minipage}}
 \caption{\texttt{dump} Module Output Example}
 \label{fig:smpl-dump-example}
 \end{figure}
@@ -133,7 +185,39 @@ level, lag-count, significance level, and max-observation limit.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 7.4 placeholder (bma input/output displays)}}
+\begin{minipage}{0.47\textwidth}
+  \centering
+  \fbox{%
+  \begin{minipage}{0.9\textwidth}
+  \small\verbatimfont
+  BMA INPUT\\
+  output parameter: \texttt{queue\_len}\\
+  count parameter : \texttt{n\_obs}\\
+  warm-up count   : 1000\\
+  initial batch   : 200\\
+  initial batches : 16\\
+  confidence      : 0.95\\
+  target rel H/W  : 0.10\\
+  lag test count  : 8\\
+  alpha test      : 0.05
+  \end{minipage}}
+\end{minipage}\hfill
+\begin{minipage}{0.47\textwidth}
+  \centering
+  \fbox{%
+  \begin{minipage}{0.9\textwidth}
+  \small\verbatimfont
+  BMA OUTPUT\\
+  merged batch size: 800\\
+  independent lags : pass\\
+  batches used     : 28\\
+  mean             : 4.217\\
+  std error        : 0.108\\
+  CI half-width    : 0.226\\
+  relative H/W     : 0.054\\
+  run status       : target met
+  \end{minipage}}
+\end{minipage}
 \caption{\texttt{bma} Input and Output Displays}
 \label{fig:smpl-bma}
 \end{figure}
@@ -159,7 +243,26 @@ written to file for external plotting.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][4.5cm][c]{0.86\textwidth}{\centering Figure 7.5 placeholder (\texttt{dis} step-mode queue plot)}}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth,height=0.34\textwidth,
+  xmin=0,xmax=200,ymin=0,ymax=8,
+  axis lines=left,
+  xlabel={simulation time},
+  ylabel={queue length},
+  xtick={0,40,80,120,160,200},
+  ytick={0,2,4,6,8},
+  ticklabel style={font=\small},
+  label style={font=\small},
+  grid=major,
+  major grid style={draw=black!12}
+]
+\addplot[const plot,line width=1pt] coordinates {
+  (0,0) (18,1) (33,2) (49,4) (62,6) (77,5) (89,3) (103,2)
+  (121,4) (136,7) (150,5) (167,3) (181,2) (196,1) (200,1)
+};
+\end{axis}
+\end{tikzpicture}
 \caption{\texttt{dis} ``step mode'' Plot}
 \label{fig:smpl-dis-step}
 \end{figure}

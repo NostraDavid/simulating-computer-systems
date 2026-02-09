@@ -36,8 +36,34 @@ ratio. Memory request processing takes place as follows.
 
 \begin{figure}[ht]
 \centering
-% TODO: Recreate Figure 5.1 (multiprocessor system elements).
-\fbox{\parbox[c][5cm][c]{0.8\textwidth}{\centering Figure 5.1 placeholder}}
+\begin{tikzpicture}[x=0.75cm,y=0.75cm]
+  \draw[line width=0.9pt] (1,6.5) rectangle (2.2,7.2) node[midway]{\small 1};
+  \draw[line width=0.9pt] (4.1,6.5) rectangle (5.3,7.2) node[midway]{\small 2};
+  \draw[line width=0.9pt] (8.2,6.5) rectangle (9.4,7.2) node[midway]{\small M};
+  \node at (6.2,7.55) {\small memories};
+  \draw[decorate,decoration={brace,amplitude=4pt}] (0.8,7.35) -- (9.6,7.35);
+
+  \draw[line width=1.1pt] (0.9,5.7) -- (9.5,5.7);
+  \draw[line width=1.1pt] (0.9,5.2) -- (9.5,5.2);
+  \draw[line width=1.1pt] (0.9,4.7) -- (9.5,4.7);
+  \node[right] at (9.7,5.7) {\small 1};
+  \node[right] at (9.7,5.2) {\small 2};
+  \node[right] at (9.7,4.7) {\small B};
+  \node at (10.45,5.2) {\small buses};
+
+  \draw[line width=0.9pt] (1,3.1) rectangle (2.2,3.8) node[midway]{\small 1};
+  \draw[line width=0.9pt] (4.1,3.1) rectangle (5.3,3.8) node[midway]{\small 2};
+  \draw[line width=0.9pt] (8.2,3.1) rectangle (9.4,3.8) node[midway]{\small N};
+  \node at (6.2,2.75) {\small processors};
+  \draw[decorate,decoration={brace,mirror,amplitude=4pt}] (0.8,2.95) -- (9.6,2.95);
+
+  \foreach \x in {1.6,4.7,8.8} {
+    \draw[line width=0.9pt] (\x,6.5) -- (\x,5.2);
+    \draw[line width=0.9pt] (\x,4.7) -- (\x,3.8);
+  }
+  \draw[densely dotted] (5.9,6.85) -- (7.1,6.85);
+  \draw[densely dotted] (5.9,3.45) -- (7.1,3.45);
+\end{tikzpicture}
 \caption{Multiprocessor System Elements}
 \end{figure}
 
@@ -137,6 +163,27 @@ parts: an execution interval of mean length $x = (1-p)/p$, a delay interval of
 mean length $b$, and a one-cycle transfer time for the accepted request. The
 single-processor request rate (counting blocked and accepted requests) is
 
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=0.9cm,y=0.9cm]
+  % Processor inter-request interval: execution x, blocked delay b, transfer 1.
+  \draw[line width=0.9pt] (0,0) -- (11,0);
+  \foreach \x in {0,5,10,11} {
+    \draw[line width=0.9pt] (\x,0.24) -- (\x,-0.24);
+  }
+  \draw[decorate,decoration={brace,amplitude=5pt}] (0,0.6) -- (5,0.6)
+    node[midway,above=7pt] {$x$};
+  \draw[decorate,decoration={brace,amplitude=5pt}] (5,0.6) -- (10,0.6)
+    node[midway,above=7pt] {$b$};
+  \draw[decorate,decoration={brace,amplitude=5pt}] (10,0.6) -- (11,0.6)
+    node[midway,above=7pt] {$1$};
+  \node[below=10pt] at (0,0) {request completion $i$};
+  \node[below=10pt] at (11,0) {request completion $i{+}1$};
+\end{tikzpicture}
+\caption{Processor Inter-Request Interval Timing}
+\label{fig:ch5-inter-request-interval}
+\end{figure}
+
 \begin{equation}
 r = (b+1)/T = (b+1)/(x+b+1)
 \label{eq:mp-r}
@@ -183,7 +230,26 @@ A C implementation with $\epsilon=0.005$ is shown in Figure~\ref{fig:ch5-bw-code
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 5.3 code listing placeholder (bandwidth computation algorithm)}}
+\begin{minipage}{0.86\textwidth}
+\begin{verbatim}
+real BW(real p, int B, int M, int N)
+{
+  real r = p, bw_prev = 0.0, bw = 0.0;
+  while (1) {
+    real q = 1.0 - pow(1.0 - r/M, N);
+    bw = 0.0;
+    for (int i = 1; i <= M; ++i) {
+      real fi = comb(M,i) * pow(q,i) * pow(1-q, M-i);
+      bw += (i < B) ? i*fi : B*fi;
+    }
+    if (fabs(bw - bw_prev) < 0.005) break;
+    r = 1.0 / (1.0 + ((1-p)/p) * bw / (N*r));
+    bw_prev = bw;
+  }
+  return bw;
+}
+\end{verbatim}
+\end{minipage}
 \caption{Bandwidth Computation Algorithm}
 \label{fig:ch5-bw-code}
 \end{figure}
@@ -238,7 +304,40 @@ this purpose (called \texttt{bws1} in the book) is given in Figure 5.4.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][6cm][c]{0.86\textwidth}{\centering Figure 5.4 code listing placeholder (multiprocessor simulation model \texttt{bws1})}}
+\begin{minipage}{0.86\textwidth}
+\begin{verbatim}
+/* model bws1: synchronous multiprocessor */
+init_model(p, N, M, B) {
+  for (j=1; j<=M; j++) module[j] = facility("module", 1);
+  bus = facility("bus", B);
+  for (n=1; n<=N; n++) schedule(BEGIN_CYCLE, 0.0, n);
+}
+
+begin_cycle(n) {
+  if (req[n] != 0) return;
+  if (drand() < p) {
+    req[n] = randint(1, M);
+    schedule(REQ_MODULE, 0.0, n);
+  } else {
+    schedule(BEGIN_CYCLE, 1.0, n);
+  }
+}
+
+req_module(n) {
+  if (!busy(module[req[n]]) && !busy(bus)) {
+    reserve(module[req[n]]); reserve(bus);
+    schedule(END_CYCLE, 1.0, n);
+  } else {
+    schedule(REQ_MODULE, 1.0, n);   /* reissue */
+  }
+}
+
+end_cycle(n) {
+  release(module[req[n]]); release(bus);
+  req[n] = 0; schedule(BEGIN_CYCLE, 0.0, n);
+}
+\end{verbatim}
+\end{minipage}
 \caption{Multiprocessor Simulation Model \texttt{bws1}}
 \label{fig:ch5-bws1}
 \end{figure}
@@ -312,6 +411,68 @@ verify at:
 If agreement is good at these structurally informative points, effort is then
 shifted to other regions of parameter space.
 
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.72\textwidth,
+  height=0.34\textwidth,
+  xmin=0,
+  xmax=18,
+  ymin=0,
+  ymax=16,
+  xlabel={$B$},
+  ylabel={$BW$},
+  axis line style={line width=0.9pt},
+  tick style={line width=0.8pt},
+  ticklabel style={font=\small},
+  major grid style={draw=black!15},
+  grid=major,
+  legend style={font=\small,draw=none,fill=none,at={(0.98,0.02)},anchor=south east},
+]
+  % Response-shape sketch used to pick low/transition/high verification points.
+  \addplot[line width=1.1pt] table[row sep=\\] {
+    1 1.1\\
+    2 2.1\\
+    3 3.0\\
+    4 3.9\\
+    5 4.8\\
+    6 5.6\\
+    7 6.2\\
+    8 6.8\\
+    9 7.2\\
+    10 7.5\\
+    11 7.7\\
+    12 7.85\\
+    14 8.0\\
+    16 8.1\\
+    18 8.15\\
+  };
+  \addplot[densely dashed,line width=1.0pt] table[row sep=\\] {
+    1 1.4\\
+    2 2.7\\
+    3 3.8\\
+    4 4.8\\
+    5 5.8\\
+    6 6.6\\
+    7 7.2\\
+    8 7.7\\
+    9 8.1\\
+    10 8.4\\
+    11 8.6\\
+    12 8.7\\
+    14 8.85\\
+    16 8.95\\
+    18 9.0\\
+  };
+  \addlegendentry{$N{=}32,\;M{=}16,\;p{=}0.20$}
+  \addlegendentry{$N{=}64,\;M{=}16,\;p{=}0.20$}
+\end{axis}
+\end{tikzpicture}
+\caption{Bandwidth Response Shape for Verification-Point Selection}
+\label{fig:ch5-verification-shape}
+\end{figure}
+
 \section{A Synchronous Queueing Model}
 \label{sec:mp-sync-queue}
 
@@ -334,7 +495,21 @@ In this notation:
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 5.6 placeholder (multiprocessor system queueing model diagram)}}
+\begin{tikzpicture}[node distance=1.2cm]
+  \node[draw,circle,minimum size=0.9cm] (cpu1) {CPU};
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm,right=2.2cm of cpu1] (mqueue) {M-queue};
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm,right=1.8cm of mqueue] (mods) {M mods};
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm,below=1.4cm of mods] (bqueue) {B-queue};
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm,left=1.8cm of bqueue] (bus) {B buses};
+  \node[draw,circle,minimum size=0.9cm,left=2.2cm of bus] (cpu2) {CPU};
+
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (cpu1) -- node[above,sloped] {request} (mqueue);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (mqueue) -- (mods);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (mods) -- (bqueue);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (bqueue) -- (bus);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (bus) -- node[below,sloped] {completion} (cpu2);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (cpu2) to[bend left=20] node[left] {next cycle} (cpu1);
+\end{tikzpicture}
 \caption{Multiprocessor System Queueing Model Diagram}
 \label{fig:ch5-queue-diagram}
 \end{figure}
@@ -355,7 +530,24 @@ done and drive cycle-end release and scheduling logic.
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][6cm][c]{0.86\textwidth}{\centering Figure 5.7 placeholder (changes to \texttt{bws1} for memory and bus queueing)}}
+\begin{minipage}{0.86\textwidth}
+\begin{verbatim}
+/* delta from bws1 to bws2 */
+- req_module() reserves module and bus simultaneously
++ req_module() queues by module, then issues req_bus()
+
++ req_bus() {
++   if (busy(bus)) queue(bus); else reserve(bus);
++   schedule(END_CYCLE, 1.0, token);
++ }
+
+- end_cycle() releases module/bus immediately
++ end_cycle() defers release until all cycle requests complete
++ and then triggers begin_cycle() for next machine cycle
+
++ report() now prints U(bus), U(module[j]), Q(module[j]), Q(bus)
+\end{verbatim}
+\end{minipage}
 \caption{Changes to \texttt{bws1} for Memory and Bus Queueing}
 \label{fig:ch5-bws2-delta}
 \end{figure}
@@ -380,7 +572,26 @@ required).
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][6cm][c]{0.86\textwidth}{\centering Figure 5.8 placeholder (multiprocessor simulation model \texttt{bws3})}}
+\begin{minipage}{0.86\textwidth}
+\begin{verbatim}
+/* bws3 asynchronous model outline */
+initialize modules[M], buses[B], processors[N]
+for each processor n: schedule(ISSUE, expntl(1/p), n)
+
+ISSUE(n):
+  j = randint(1, M)
+  if (module[j] and bus available) then
+    reserve(module[j]); reserve(bus)
+    schedule(COMPLETE, 1.0, n)
+  else
+    enqueue request (n,j)
+
+COMPLETE(n):
+  release resources for n
+  schedule(ISSUE, expntl(1/p), n)
+  dequeue waiting requests if resources become available
+\end{verbatim}
+\end{minipage}
 \caption{Multiprocessor Simulation Model \texttt{bws3}}
 \label{fig:ch5-bws3}
 \end{figure}
@@ -450,7 +661,22 @@ instruction fetch buffer, and a data fetch buffer (Figure~5.9).
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][5cm][c]{0.86\textwidth}{\centering Figure 5.9 placeholder (major CPU elements)}}
+\begin{tikzpicture}[x=0.9cm,y=0.9cm]
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (if) at (0,2.6) {Ifetch};
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (pipeD) at (2.0,2.6) {D};
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (pipeA) at (3.6,2.6) {A};
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (pipeX) at (5.2,2.6) {X};
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (pipeW) at (6.8,2.6) {W};
+  \node[draw,rectangle,minimum width=2.0cm,minimum height=0.8cm] (cache) at (3.6,1.1) {Cache};
+  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (df) at (6.8,1.1) {Dfetch};
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (if) -- (pipeD);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (pipeD) -- (pipeA);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (pipeA) -- (pipeX);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (pipeX) -- (pipeW);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (pipeA) -- (cache);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (cache) -- (df);
+  \draw[-{Stealth[length=3mm]},line width=0.9pt] (df) -- (pipeX);
+\end{tikzpicture}
 \caption{Major CPU Elements}
 \label{fig:ch5-cpu-elements}
 \end{figure}
@@ -478,7 +704,20 @@ and delay patterns for instruction classes:
 
 \begin{figure}[ht]
 \centering
-\fbox{\parbox[c][7cm][c]{0.86\textwidth}{\centering Figure 5.10 placeholder (pipeline sequence examples)}}
+\begin{minipage}{0.86\textwidth}
+\centering
+\small
+\begin{tabular}{l|cccccccc}
+sequence & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ hline
+(a) ALU  & D & A & X & W & D & A & X & W \\ 
+(b) FS   & D & A & C & W & O & D & A & W \\ 
+(c) BR   & D & A & B & O & O & D & A & W \\ 
+(d) mix  & D & A & X & X & W & D & A & W \\ 
+(e) mix  & D & A & B & O & D & A & X & W \\ 
+\end{tabular}
+\par\vspace{0.4em}
+\footnotesize O = hole, C = cache arbitration delay, B = taken branch delay
+\end{minipage}
 \caption{Pipeline Sequence Examples}
 \label{fig:ch5-pipeline-examples}
 \end{figure}

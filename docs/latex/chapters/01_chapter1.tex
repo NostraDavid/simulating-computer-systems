@@ -522,8 +522,7 @@ entries in the seek time interval endpoint array. The sample-generating
 statements might look like this (OCR needs verification):
 
 \begin{verbatim}
-r = ranf ();
-while (r > p[i]) i++;
+r = ranf (); while (r > p[i]) i++;
 t = t[i-1] + (t[i]-t[i-1]) * (r - p[i-1]) / (p[i] - p[i-1]);
 \end{verbatim}
 
@@ -657,7 +656,14 @@ distributed with mean Ts. (This, then, is an M/M/1 queue.)
 
 \begin{figure}[htbp]
   \centering
-  \fbox{\parbox{0.8\textwidth}{TODO: Figure 1.3. A Single Server Queueing System}}
+  \begin{tikzpicture}[node distance=2.0cm,>=Latex]
+    \node[draw,rounded corners,minimum width=3.2cm,minimum height=1.0cm] (src) {Infinite source};
+    \node[draw,minimum width=2.4cm,minimum height=1.0cm,right=2.3cm of src] (q) {Queue};
+    \node[draw,minimum width=2.6cm,minimum height=1.0cm,right=2.3cm of q] (srv) {Server};
+    \draw[->,line width=0.95pt] (src) -- node[above] {$T_a$} (q);
+    \draw[->,line width=0.95pt] (q) -- (srv);
+    \draw[->,line width=0.95pt] (srv) -- ++(2.2,0) node[above,pos=0.55] {$T_s$} node[right] {Departures};
+  \end{tikzpicture}
   \caption{A Single Server Queueing System}
 \end{figure}
 
@@ -730,7 +736,47 @@ service times, we can see how the model generates this behavior.
 
 \begin{figure}[htbp]
   \centering
-  \fbox{\parbox{0.8\textwidth}{TODO: Figure 1.5. Queueing System Behavior}}
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.9\textwidth,height=0.24\textwidth,
+      xmin=0,xmax=600,ymin=0,ymax=4.6,
+      axis lines=left,
+      xlabel={time},ylabel={customer},
+      xtick={0,100,200,300,400,500,600},
+      ytick={1,2,3,4},
+      ticklabel style={font=\small},
+      label style={font=\small},
+      clip=false
+    ]
+      \addplot[only marks,mark=*,mark size=1.7pt] coordinates {(20,0.25) (50,0.25) (75,0.25) (140,0.25) (220,0.25) (300,0.25)};
+      \addplot[line width=4pt,draw=black!35] coordinates {(20,1) (100,1)};
+      \addplot[line width=4pt,draw=black!35] coordinates {(100,2) (250,2)};
+      \addplot[line width=4pt,draw=black!35] coordinates {(250,3) (340,3)};
+      \addplot[line width=4pt,draw=black!35] coordinates {(340,4) (400,4)};
+      \addplot[line width=4pt,draw=black!35] coordinates {(400,1.4) (480,1.4)};
+      \addplot[line width=4pt,draw=black!35] coordinates {(480,2.4) (570,2.4)};
+      \node[anchor=west,font=\small] at (axis cs:610,4.05) {(a) arrivals and service times};
+    \end{axis}
+  \end{tikzpicture}
+
+  \vspace{0.6em}
+
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.9\textwidth,height=0.2\textwidth,
+      xmin=0,xmax=600,ymin=0,ymax=4.5,
+      axis lines=left,
+      xlabel={time},ylabel={$n(t)$},
+      xtick={0,100,200,300,400,500,600},
+      ytick={0,1,2,3,4},
+      ticklabel style={font=\small},
+      label style={font=\small},
+      clip=false
+    ]
+      \addplot[const plot,line width=1pt] coordinates {(0,0) (20,1) (50,2) (75,3) (100,2) (140,3) (220,4) (250,3) (300,4) (340,3) (400,2) (480,1) (570,0) (600,0)};
+      \node[anchor=west,font=\small] at (axis cs:610,3.7) {(b) number in system};
+    \end{axis}
+  \end{tikzpicture}
   \caption{Queueing System Behavior}
 \end{figure}
 
@@ -1194,7 +1240,37 @@ in Chapter 8; code for this function is given in the Appendix.
 
     \begin{figure}[htbp]
       \centering
-      \fbox{\parbox{0.8\textwidth}{TODO: Figure 1.8. Triangular Distribution}}
+      \begin{minipage}{0.47\textwidth}
+        \centering
+        \begin{tikzpicture}
+          \begin{axis}[
+            width=\textwidth,height=0.62\textwidth,
+            xmin=0,xmax=10,ymin=0,ymax=0.35,
+            axis lines=left,
+            xlabel={$x$},ylabel={$f(x)$},
+            xtick={1,4,9},
+            xticklabels={$a$,$c$,$b$},
+            ytick=\empty,
+            ticklabel style={font=\small},
+            label style={font=\small}
+          ]
+            \addplot[line width=1.05pt] coordinates {(1,0) (4,0.3) (9,0)};
+          \end{axis}
+        \end{tikzpicture}
+      \end{minipage}
+      \hfill
+      \begin{minipage}{0.5\textwidth}
+        \small
+        \[
+        F(x)=
+        \begin{cases}
+          0, & x<a \\
+          \dfrac{(x-a)^2}{(b-a)(c-a)}, & a\le x<c \\
+          1-\dfrac{(b-x)^2}{(b-a)(b-c)}, & c\le x<b \\
+          1, & x\ge b
+        \end{cases}
+        \]
+      \end{minipage}
       \caption{Triangular Distribution}
     \end{figure}
 
@@ -1215,7 +1291,18 @@ in Chapter 8; code for this function is given in the Appendix.
 
     \begin{figure}[htbp]
       \centering
-      \fbox{\parbox{0.8\textwidth}{TODO: Figure 1.9. Timesharing System}}
+      \begin{tikzpicture}[>=Latex]
+        \node[draw,minimum width=3.4cm,minimum height=1.2cm] (term) at (0,1.8) {16 terminals};
+        \node[draw,minimum width=2.6cm,minimum height=1.2cm] (cpu) at (4.8,1.8) {CPU};
+        \node[draw,minimum width=2.4cm,minimum height=1.0cm] (d1) at (3.9,-1.0) {Disk 1};
+        \node[draw,minimum width=2.4cm,minimum height=1.0cm] (d2) at (5.7,-1.0) {Disk 2};
+        \draw[->,line width=0.95pt] (term) -- node[above] {request} (cpu);
+        \draw[->,line width=0.95pt] (cpu) -- node[below] {response} (term);
+        \draw[->,line width=0.95pt] (cpu) -- (d1);
+        \draw[->,line width=0.95pt] (cpu) -- (d2);
+        \draw[->,line width=0.95pt] (d1) -- (cpu);
+        \draw[->,line width=0.95pt] (d2) -- (cpu);
+      \end{tikzpicture}
       \caption{Timesharing System}
     \end{figure}
 
@@ -1249,7 +1336,29 @@ in Chapter 8; code for this function is given in the Appendix.
 
     \begin{figure}[htbp]
       \centering
-      \fbox{\parbox{0.8\textwidth}{TODO: Figure 1.10. Program Graph}}
+      \begin{tikzpicture}[node distance=1.4cm and 1.9cm,>=Latex]
+        \tikzstyle{stmt}=[draw,rectangle,minimum width=1.9cm,minimum height=0.9cm]
+        \tikzstyle{branch}=[draw,diamond,aspect=1.8,inner sep=1.2pt]
+
+        \node[stmt] (s0) {start};
+        \node[branch,below=of s0] (b1) {$B_1$};
+        \node[stmt,below left=of b1] (s1) {$I_1$};
+        \node[stmt,below right=of b1] (s2) {$I_2$};
+        \node[branch,below=2.0cm of b1] (b2) {$B_2$};
+        \node[stmt,below left=of b2] (s3) {$I_3$};
+        \node[stmt,below right=of b2] (s4) {$I_4$};
+        \node[stmt,below=2.0cm of b2] (se) {end};
+
+        \draw[->] (s0) -- (b1);
+        \draw[->] (b1) -- node[above left] {0.6} (s1);
+        \draw[->] (b1) -- node[above right] {0.4} (s2);
+        \draw[->] (s1) -- (b2);
+        \draw[->] (s2) -- (b2);
+        \draw[->] (b2) -- node[above left] {0.7} (s3);
+        \draw[->] (b2) -- node[above right] {0.3} (s4);
+        \draw[->] (s3) -- (se);
+        \draw[->] (s4) -- (se);
+      \end{tikzpicture}
       \caption{Program Graph}
     \end{figure}
 
