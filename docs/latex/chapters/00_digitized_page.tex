@@ -1,0 +1,23 @@
+% Internet Archive digitization notice page.
+\clearpage
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture,overlay]
+  % Very light vertical striping to echo the scanned page background.
+  \fill[black!2] (current page.south west) rectangle (current page.north east);
+  \foreach \i in {0,...,8} {
+    \fill[white!80!black!4]
+      ([xshift=\i*2.4cm]current page.south west)
+      rectangle
+      ([xshift=\i*2.4cm+1.1cm]current page.north west);
+  }
+\end{tikzpicture}
+
+\vspace*{\fill}
+\begin{center}
+  {\color{black!45}\fontsize{20}{26}\selectfont
+  Digitized by the Internet Archive\\
+  in 2017 with funding from\\
+  The Arcadia Fund\par}
+\end{center}
+\vspace*{\fill}

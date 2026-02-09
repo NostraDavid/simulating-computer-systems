@@ -1,0 +1,54 @@
+% Reverse-side logo page after the cover.
+% This recreates the circular MIT Libraries stamp from the scanned source.
+\clearpage
+\thispagestyle{empty}
+\begin{center}
+  % Vertical placement on the otherwise blank page.
+  \vspace*{2.2cm}
+  \begin{tikzpicture}[scale=1.02]
+    % Light gray ink to mimic the faded stamp appearance.
+    \color{black!38}
+
+    % Outer ring and inner ring.
+    \draw[line width=1.15pt] (0,0) circle (5.05cm);
+    \draw[line width=1.05pt] (0,0) circle (3.12cm);
+
+    % Top arc text.
+    \path[
+      postaction={
+        decorate,
+        decoration={
+          text along path,
+          text={|\bfseries\fontsize{20}{22}\selectfont|MASSACHUSETTS},
+          text align={align=center},
+          raise=1.0ex
+        }
+      }
+    ] (-4.50,1.96) arc[start angle=154,end angle=26,radius=5cm];
+
+    % Bottom arc text.
+    \path[
+      postaction={
+        decorate,
+        decoration={
+          text along path,
+          text={|\bfseries\fontsize{19}{21}\selectfont|INSTITUTE of TECHNOLOGY},
+          text align={align=center},
+          raise=0.95ex
+        }
+      }
+    ] (-4.06,-2.44) arc[start angle=-145,end angle=-35,radius=5cm];
+
+    % Center label and side separators.
+    \node[font=\bfseries\fontsize{20}{22}\selectfont] at (0,0) {LIBRARIES};
+    \node[font=\large] at (-4.16,0.00) {$\star$};
+    \node[font=\large] at (4.16,0.00) {$\star$};
+
+    % Slight offset overprint to emulate scan-stamp softness / bleed.
+    \begin{scope}[xshift=0.03cm,yshift=-0.03cm,opacity=0.30]
+      \draw[line width=0.55pt] (0,0) circle (5.05cm);
+      \draw[line width=0.55pt] (0,0) circle (3.12cm);
+      \node[font=\bfseries\fontsize{20}{22}\selectfont] at (0,0) {LIBRARIES};
+    \end{scope}
+  \end{tikzpicture}
+\end{center}

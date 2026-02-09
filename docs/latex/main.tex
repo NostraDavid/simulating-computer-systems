@@ -6,8 +6,18 @@
 \author{M. H. MacDougall}
 \date{}
 
+% Keep scan-wrapper pages optional.
+% Set \scanwrappertrue only when you want to reproduce the archive wrapper
+% pages (MIT LIBRARIES / IA notices) ahead of the actual cover.
+\newif\ifscanwrapper
+\scanwrapperfalse
+% \scanwrappertrue
+
 \begin{document}
 \pagenumbering{gobble}
+\ifscanwrapper
+\include{chapters/00_scan_prelim}
+\fi
 \begin{titlepage}
   \thispagestyle{empty}
   \pagecolor{coverblue}
@@ -33,10 +43,19 @@
   \makeatother
 \end{titlepage}
 \nopagecolor
+\include{chapters/00_logo_page}
+\include{chapters/00_authorized_page}
+\include{chapters/00_digitized_page}
+\include{chapters/00_half_title_page}
 \include{chapters/00_frontmatter}
 \frontmatter
 \pagenumbering{roman}
+\setcounter{tocdepth}{1}
+\begingroup
+\small
+\setlength{\parskip}{0pt}
 \tableofcontents
+\endgroup
 \include{chapters/00_preface}
 
 \mainmatter
