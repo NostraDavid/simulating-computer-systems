@@ -1,12 +1,13 @@
 # Simulating Computer Systems
 
 Workspace for reconstructing `simulatingcomput00myro_1-1.pdf` into editable LaTeX,
-plus a small Python project scaffold.
+plus Python queueing simulations.
 
 ## Quick start
 
-- Enter dev shell (Nix):
-  - `just dev`
+- Load the Nix, devenv, and direnv environment:
+  - `direnv allow`, then `just setup`
+  - `just dev` opens the environment without direnv.
 - Build LaTeX (latexmk):
   - `just build-latex`
 - Build LaTeX (tectonic):
@@ -18,7 +19,7 @@ plus a small Python project scaffold.
 - `docs/latex/chapters/`: Chapter files (one per chapter/section)
 - `docs/latex/figures/`: Extracted images/figures
 - `docs/latex/build/`: Build output (ignored)
-- `src/`, `tests/`: Python project scaffold
+- `src/`, `tests/`: Python simulations and tests
 
 ## Extraction helpers
 
@@ -35,3 +36,12 @@ plus a small Python project scaffold.
   maximum compatibility.
 - The dev shell includes `poppler_utils` (pdftotext/pdfimages) and `tesseract`
   for OCR.
+
+## Python development
+
+`just run` starts the single-server queue simulation from `scs.sim1`.
+`just check` runs its tests and the installed CLI. `just update` refreshes the
+Nix and Python dependency locks.
+
+The extraction and OCR recipes require the original PDF in the repository root
+as `simulatingcomput00myro_1-1.pdf`. That input is not included in this checkout.

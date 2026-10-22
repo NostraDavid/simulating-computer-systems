@@ -10,7 +10,7 @@ default:
     @just --list
 
 dev:
-    nix develop --no-warn-dirty --unset-env-var LC_ALL --unset-env-var LANG --unset-env-var LANGUAGE
+    devenv shell
 
 build-latex:
     mkdir -p {{build_dir}}
@@ -41,25 +41,42 @@ ocr-page page dpi='400' psm='6':
     pp=$(printf "%03d" {{page}}); \
       pdftoppm -f {{page}} -l {{page}} -r {{dpi}} -png {{pdf}} {{build_dir}}/ocr/page; \
       if command -v magick >/dev/null; then \
-        magick {{build_dir}}/ocr/page-$${pp}.png -colorspace Gray -deskew 40% -normalize -sharpen 0x1 {{build_dir}}/ocr/page-$${pp}-clean.png; \
-        tesseract {{build_dir}}/ocr/page-$${pp}-clean.png {{build_dir}}/ocr/page-$${pp} -l eng --oem 1 --psm {{psm}} -c preserve_interword_spaces=1; \
+        magick {{build_dir}}/ocr/page-${pp}.png -colorspace Gray -deskew 40% -normalize -sharpen 0x1 {{build_dir}}/ocr/page-${pp}-clean.png; \
+        tesseract {{build_dir}}/ocr/page-${pp}-clean.png {{build_dir}}/ocr/page-${pp} -l eng --oem 1 --psm {{psm}} -c preserve_interword_spaces=1; \
       else \
-        tesseract {{build_dir}}/ocr/page-$${pp}.png {{build_dir}}/ocr/page-$${pp} -l eng --oem 1 --psm {{psm}} -c preserve_interword_spaces=1; \
+        tesseract {{build_dir}}/ocr/page-${pp}.png {{build_dir}}/ocr/page-${pp} -l eng --oem 1 --psm {{psm}} -c preserve_interword_spaces=1; \
       fi
 
 ocr-range from to dpi='400' psm='6':
     mkdir -p {{build_dir}}/ocr
     for p in $(seq {{from}} {{to}}); do \
-      pp=$$(printf "%03d" $$p); \
-      pdftoppm -f $$p -l $$p -r {{dpi}} -png {{pdf}} {{build_dir}}/ocr/page; \
+      pp=$(printf "%03d" $p); \
+      pdftoppm -f $p -l $p -r {{dpi}} -png {{pdf}} {{build_dir}}/ocr/page; \
       if command -v magick >/dev/null; then \
-        magick {{build_dir}}/ocr/page-$$pp.png -colorspace Gray -deskew 40% -normalize -sharpen 0x1 {{build_dir}}/ocr/page-$$pp-clean.png; \
-        tesseract {{build_dir}}/ocr/page-$$pp-clean.png {{build_dir}}/ocr/page-$$pp -l eng --oem 1 --psm {{psm}} -c preserve_interword_spaces=1; \
+        magick {{build_dir}}/ocr/page-$pp.png -colorspace Gray -deskew 40% -normalize -sharpen 0x1 {{build_dir}}/ocr/page-$pp-clean.png; \
+        tesseract {{build_dir}}/ocr/page-$pp-clean.png {{build_dir}}/ocr/page-$pp -l eng --oem 1 --psm {{psm}} -c preserve_interword_spaces=1; \
       else \
-        tesseract {{build_dir}}/ocr/page-$$pp.png {{build_dir}}/ocr/page-$$pp -l eng --oem 1 --psm {{psm}} -c preserve_interword_spaces=1; \
+        tesseract {{build_dir}}/ocr/page-$pp.png {{build_dir}}/ocr/page-$pp -l eng --oem 1 --psm {{psm}} -c preserve_interword_spaces=1; \
       fi; \
     done
 
 ocr image out_base:
     mkdir -p {{build_dir}}
     tesseract {{image}} {{build_dir}}/{{out_base}}
+
+setup:
+    uv sync --locked
+
+run:
+    uv run --locked scs
+
+test:
+    uv run --locked pytest
+
+check: test
+    uv run --locked scs
+
+update:
+    devenv update
+    uv lock --upgrade
+    uv sync --locked

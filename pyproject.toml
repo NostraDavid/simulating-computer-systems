@@ -1,7 +1,7 @@
 [project]
 name = "scs"
 version = "0.1.0"
-description = "Add your description here"
+description = "Queueing simulations and a LaTeX reconstruction workspace."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-scs = "scs.main:simulate_queue"
+scs = "scs.sim1:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -25,3 +25,6 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest-mock>=3.14.0",
 ]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src", "tests", "pyproject.toml", "README.md"]

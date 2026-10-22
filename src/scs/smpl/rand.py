@@ -24,6 +24,7 @@ ln = [
 ]  # Seeds for streams 1-15
 
 strm = 1  # Index of current stream
+z2 = 0.0  # Cached second normal variate.
 
 
 def ranf() -> float:  # FIXME: weird implementation??

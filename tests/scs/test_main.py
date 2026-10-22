@@ -1,14 +1,14 @@
 import math
 import pytest
 from unittest import mock
-from scs.main import expntl, main
+from scs.sim1 import expntl, main
 from hypothesis import given
 import hypothesis.strategies as st
 
 
 @given(st.floats(min_value=0.1, max_value=1000.0))
 def test_expntl_hypothesis(mean):
-    with mock.patch("random.random", return_value=0.5):
+    with mock.patch("scs.smpl.rand.ranf", return_value=0.5):
         assert expntl(mean) == pytest.approx(-mean * math.log(0.5), 0.001)
 
 
@@ -21,12 +21,12 @@ def test_expntl_hypothesis(mean):
     ],
 )
 def test_expntl(random_value, expected):
-    with mock.patch("random.random", return_value=random_value):
+    with mock.patch("scs.smpl.rand.ranf", return_value=random_value):
         assert expntl(100) == pytest.approx(expected, 0.001)
 
 
 def test_main():
-    with mock.patch("scs.main.expntl") as mock_expntl:
+    with mock.patch("scs.sim1.expntl") as mock_expntl:
         # Mock expntl to return predictable values
         mock_expntl.return_value = 500
         main()
