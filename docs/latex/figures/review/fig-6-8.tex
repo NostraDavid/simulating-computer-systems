@@ -1,0 +1,23 @@
+\begin{tikzpicture}
+\draw[review arrow] (0,3) -- (10,3);
+\draw[review arrow] (0,0) -- (10,0) node[below] {time};
+\node[review heading,anchor=east] at (-0.25,3) {station j};
+\node[review heading,anchor=east] at (-0.25,0) {station i};
+\draw[review arrow,densely dashed] (0.7,0) -- (3.6,3);
+\foreach \x/\lab in {0.7/tis,3.6/tis+dt,6.5/tis+dt+Tif} {\draw[review line] (\x,0) -- +(0,-0.75); \node[below] at (\x,-0.85) {\lab};}
+\draw[review arrow] (1.45,-0.35) -- (0.7,-0.35);
+\draw[review arrow] (2.85,-0.35) -- (3.6,-0.35);
+\node at (2.15,-0.38) {dt};
+\draw[review arrow] (4.35,-0.35) -- (3.6,-0.35);
+\draw[review arrow] (5.75,-0.35) -- (6.5,-0.35);
+\node at (5.05,-0.38) {Tif};
+\draw[review line] (5.5,3) -- +(0,0.28);
+\node[above] at (5.5,3.28) {t};
+\node[anchor=east] at (4.3,4.65) {request arrival};
+\draw[review arrow] (4.4,4.65) -- (5.5,4.65) -- (5.5,4.05);
+\draw[review line] (5.5,2.15) -- (5.5,2.65);
+\draw[review line] (6.5,2.15) -- (6.5,2.65);
+\draw[review arrow] (5.0,2.4) -- (5.5,2.4);
+\draw[review arrow] (7.0,2.4) -- (6.5,2.4);
+\node[anchor=west,align=left] at (7.15,2.4) {remaining\\deference time};
+\end{tikzpicture}

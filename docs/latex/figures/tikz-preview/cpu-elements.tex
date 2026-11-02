@@ -1,0 +1,37 @@
+\begin{tikzpicture}[x=0.02cm,y=-0.02cm, font=\sffamily\mdseries,
+  flow/.style={line width=1.2pt, -{Triangle[round,length=8pt,width=7pt]}}]
+  % Cache and its two internal cells.
+  \draw[line width=3.2pt,shift={(3,-3)}] (318,12) -- (598,12) -- (598,152);
+  \draw[line width=1.2pt,fill=white] (318,12) rectangle (598,152);
+  \node[font=\sffamily\bfseries\fontsize{15}{18}\selectfont] at (458,41) {cache};
+  \draw[line width=1.2pt] (388,83) rectangle (527,128);
+  \draw[line width=1.2pt] (457,83) -- (457,128);
+  \node[font=\sffamily\mdseries\fontsize{14}{16}\selectfont] at (422,106) {P};
+  \node[font=\sffamily\mdseries\fontsize{14}{16}\selectfont] at (492,106) {C};
+
+  % Three-slot instruction fetch buffer and one-word data fetch buffer.
+  \draw[line width=1.2pt] (109,174) rectangle (203,242);
+  \draw[line width=1.2pt] (109,197) -- (203,197) (109,219) -- (203,219);
+  \draw[line width=1.2pt] (503,192) rectangle (596,215);
+  \node[align=center, font=\sffamily\mdseries\fontsize{12}{15}\selectfont] at (45,202) {Ifetch\\buffer};
+  \node[align=center, font=\sffamily\mdseries\fontsize{12}{15}\selectfont] at (662,202) {Dfetch\\buffer};
+
+  % Four stages of the instruction pipeline.
+  \draw[line width=3.2pt,shift={(3,-3)}] (226,262) -- (598,262) -- (598,355);
+  \draw[line width=1.2pt,fill=white] (226,262) rectangle (598,355);
+  \draw[line width=1.2pt] (319,262) -- (319,355)
+    (411,262) -- (411,355) (504,262) -- (504,355);
+  \node[font=\sffamily\mdseries\fontsize{19}{22}\selectfont] at (272,309) {D};
+  \node[font=\sffamily\mdseries\fontsize{19}{22}\selectfont] at (365,309) {A};
+  \node[font=\sffamily\mdseries\fontsize{19}{22}\selectfont] at (457,309) {X};
+  \node[font=\sffamily\mdseries\fontsize{19}{22}\selectfont] at (551,309) {W};
+  \node[font=\sffamily\bfseries\fontsize{14}{17}\selectfont] at (412,391) {instruction pipeline};
+
+  % The four directed paths, including the two segments through Dfetch.
+  \draw[flow] (318,106) -- (156,106) -- (156,174);
+  \draw[flow] (156,242) -- (156,310) -- (226,310);
+  \draw[flow] (550,152) -- (550,192);
+  \draw[flow] (550,215) -- (550,262);
+  \draw[flow] (365,262) -- (365,152);
+  \node[anchor=west, font=\sffamily\mdseries\fontsize{12}{15}\selectfont] at (373,198) {Store};
+\end{tikzpicture}

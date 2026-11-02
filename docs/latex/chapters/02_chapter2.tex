@@ -565,27 +565,7 @@ used in smpl because of their relationship to analytic modeling approaches
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}[font=\small, line width=0.4pt, >=stealth]
-  \node[draw, rectangle, minimum width=1.4cm, minimum height=0.7cm] (cpu) at (0,0) {CPU};
-  \node[draw, rectangle, minimum width=1.0cm, minimum height=0.5cm] (d1) at (-1.8,-1.3) {disk};
-  \node[draw, rectangle, minimum width=1.0cm, minimum height=0.5cm] (d2) at (-0.6,-1.3) {disk};
-  \node[draw, rectangle, minimum width=1.0cm, minimum height=0.5cm] (d3) at (0.6,-1.3) {disk};
-  \node[draw, rectangle, minimum width=1.0cm, minimum height=0.5cm] (d4) at (1.8,-1.3) {disk};
-
-  \node[anchor=east] at (-2.4,0.35) {$n_0$ class 0 tasks};
-  \node[anchor=east] at (-2.4,-0.35) {$n_1$ class 1 tasks};
-  \draw[->] (-2.25,0.35) -- (cpu.west);
-  \draw[->] (-2.25,-0.35) -- (cpu.west);
-
-  \draw (cpu.south) -- (d1.north);
-  \draw (cpu.south) -- (d2.north);
-  \draw (cpu.south) -- (d3.north);
-  \draw (cpu.south) -- (d4.north);
-
-  \node[anchor=west] at (0.9,0.35) {$t_s = 10\,\mathrm{ms}$ (class 0)};
-  \node[anchor=west] at (0.9,-0.05) {$t_s = 5\,\mathrm{ms}$ (class 1)};
-  \node[anchor=west] at (0.9,-1.35) {$t_d = 30\,\mathrm{ms}$};
-\end{tikzpicture}
+\includegraphics[width=0.85\textwidth]{figures/ch2-figure-2-1.png}
 \caption{Central Server Queueing Network}
 \end{figure}
 
@@ -635,9 +615,15 @@ and the mean number of tours it makes (mean number of disk requests), we can
 compute the mean time a task spends in the system.
 
 \paragraph{The simulation program.}
-Figure 2.2 shows a smpl implementation of this model. smpl function names are
+Figure 2.2 shows a smpl implementation of this model.\footnote{A simulation
+model of a system is defined by the level of abstraction with which the system
+is viewed. This definition encompasses both static entities (facilities, in our
+case) and dynamic entities (activities and events, together with activity
+parameter values and distributions). Although we often ignore the distinction,
+a particular simulation program is just one particular implementation of a
+simulation model.} smpl function names are
 underlined in this figure. Preprocessor directives (lines 2--6) define the
-number of tasks, the number of disks, and a symbolic representation (gd) for
+number of tasks, the number of disks, and a symbolic representation (qd) for
 the value returned by a request or preempt function when a facility
 reservation request is queued.
 
@@ -664,7 +650,7 @@ system (unless there was a major ``bottleneck'' at some point). This state
 will be reflected in measurement data collected during the first part of the
 simulation run, biasing estimates of steady-state system performance.
 
-\begin{figure}[ht]
+\begin{figure}[p]
 \centering
 \begingroup\small
 \begin{verbatim}
@@ -674,7 +660,7 @@ simulation run, biasing estimates of steady-state system performance.
 #define n1 3      /* no. class 1 tasks */
 #define nt n0+n1  /* total no. of tasks */
 #define nd 4      /* no. of disks */
-#define gd 1      /* queued req. return */
+#define qd 1      /* queued req. return */
 
 struct token {
     int cls;   /* task class (& priority) */
@@ -685,7 +671,7 @@ struct token {
 int i, j, event, n[2];
 real s[2];
 int disk[nd+1], cpu, nts = 10000;
-real te[2] = {10.0, 5.0}; /* class 0/1 mean CPU times */
+real tc[2] = {10.0, 5.0}; /* class 0/1 mean CPU times */
 real td = 30.0, sd = 7.5; /* disk time mean, std. dev. */
 
 main()
@@ -712,9 +698,20 @@ main()
 
         case 2: /* request cpu */
             j = p->cls;
-            if (preempt(cpu, i, j) != gd) then
-                schedule(3, expntl(te[j]), i);
+            if (preempt(cpu, i, j) != qd) then
+                schedule(3, expntl(tc[j]), i);
             break;
+\end{verbatim}
+\endgroup
+\caption{Queueing Network Simulation Program}
+\end{figure}
+
+% Keep the complete editable program legible instead of clipping a tall float.
+\addtocounter{figure}{-1}
+\begin{figure}[p]
+\centering
+\begingroup\small
+\begin{verbatim}
 
         case 3: /* release cpu, select disk */
             release(cpu, i);
@@ -723,7 +720,7 @@ main()
             break;
 
         case 4: /* request disk */
-            if (request(disk[p->un], i, 0) != gd) then
+            if (request(disk[p->un], i, 0) != qd) then
                 schedule(5, erlang(td, sd), i);
             break;
 
@@ -739,12 +736,12 @@ main()
         }
     }
 
-    printf("class 0 tour time %6.2f\n", s[0] / n[0]);
-    printf("class 1 tour time %6.2f\n", s[1] / n[1]);
+    printf("class 0 tour time = %.2f\n", s[0] / n[0]);
+    printf("class 1 tour time = %.2f\n", s[1] / n[1]);
 }
 \end{verbatim}
 \endgroup
-\caption{Queueing Network Simulation Program}
+\caption{Queueing Network Simulation Program (continued)}
 \end{figure}
 
 It is possible to devise more elaborate initialization schemes, but this is
@@ -967,7 +964,7 @@ time 87.828 -- token 7 -- CAUSE EVENT 3
 -- RESUME EVENT 3
 - token 7 -- SCHEDULE EVENT 4
 - token 7 -- CAUSE EVENT 4
-- token 7 -- REQUEST disk QUEUED (inq = 1)
+- token 7 -- REQUEST disk: QUEUED (inq = 1)
 
 time 96.976 -- token 2 -- CAUSE EVENT 5
 - token 2 -- RELEASE disk
@@ -1093,17 +1090,17 @@ the number of servers is appended in brackets to the facility name.
 \begin{verbatim}
 smpl SIMULATION REPORT
 
-MODEL: central server model      TIME 29652.553
+MODEL: central server model      TIME 96527.553
 
-INTERVAL: 29652.553
+INTERVAL: 96527.553
 
 MEAN BUSY   MEAN QUEUE   OPERATION COUNT
 FACILITY     UTIL  PERIOD LENGTH   RELEASE PREEMPT QUEUE
-CPU          0.8151 6.202 1.2286    12687   2682   7335
-disk         0.7872 29.970 0.933    2484    0      1838
-disk         0.7161 29.704 0.847    2457    0      1787
-disk         0.7804 29.844 0.921    2514    0      1896
-disk         0.7886 30.029 0.951    2939    0      1931
+CPU          0.8151 6.202  1.286    12687   2682   7335
+disk         0.7712 29.970 0.933     2484      0   1838
+disk         0.7561 29.704 0.847     2457      0   1787
+disk         0.7804 29.844 0.971     2524      0   1896
+disk         0.7886 30.029 1.051     2535      0   1931
 \end{verbatim}
 \endgroup
 \caption{smpl Simulation Report}
@@ -1257,10 +1254,10 @@ t = time ()        get current simulation time
 DEBUGGING AND REPORTING
 
 trace (n)          set trace mode
-error (n, s)       display error message & halt
+error (0, s)       display error message & halt
 report ()          generate simulation report
 
-lcnt (n)           count output lines on current page
+lns (n)            count output lines on current page
 endpage ()         advance (pause) on full page (screen)
 newpage ()         initialize page/screen line count
 d = sendto (d)     get/set output destination
@@ -1333,16 +1330,7 @@ can be modeled by a triangular distribution with range [0, 50] ms. and mode
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}[font=\small, line width=0.4pt, >=stealth]
-  \node[draw, rectangle, minimum width=2.0cm, minimum height=0.7cm] (terms) at (-2.4,0) {terminals};
-  \node[draw, rectangle, minimum width=1.4cm, minimum height=0.7cm] (cpu) at (0,0) {CPU};
-  \node[draw, rectangle, minimum width=1.1cm, minimum height=0.55cm] (d1) at (1.9,0.55) {disk};
-  \node[draw, rectangle, minimum width=1.1cm, minimum height=0.55cm] (d2) at (1.9,-0.55) {disk};
-
-  \draw[<->] (terms.east) -- (cpu.west);
-  \draw[<->] (cpu.east) -- (d1.west);
-  \draw[<->] (cpu.east) -- (d2.west);
-\end{tikzpicture}
+\includegraphics[width=0.85\textwidth]{figures/ch2-figure-2-6.png}
 \caption{Timesharing System Queueing Diagram}
 \end{figure}
 

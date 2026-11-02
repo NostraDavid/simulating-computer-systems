@@ -1,7 +1,9 @@
 # Simulating Computer Systems
 
-Workspace for reconstructing `simulatingcomput00myro_1-1.pdf` into editable LaTeX,
-plus Python queueing simulations.
+Workspace for rebuilding `simulatingcomput00myro_1-1.pdf` as editable LaTeX,
+plus Python queueing simulations. Text, mathematics, tables, and source listings
+are typeset rather than embedded as scanned pages. Figures are vector drawings
+or individual cropped figure assets, not complete page images.
 
 ## Quick start
 
@@ -13,12 +15,18 @@ plus Python queueing simulations.
 - Build LaTeX (tectonic):
   - `just build-tectonic`
 
+Both build commands produce `build/simulating-computer-systems.pdf`.
+The original scan is used for transcription and checking, not as a build input.
+See [reconstruction status](docs/latex/RECONSTRUCTION.md) for coverage and
+remaining verification work.
+
 ## Layout
 
 - `docs/latex/`: LaTeX project (entry: `main.tex`)
-- `docs/latex/chapters/`: Chapter files (one per chapter/section)
+- `docs/latex/chapters/`: Editable chapter files
+- `docs/latex/listings/`: Transcribed original C listings
 - `docs/latex/figures/`: Extracted images/figures
-- `docs/latex/build/`: Build output (ignored)
+- `build/`: Build output (ignored)
 - `src/`, `tests/`: Python simulations and tests
 
 ## Extraction helpers
@@ -28,7 +36,7 @@ plus Python queueing simulations.
 - Image extraction:
   - `just extract-images`
 - OCR a single image:
-  - `just ocr image=docs/latex/figures/page-000.png out_base=page-000`
+  - `just ocr docs/latex/figures/page-000.png page-000`
 
 ## Notes
 

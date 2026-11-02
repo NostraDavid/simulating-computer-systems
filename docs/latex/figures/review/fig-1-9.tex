@@ -1,0 +1,20 @@
+\begin{tikzpicture}[scale=1]
+\foreach \y/\n in {5/1,3.5/2,1/16}{
+ \draw[review line] (0,\y) rectangle (1,\y+.8) (.09,\y+.09) rectangle (.91,\y+.71);
+ \draw[review line] (0,\y)--(-.16,\y-.16)--(1.16,\y-.16)--(1,\y);
+ \node at (.5,\y+.4) {\n}; }
+\node at (.5,2.9) {$\bullet$}; \node at (.5,2.25) {$\bullet$};
+\draw[review line] (2.5,1.4)--(2.5,5.4); \draw[densely dotted,line width=1.2pt,white] (2.5,2.65)--(2.5,3.05); \draw[densely dotted,line width=1.2pt] (2.5,1.5)--(2.5,3.1);
+\foreach \y in {5.4,3.9,1.4} \draw[review arrow] (2.5,\y)--(1,\y);
+\fill (2.5,3.9) circle (.09);
+\draw[densely dotted,line width=1.2pt] (6.6,.5) rectangle (11.5,5.1);
+\draw[review arrow] (2.5,3.9)--(7.8,3.9);
+\node[anchor=west,align=left] at (2.9,3.2) {R = 3 seconds\\X = 2 reqs./sec};
+\fill (7.9,3.38) rectangle (10.4,4.68); \node[review box,minimum width=2.5cm,minimum height=1.3cm] (cpu) at (9.05,4.1) {}; \node[review heading] at (9.05,4.38) {CPU}; \node at (9.05,3.9) {U = 95\%};
+\foreach \x/\n in {7.8/1,10.2/2}{\fill (\x,1.35) ellipse (.62 and .34); \draw[review box] (\x,1.5) ellipse (.62 and .34); \node at (\x,1.53) {\n};}
+\draw[review arrow] (8.42,3.45)--(8.42,2.75)--(7.8,2.75)--(7.8,1.84);
+\draw[review arrow] (9.68,3.45)--(9.68,2.75)--(10.2,2.75)--(10.2,1.84);
+\draw[review arrow] (7.8,1.84)--(7.8,2.75)--(8.42,2.75)--(8.42,3.45);
+\draw[review arrow] (10.2,1.84)--(10.2,2.75)--(9.68,2.75)--(9.68,3.45);
+\node[review heading] at (9,1.9) {disks}; \node[review heading] at (.5,.35) {terminals}; \node[review heading] at (9,-.05) {computer system};
+\end{tikzpicture}

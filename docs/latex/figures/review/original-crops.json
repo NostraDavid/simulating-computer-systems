@@ -1,0 +1,726 @@
+{
+  "purpose": "Original PDF crops for comparison only; not for book reconstruction. Existing referenced images are reused rather than cropped.",
+  "source_pdf": "simulatingcomput00myro_1-1.pdf",
+  "render": "pdftoppm -scale-to 2000",
+  "crop_coordinate_system": "pixels, [left, top, right, bottom], origin at top left of full rendered source page; right/bottom exclusive",
+  "coverage": {
+    "inventory_entries": 77,
+    "entries_with_existing_assets": 44,
+    "entries_needing_crops": 34,
+    "entries_with_crops": 34,
+    "crop_files": 39,
+    "entries_missing_comparison_reference": [],
+    "entries_using_existing_assets_as_reference": 43
+  },
+  "remaining_flags": [
+    "43 existing raster assets used as references were visually checked against source pages; this does not guarantee perfect fidelity.",
+    "Original crops were visually bounded from contact sheets, not individually checked at full resolution; edge clipping or incidental caption/body text remains possible.",
+    "Figure 7.2 is classified by its current table representation, while the original is a function-key schematic.",
+    "Figure and table captions in this inventory are exact current TeX, not an exact transcription of every original caption.",
+    "Panels not explicitly listed may exist; visual comparison against the source remains necessary."
+  ],
+  "crops": [
+    {
+      "id": "figure 1.1",
+      "printed_page": 8,
+      "source_pdf_page": 30,
+      "image_path": "build/all-figures-review/originals/figure-1-1-p8.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        210,
+        1334,
+        810
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 1.2",
+      "printed_page": 8,
+      "source_pdf_page": 30,
+      "image_path": "build/all-figures-review/originals/figure-1-2-p8.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        1020,
+        1334,
+        1740
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 1.4",
+      "printed_page": 14,
+      "source_pdf_page": 36,
+      "image_path": "build/all-figures-review/originals/figure-1-4-p14.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        190,
+        1334,
+        980
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 1.6",
+      "printed_page": 20,
+      "source_pdf_page": 42,
+      "image_path": "build/all-figures-review/originals/figure-1-6-p20.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        190,
+        1334,
+        1240
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 1.7",
+      "printed_page": 23,
+      "source_pdf_page": 45,
+      "image_path": "build/all-figures-review/originals/figure-1-7-p23.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1380
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 1.8",
+      "printed_page": 26,
+      "source_pdf_page": 48,
+      "image_path": "build/all-figures-review/originals/figure-1-8-p26.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        720
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 2.2",
+      "printed_page": 44,
+      "source_pdf_page": 66,
+      "image_path": "build/all-figures-review/originals/figure-2-2-p44.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        800,
+        1334,
+        1720
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 2.2",
+      "printed_page": 45,
+      "source_pdf_page": 67,
+      "image_path": "build/all-figures-review/originals/figure-2-2-p45.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1720
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 2.3",
+      "printed_page": 50,
+      "source_pdf_page": 72,
+      "image_path": "build/all-figures-review/originals/figure-2-3-p50.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1040
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 2.4",
+      "printed_page": 53,
+      "source_pdf_page": 75,
+      "image_path": "build/all-figures-review/originals/figure-2-4-p53.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        740
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 2.5",
+      "printed_page": 56,
+      "source_pdf_page": 78,
+      "image_path": "build/all-figures-review/originals/figure-2-5-p56.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1680
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 3.1",
+      "printed_page": 62,
+      "source_pdf_page": 84,
+      "image_path": "build/all-figures-review/originals/figure-3-1-p62.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1000
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 3.3",
+      "printed_page": 71,
+      "source_pdf_page": 93,
+      "image_path": "build/all-figures-review/originals/figure-3-3-p71.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1720
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 3.5",
+      "printed_page": 89,
+      "source_pdf_page": 111,
+      "image_path": "build/all-figures-review/originals/figure-3-5-p89.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1660
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "table 4.1",
+      "printed_page": 98,
+      "source_pdf_page": 120,
+      "image_path": "build/all-figures-review/originals/table-4-1-p98.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        780
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "table 4.2",
+      "printed_page": 103,
+      "source_pdf_page": 125,
+      "image_path": "build/all-figures-review/originals/table-4-2-p103.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        780
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "table 4.3",
+      "printed_page": 113,
+      "source_pdf_page": 135,
+      "image_path": "build/all-figures-review/originals/table-4-3-p113.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        700
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "table 4.4",
+      "printed_page": 113,
+      "source_pdf_page": 135,
+      "image_path": "build/all-figures-review/originals/table-4-4-p113.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        1220,
+        1334,
+        1800
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 4.7",
+      "printed_page": 118,
+      "source_pdf_page": 140,
+      "image_path": "build/all-figures-review/originals/figure-4-7-p118.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1760
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 5.3",
+      "printed_page": 135,
+      "source_pdf_page": 157,
+      "image_path": "build/all-figures-review/originals/figure-5-3-p135.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1720
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 5.4",
+      "printed_page": 138,
+      "source_pdf_page": 160,
+      "image_path": "build/all-figures-review/originals/figure-5-4-p138.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1720
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 5.4",
+      "printed_page": 139,
+      "source_pdf_page": 161,
+      "image_path": "build/all-figures-review/originals/figure-5-4-p139.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1660
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 5.7",
+      "printed_page": 147,
+      "source_pdf_page": 169,
+      "image_path": "build/all-figures-review/originals/figure-5-7-p147.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1280
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 5.8",
+      "printed_page": 149,
+      "source_pdf_page": 171,
+      "image_path": "build/all-figures-review/originals/figure-5-8-p149.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        200,
+        1334,
+        1760
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "table 5.1",
+      "printed_page": 150,
+      "source_pdf_page": 172,
+      "image_path": "build/all-figures-review/originals/table-5-1-p150.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1060
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 6.5",
+      "printed_page": 169,
+      "source_pdf_page": 191,
+      "image_path": "build/all-figures-review/originals/figure-6-5-p169.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        780
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 6.9",
+      "printed_page": 178,
+      "source_pdf_page": 200,
+      "image_path": "build/all-figures-review/originals/figure-6-9-p178.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        200,
+        1334,
+        1660
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 6.9",
+      "printed_page": 179,
+      "source_pdf_page": 201,
+      "image_path": "build/all-figures-review/originals/figure-6-9-p179.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1800
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 6.9",
+      "printed_page": 180,
+      "source_pdf_page": 202,
+      "image_path": "build/all-figures-review/originals/figure-6-9-p180.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1680
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 6.9",
+      "printed_page": 181,
+      "source_pdf_page": 203,
+      "image_path": "build/all-figures-review/originals/figure-6-9-p181.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1660
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "table 6.1",
+      "printed_page": 185,
+      "source_pdf_page": 207,
+      "image_path": "build/all-figures-review/originals/table-6-1-p185.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        660
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 7.2",
+      "printed_page": 201,
+      "source_pdf_page": 223,
+      "image_path": "build/all-figures-review/originals/figure-7-2-p201.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        740
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 7.3",
+      "printed_page": 204,
+      "source_pdf_page": 226,
+      "image_path": "build/all-figures-review/originals/figure-7-3-p204.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        200,
+        1334,
+        1720
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 7.4",
+      "printed_page": 208,
+      "source_pdf_page": 230,
+      "image_path": "build/all-figures-review/originals/figure-7-4-p208.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1800
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 8.1",
+      "printed_page": 214,
+      "source_pdf_page": 236,
+      "image_path": "build/all-figures-review/originals/figure-8-1-p214.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1820
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 8.5",
+      "printed_page": 228,
+      "source_pdf_page": 250,
+      "image_path": "build/all-figures-review/originals/figure-8-5-p228.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        960
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 8.6",
+      "printed_page": 230,
+      "source_pdf_page": 252,
+      "image_path": "build/all-figures-review/originals/figure-8-6-p230.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        740
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 9.4",
+      "printed_page": 248,
+      "source_pdf_page": 270,
+      "image_path": "build/all-figures-review/originals/figure-9-4-p248.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        62,
+        180,
+        1334,
+        1080
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "rectangle estimated from visual contact sheet; check edges and stray captions before use"
+    },
+    {
+      "id": "figure 6.3",
+      "printed_page": 163,
+      "source_pdf_page": 185,
+      "image_path": "build/all-figures-review/originals/figure-6-3-p163.png",
+      "source_render_dimensions_px": [
+        1383,
+        2000
+      ],
+      "crop_xyxy_px": [
+        100,
+        189,
+        1234,
+        956
+      ],
+      "source_page_in_comparison": false,
+      "inspection": "Parent visually checked source page; rectangle includes timing diagram and all seven key lines and excludes caption and body."
+    }
+  ]
+}

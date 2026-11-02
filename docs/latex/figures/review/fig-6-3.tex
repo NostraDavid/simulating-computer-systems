@@ -1,0 +1,22 @@
+\begin{tikzpicture}
+\draw[review arrow] (0,3) -- (10,3);
+\draw[review arrow] (0,0) -- (10,0) node[below] {time};
+\node[review heading,anchor=east] at (-0.3,3) {station n};
+\node[review heading,anchor=east] at (-0.3,0) {station 1};
+\draw[review arrow] (-1.25,0.5) -- (-1.25,2.5) node[midway,left,rotate=90,anchor=south] {distance};
+\foreach \x/\lab in {2.2/t2,3.15/t3,4.6/t4,9.2/t7} {\draw[review line] (\x,3) -- +(0,0.25); \node[above] at (\x,3.25) {\lab};}
+\foreach \x/\lab in {0.3/t1,5.1/t5,6.3/t6} {\draw[review line] (\x,0) -- +(0,-0.25); \node[below] at (\x,-0.25) {\lab};}
+\draw[review arrow,densely dashed] (0.3,0) -- (3.15,3);
+\draw[review arrow,densely dashed] (2.2,3) -- (5.1,0);
+\draw[review arrow,densely dashed] (4.6,3) -- (7.5,0);
+\draw[review arrow,densely dashed] (6.3,0) -- (9.2,3);
+\node[anchor=north,align=left] at (5,-0.75) {
+  t1 -- station 1 initiates transmission\\
+  t2 -- station \textit{n} initiates transmission\\
+  t3 -- station \textit{n} detects collision \& initiates jam\\
+  t4 -- station \textit{n} ends jam \& begins backoff\\
+  t5 -- station 1 detects collision \& initiates jam\\
+  t6 -- station 1 ends jam \& begins backoff\\
+  t7 -- all stations recognize channel free
+};
+\end{tikzpicture}

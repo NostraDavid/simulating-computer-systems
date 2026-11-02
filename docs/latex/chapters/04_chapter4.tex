@@ -289,14 +289,14 @@ $z_{.025}$ are, respectively, 1.65 and 1.96.
 4  & 2.13 & 2.78 & 15 & 1.75 & 2.13 \\
 5  & 2.02 & 2.57 & 16 & 1.75 & 2.12 \\
 6  & 1.94 & 2.45 & 17 & 1.74 & 2.11 \\
-7  & 1.90 & 2.36 & 18 & 1.73 & 2.10 \\
+7  & 1.90 & 2.37 & 18 & 1.73 & 2.10 \\
 8  & 1.86 & 2.31 & 19 & 1.73 & 2.09 \\
-9  & 1.83 & 2.26 & 20 & 1.72 & 2.09 \\
+9  & 1.83 & 2.26 & 20 & 1.73 & 2.09 \\
 10 & 1.81 & 2.23 & 21 & 1.72 & 2.08 \\
 11 & 1.80 & 2.20 & 22 & 1.72 & 2.07 \\
 12 & 1.78 & 2.18 & 23 & 1.71 & 2.07 \\
 13 & 1.77 & 2.16 & 24 & 1.71 & 2.06 \\
-14 & 1.76 & 2.14 & $\infty$ & 1.65 & 1.96 \\
+14 & 1.76 & 2.15 & $\infty$ & 1.65 & 1.96 \\
 \bottomrule
 \end{tabular}
 \caption{Selected Values of $t_{\alpha/2,\,N-1}$}
@@ -389,31 +389,7 @@ display, described in Chapter 7.}
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.84\textwidth,
-  height=0.33\textwidth,
-  xmin=0, xmax=1000,
-  ymin=0, ymax=1200,
-  xlabel={customer number},
-  ylabel={queueing time},
-  axis line style={line width=0.9pt},
-  tick style={line width=0.8pt},
-  ticklabel style={font=\small},
-  grid=major,
-  major grid style={draw=black!12},
-]
-\addplot[line width=0.8pt] table[row sep=\\] {
-0 40\\ 20 55\\ 40 70\\ 60 88\\ 80 110\\ 100 140\\ 120 180\\ 140 240\\
-160 320\\ 180 410\\ 200 520\\ 220 660\\ 240 790\\ 260 910\\ 280 820\\ 300 700\\
-320 560\\ 340 430\\ 360 310\\ 380 230\\ 400 190\\ 420 160\\ 440 145\\ 460 170\\
-480 220\\ 500 300\\ 520 390\\ 540 500\\ 560 620\\ 580 760\\ 600 910\\ 620 1030\\
-640 940\\ 660 820\\ 680 690\\ 700 560\\ 720 430\\ 740 320\\ 760 250\\ 780 210\\
-800 180\\ 820 165\\ 840 190\\ 860 240\\ 880 315\\ 900 420\\ 920 560\\ 940 710\\
-960 860\\ 980 990\\ 1000 870\\
-};
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.84\textwidth]{figures/ch4-figure-4-1.png}
 \caption{A Queueing Time Sequence in an M/M/1 Queue}
 \end{figure}
 
@@ -862,33 +838,7 @@ CPU queueing time is 20.) Also, note that the effect of this bias
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.84\textwidth,
-  height=0.33\textwidth,
-  xmin=0, xmax=1000,
-  ymin=0, ymax=35,
-  xlabel={class 0 CPU requests},
-  ylabel={mean queueing time},
-  axis line style={line width=0.9pt},
-  tick style={line width=0.8pt},
-  ticklabel style={font=\small},
-  grid=major,
-  major grid style={draw=black!12},
-  legend style={font=\small,draw=none,fill=none,at={(0.98,0.98)},anchor=north east},
-]
-\addplot[line width=1.0pt] table[row sep=\\] {
-0 6\\ 50 8\\ 100 10\\ 150 12\\ 200 13.5\\ 250 14.8\\ 300 15.8\\ 350 16.6\\
-400 17.2\\ 450 17.8\\ 500 18.2\\ 600 18.9\\ 700 19.3\\ 800 19.6\\ 900 19.8\\ 1000 20.0\\
-};
-\addplot[densely dashed,line width=1.0pt] table[row sep=\\] {
-0 15.0\\ 50 16.2\\ 100 17.2\\ 150 18.0\\ 200 18.5\\ 250 18.9\\ 300 19.2\\ 350 19.4\\
-400 19.55\\ 450 19.65\\ 500 19.72\\ 600 19.84\\ 700 19.90\\ 800 19.95\\ 900 19.98\\ 1000 20.0\\
-};
-\addplot[dotted,line width=0.9pt] coordinates {(0,20) (1000,20)};
-\legend{no deletion,delete first 50,expected mean}
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.84\textwidth]{figures/ch4-figure-4-2.png}
 \caption{Mean Queueing Time in a Queueing Network Simulation}
 \end{figure}
 
@@ -910,32 +860,7 @@ the result from a single run).
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.84\textwidth,
-  height=0.33\textwidth,
-  xmin=0, xmax=10000,
-  ymin=0, ymax=480,
-  xlabel={customer number},
-  ylabel={mean queueing time},
-  axis line style={line width=0.9pt},
-  tick style={line width=0.8pt},
-  ticklabel style={font=\small},
-  grid=major,
-  major grid style={draw=black!12},
-]
-\addplot[line width=0.9pt] table[row sep=\\] {
-0 20\\ 200 45\\ 400 70\\ 600 88\\ 800 104\\ 1000 123\\ 1200 138\\ 1400 152\\
-1600 166\\ 1800 182\\ 2000 198\\ 2200 214\\ 2400 228\\ 2600 244\\ 2800 260\\ 3000 274\\
-3200 290\\ 3400 304\\ 3600 318\\ 3800 330\\ 4000 344\\ 4200 355\\ 4400 366\\ 4600 376\\
-4800 385\\ 5000 393\\ 5200 399\\ 5400 405\\ 5600 409\\ 5800 413\\ 6000 416\\ 6200 419\\
-6400 421\\ 6600 423\\ 6800 424\\ 7000 425\\ 7200 426\\ 7400 427\\ 7600 427\\ 7800 428\\
-8000 428\\ 8200 428\\ 8400 429\\ 8600 429\\ 8800 429\\ 9000 429\\ 9200 430\\ 9400 430\\
-9600 430\\ 9800 430\\ 10000 430\\
-};
-\addplot[dotted,line width=0.9pt] coordinates {(0,400) (10000,400)};
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.84\textwidth]{figures/ch4-figure-4-3.png}
 \caption{Mean Queueing Time in an M/M/1 Queue Simulation (Single Run)}
 \end{figure}
 
@@ -949,69 +874,13 @@ evident in the slow upward climb of the mean toward its expected value.
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.84\textwidth,
-  height=0.33\textwidth,
-  xmin=0, xmax=4000,
-  ymin=200, ymax=460,
-  xlabel={customer number $n$},
-  ylabel={mean queueing time after $n$ completions},
-  axis line style={line width=0.9pt},
-  tick style={line width=0.8pt},
-  ticklabel style={font=\small},
-  grid=major,
-  major grid style={draw=black!12},
-  legend style={font=\small,draw=none,fill=none,at={(0.98,0.04)},anchor=south east},
-]
-\addplot[line width=1.0pt] table[row sep=\\] {
-200 228\\ 400 245\\ 600 262\\ 800 279\\ 1000 296\\ 1200 311\\ 1400 324\\
-1600 336\\ 1800 346\\ 2000 355\\ 2200 363\\ 2400 369\\ 2600 375\\ 2800 380\\
-3000 384\\ 3200 388\\ 3400 391\\ 3600 394\\ 3800 397\\ 4000 399\\
-};
-\addplot[densely dashed,line width=1.0pt] table[row sep=\\] {
-200 308\\ 400 326\\ 600 341\\ 800 353\\ 1000 363\\ 1200 371\\ 1400 378\\
-1600 384\\ 1800 389\\ 2000 393\\ 2200 396\\ 2400 398\\ 2600 400\\ 2800 401\\
-3000 402\\ 3200 403\\ 3400 404\\ 3600 404\\ 3800 404.5\\ 4000 405\\
-};
-\addplot[dotted,line width=0.9pt] coordinates {(0,400) (4000,400)};
-\legend{no deletion,delete first 150,expected mean}
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.84\textwidth]{figures/ch4-figure-4-4.png}
 \caption{Mean Queueing Time in an M/M/1 Queue Simulation (10 Runs)}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.84\textwidth,
-  height=0.33\textwidth,
-  xmin=0, xmax=4000,
-  ymin=300, ymax=430,
-  xlabel={customer number $n$},
-  ylabel={mean queueing time after $n$ completions},
-  axis line style={line width=0.9pt},
-  tick style={line width=0.8pt},
-  ticklabel style={font=\small},
-  grid=major,
-  major grid style={draw=black!12},
-  legend style={font=\small,draw=none,fill=none,at={(0.98,0.04)},anchor=south east},
-]
-\addplot[line width=1.0pt] table[row sep=\\] {
-200 318\\ 400 330\\ 600 341\\ 800 350\\ 1000 358\\ 1200 365\\ 1400 371\\
-1600 376\\ 1800 380\\ 2000 384\\ 2200 387\\ 2400 390\\ 2600 392\\ 2800 394\\
-3000 396\\ 3200 397\\ 3400 398\\ 3600 399\\ 3800 400\\ 4000 401\\
-};
-\addplot[densely dashed,line width=1.0pt] table[row sep=\\] {
-200 360\\ 400 370\\ 600 378\\ 800 384\\ 1000 389\\ 1200 392\\ 1400 395\\
-1600 397\\ 1800 398\\ 2000 399\\ 2200 400\\ 2400 400.5\\ 2600 401\\ 2800 401.2\\
-3000 401.4\\ 3200 401.6\\ 3400 401.8\\ 3600 402\\ 3800 402\\ 4000 402\\
-};
-\addplot[dotted,line width=0.9pt] coordinates {(0,400) (4000,400)};
-\legend{no deletion,delete first 150,expected mean}
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.84\textwidth]{figures/ch4-figure-4-5.png}
 \caption{Mean Queueing Time in an M/M/1 Queue Simulation (200 Runs)}
 \end{figure}
 
@@ -1060,9 +929,9 @@ in these tables represent equal values of $mk$.
 $m$ run length & 5 & 10 & 20 \\
 \midrule
 500  & .475 & .294 & .204 \\
-1000 & .363 & .224 & .153 \\
-2000 & .270 & .165 & .111 \\
-4000 & .194 & .118 & .079 \\
+1000 & .363\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .224\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .153 \\
+2000 & .270\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .165\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .111 \\
+4000 & .194\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .118\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .079 \\
 \bottomrule
 \end{tabular}
 \caption{Relative Half-Widths for M/M/1 Queue Simulations}
@@ -1084,9 +953,9 @@ are required to obtain accuracies in the vicinity of 10 percent.
 $m$ run length & 5 & 10 & 20 \\
 \midrule
 500  & .883 & .853 & .853 \\
-1000 & .893 & .897 & .913 \\
-2000 & .937 & .940 & .960 \\
-4000 & .952 & .947 & .953 \\
+1000 & .893\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .897\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .913 \\
+2000 & .937\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .940\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .960 \\
+4000 & .952\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .947\rlap{\tikz[overlay,baseline]\draw[densely dotted] (2pt,1pt) -- (10pt,10pt);} & .953 \\
 \bottomrule
 \end{tabular}
 \caption{Measured Coverages for M/M/1 Queue Simulations}
@@ -1158,6 +1027,10 @@ k^* = \left\lceil 5\left(H_5/.10Y\right)^2 \right\rceil
 
 \footnote{$\lceil x \rceil$ denotes the ceiling function of $x$ -- the smallest
 integer equal to or greater than $x$.}
+
+and compute a new confidence interval half width; this should provide the
+required accuracy. If $k^* > 20$, it is advisable to start again with the run
+length (at least) doubled.
 
 \begin{enumerate}
 \setcounter{enumi}{3}
@@ -1242,48 +1115,7 @@ confidence interval toward the mean.
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.84\textwidth,
-  height=0.34\textwidth,
-  xmin=1, xmax=40,
-  ymin=260, ymax=500,
-  xlabel={batch number},
-  ylabel={queueing time estimate},
-  axis line style={line width=0.9pt},
-  tick style={line width=0.8pt},
-  ticklabel style={font=\small},
-  grid=major,
-  major grid style={draw=black!12},
-  legend style={font=\small,draw=none,fill=none,at={(0.98,0.04)},anchor=south east},
-]
-\addplot[only marks,mark=*,mark size=1.8pt] table[row sep=\\] {
-1 305\\ 2 318\\ 3 332\\ 4 347\\ 5 360\\ 6 372\\ 7 382\\ 8 391\\ 9 398\\ 10 404\\
-11 408\\ 12 411\\ 13 414\\ 14 416\\ 15 417\\ 16 418\\ 17 419\\ 18 419.5\\ 19 420\\ 20 420.2\\
-21 420.4\\ 22 420.6\\ 23 420.8\\ 24 421\\ 25 421.1\\ 26 421.2\\ 27 421.3\\ 28 421.4\\ 29 421.5\\ 30 421.6\\
-31 421.7\\ 32 421.8\\ 33 421.9\\ 34 422\\ 35 422\\ 36 422.1\\ 37 422.1\\ 38 422.2\\ 39 422.2\\ 40 422.3\\
-};
-\addplot[line width=1.0pt] table[row sep=\\] {
-1 305\\ 2 311\\ 3 318\\ 4 326\\ 5 334\\ 6 342\\ 7 350\\ 8 357\\ 9 363\\ 10 369\\
-11 374\\ 12 378\\ 13 382\\ 14 385\\ 15 388\\ 16 391\\ 17 393\\ 18 395\\ 19 397\\ 20 399\\
-21 400.5\\ 22 401.8\\ 23 403\\ 24 404\\ 25 405\\ 26 406\\ 27 406.8\\ 28 407.5\\ 29 408.2\\ 30 408.8\\
-31 409.3\\ 32 409.8\\ 33 410.2\\ 34 410.6\\ 35 410.9\\ 36 411.2\\ 37 411.5\\ 38 411.7\\ 39 411.9\\ 40 412.1\\
-};
-\addplot[densely dotted,line width=0.9pt] table[row sep=\\] {
-1 485\\ 2 470\\ 3 456\\ 4 445\\ 5 436\\ 6 429\\ 7 424\\ 8 420\\ 9 417\\ 10 415\\
-11 413\\ 12 411\\ 13 410\\ 14 409\\ 15 408\\ 16 407\\ 17 406\\ 18 405\\ 19 404\\ 20 404\\
-21 403\\ 22 403\\ 23 402.5\\ 24 402.2\\ 25 402\\ 26 401.8\\ 27 401.6\\ 28 401.5\\ 29 401.4\\ 30 401.3\\
-31 401.2\\ 32 401.1\\ 33 401.1\\ 34 401\\ 35 401\\ 36 400.9\\ 37 400.9\\ 38 400.8\\ 39 400.8\\ 40 400.8\\
-};
-\addplot[densely dotted,line width=0.9pt] table[row sep=\\] {
-1 125\\ 2 152\\ 3 180\\ 4 207\\ 5 232\\ 6 255\\ 7 276\\ 8 294\\ 9 309\\ 10 323\\
-11 335\\ 12 345\\ 13 354\\ 14 361\\ 15 368\\ 16 374\\ 17 380\\ 18 384\\ 19 389\\ 20 393\\
-21 398\\ 22 400\\ 23 403.5\\ 24 405.8\\ 25 408\\ 26 410.2\\ 27 412.4\\ 28 413.5\\ 29 415\\ 30 416.3\\
-31 417.4\\ 32 418.5\\ 33 419.3\\ 34 420.2\\ 35 420.8\\ 36 421.5\\ 37 422.1\\ 38 422.6\\ 39 423.1\\ 40 423.4\\
-};
-\legend{batch means,grand mean,upper CI,lower CI}
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.84\textwidth]{figures/ch4-figure-4-6.png}
 \caption{Batch Means Analysis Output for an M/M/1 Queue Simulation}
 \end{figure}
 
@@ -1308,12 +1140,12 @@ int m0, mb;
   d = m0; m = mb; smy = smY = smY2 = 0.0; k = n = 0;
 }
 
-obs(vy)
-real vy;
+obs(y)
+real y;
 {
   int r = 0; real var;
   if (d) { d--; return (r); }
-  smy += vy; n++;
+  smy += y; n++;
   if (n == m) {
     /* batch complete: update sums & counts */
     smy /= n; smY += smy; smY2 += smy * smy; k++;
@@ -1434,30 +1266,30 @@ case, about the same number as required for replication.
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.84\textwidth,
-  height=0.34\textwidth,
-  xmin=300, xmax=500,
-  ymin=0, ymax=70,
-  xlabel={mean queueing time estimate},
-  ylabel={frequency (300 runs)},
-  axis line style={line width=0.9pt},
-  tick style={line width=0.8pt},
-  ticklabel style={font=\small},
-  ymajorgrids,
-  major grid style={draw=black!12},
-]
-\addplot+[ybar,bar width=8pt,fill=white,draw=black,line width=0.9pt] table[row sep=\\] {
-320 4\\ 330 6\\ 340 9\\ 350 14\\ 360 23\\ 370 31\\ 380 42\\ 390 56\\
-400 64\\ 410 55\\ 420 41\\ 430 28\\ 440 15\\ 450 8\\ 460 3\\ 470 1\\
-};
-\addplot[dotted,line width=0.9pt] coordinates {(360,0) (360,70)};
-\addplot[dotted,line width=0.9pt] coordinates {(440,0) (440,70)};
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.84\textwidth]{figures/ch4-figure-4-8.png}
 \caption{Distribution of Means for 300 M/M/1 Queue Simulations}
 \end{figure}
+
+\paragraph{Independence-seeking algorithms.}
+The major problem in batch means analysis is determining a batch size large
+enough to insure that batch means are independent. Algorithms to deal with this
+problem have been developed by several researchers, including Law and Carson
+[1979] (also described in Law and Kelton [1982]), and Adam [1983]. Typically,
+these algorithms start with a small batch size, collect a relatively large number
+of batches, compute the batch means, and compute an estimate of the correlations
+of the means. If these correlations are not significant, the batch size is
+assumed to satisfy the independence requirement; the biased nature of correlation
+estimators makes this decision the key part of the algorithm. If the
+correlations are significant, the batch size is doubled and additional sample
+values are collected. (Increasing the batch size by doubling simplifies things
+by requiring that only batch sums have to be saved.) When a batch size is reached
+which provides independence of the means, a sequential procedure is used to
+obtain the desired accuracy.
+
+\paragraph{Batch means analysis with SMPL.}
+The bma module of SMPL uses the independence-seeking algorithm proposed by Adam,
+followed by a sequential procedure which varies slightly from Adam's. This module
+is described in Chapter 6.
 
 \section{Improving Simulation Efficiency}
 \label{sec:improving-efficiency}
@@ -1512,7 +1344,9 @@ Suppose $y$ is an output variable of a particular simulation model, $Y_1$ is the
 mean of $y$ obtained from one replication of the model and $Y_2$ is the mean of
 $y$ for a second replication. The mean value of $y$, averaged over the two runs,
 is $Y = (Y_1 + Y_2)/2$. $Y_1$ and $Y_2$ are random variables; from the basic law
-for the sum of two random variables, the variance of $Y$ is
+for the sum of two random variables, the variance of $Y$ is\footnote{The
+variance and covariance referred to here are not quantities estimated in the
+simulation, but rather describe the intrinsic variation of the estimated means.}
 
 \begin{equation}
 \mathrm{Var}(Y) = [\mathrm{Var}(Y_1) + \mathrm{Var}(Y_2) + 2\mathrm{Cov}(Y_1,Y_2)]/4
@@ -1803,4 +1637,4 @@ computed using a 95 percent confidence level.
   queue of problem 4.
 \end{enumerate}
 
-% TODO: Continue from PDF page 151 (Chapter 5).
+% Chapter 5 begins on source PDF page 151.

@@ -1,0 +1,11 @@
+\begin{tikzpicture}
+\def\queue#1#2{\draw[review line] (#1,#2+.45)--(#1+.95,#2+.45)--(#1+.95,#2-.45)--(#1,#2-.45); \foreach \dx in {.3,.5,.7} \draw[review line] (#1+\dx,#2-.32)--(#1+\dx,#2+.32);}
+\draw[review arrow] (0,4.5)--(0,2.1)--(1.5,2.1); \draw[review arrow] (11.9,4.5)--(0,4.5);
+\node[anchor=west,align=left] at (.7,4) {n0 class 0 tasks\\n1 class 1 tasks};
+\queue{1.5}{2.1} \draw[review line] (2.45,2.1)--(2.75,2.1); \draw[review line] (3.2,2.1) circle (.45); \node[review heading] at (2.55,3) {CPU};
+\node[anchor=west,align=left] at (.7,1.1) {ts = 10 ms.\quad (class 0)\\ts = 5 ms.\quad\; (class 1)};
+\draw[review arrow] (3.65,2.1)--(5.5,2.1); \draw[review line] (5.5,2.1)--(5.5,-1.8);
+\node[review heading] at (8.7,3) {disks};
+\foreach \y/\n in {2.1/1,.8/2,-.5/3,-1.8/4}{\draw[review arrow] (5.5,\y)--(7.7,\y); \queue{7.7}{\y} \draw[review line] (8.65,\y)--(8.95,\y); \draw[review line] (9.4,\y) circle (.45); \node at (9.4,\y) {\n}; \draw[review line] (9.85,\y)--(11.9,\y); \fill (5.5,\y) circle (.08); \fill (11.9,\y) circle (.08);}
+\draw[review line] (11.9,-1.8)--(11.9,4.5); \node at (8.8,-2.7) {td = 30 ms.};
+\end{tikzpicture}

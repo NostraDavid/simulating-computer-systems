@@ -1,39 +1,49 @@
-% OCR draft from PDF pages 280-298 (Appendix source listings).
+% Source PDF page 280, printed page 258.
 \chapter{Appendix}
 \label{chap:appendix-source}
 
-The following pages in the original book provide C source listings for four
-files:
-\begin{itemize}
-\item \texttt{smpl.c}: the SMPL simulation subsystem (excluding random variates),
-\item \texttt{rand.c}: random variate generation functions,
-\item \texttt{smpl.h}: external declarations and user-level directives,
-\item \texttt{stat.c}: normal and $t$-distribution quantile support.
-\end{itemize}
+The following pages contains C source code listings for four files:\footnote{These
+files, together with source code files for the other programs in this book, are
+available on diskette; see note in Preface.}
+\begin{description}
+\item[\textit{smpl.c} ---] the \textbf{smpl} simulation subsystem except for random
+variate generation functions,
+\item[\textit{rand.c} ---] random variate generation functions,
+\item[\textit{smpl.h} ---] \textbf{smpl} external name declarations and various
+user-level directives (for inclusion in simulation programs), and
+\item[\textit{stat.c} ---] normal and $t$ distribution quantile computation
+functions \texttt{Z()} and \texttt{T()} (used by the batch means analysis module
+of Section 4.7).
+\end{description}
 
-An executable model is formed by compiling \texttt{smpl.c} and \texttt{rand.c}
-(or packaging them in a library), and compiling/linking the simulation model
-source that includes \texttt{smpl.h}.
+An executable instance of a \textbf{smpl} simulation model is formed by
+\begin{enumerate}
+\item compiling \textit{smpl.c} and \textit{rand.c} (and, if desired, creating a
+library module from their object modules),
+\item compiling the simulation program, which contains \texttt{main()}
+(and which \texttt{\#includes} \textit{smpl.h}), and
+\item linking the simulation program's object module to the \textit{smpl}
+and \textit{rand} object modules (or their library module) to form an
+executable file.
+\end{enumerate}
+Note that there are two versions of \texttt{ranf()} in \textit{rand.c}; the
+version compiled is determined by the value \texttt{\#defined} for \texttt{CPU}
+(8086 or 68000). You may want to compile the batch means analysis module of
+Section 4.7 (which \texttt{\#includes} \textit{stat.c}) and add its object module
+to your library.
 
-\section{Listing Overview}
-\label{sec:appendix-listing-overview}
+% Source PDF pages 281--293, printed pages 259--271.
+\section{smpl.c}\label{appendix-smpl}
+\lstinputlisting[language=C]{listings/smpl.c}
 
-\begin{itemize}
-\item \textbf{\texttt{smpl.c}} (pp.~281--293 in the scan): initialization, element
-  pool management, event scheduling, queue/list processing, facility
-  operations, tracing, and report output.
-\item \textbf{\texttt{rand.c}} (pp.~294--297): stream/seed handling and variate
-  generators (\texttt{ranf}, \texttt{random}, \texttt{expntl}, \texttt{erlang},
-  \texttt{hyperx}, \texttt{normal}).
-\item \textbf{\texttt{stat.c}} (p.~298 onward): quantile routines used by analysis
-  modules.
-\end{itemize}
+% Source PDF pages 294--297, printed pages 272--275.
+\section{rand.c}\label{appendix-rand}
+\lstinputlisting[language=C]{listings/rand.c}
 
-\section{Implementation Notes}
-\label{sec:appendix-notes}
+% Source PDF page 297, printed page 275.
+\section{smpl.h}\label{appendix-header}
+\lstinputlisting[language=C]{listings/smpl.h}
 
-The scanned appendix is code-heavy and OCR introduces substantial formatting
-noise (spacing, punctuation, and token corruption in identifiers/operators).
-For this draft, code is represented as structural overview text. A later pass can
-replace this with validated verbatim listings (or with cleaned source imported
-from trusted machine-readable files).
+% Source PDF page 298, printed page 276.
+\section{stat.c}\label{appendix-stat}
+\lstinputlisting[language=C]{listings/stat.c}

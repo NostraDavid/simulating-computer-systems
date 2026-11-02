@@ -1,0 +1,7 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \left/\width/\label/\size in {0/.8/SD/1,.8/.8/AC/1,1.6/.8/FC/1,2.4/1.6/{dest.\\address}/{2 or 6},4/1.6/{source\\address}/{2 or 6},5.6/2.8/information/{0 -- n},8.4/1.2/FCS/4,9.6/.8/ED/1,10.4/.8/FS/1} {
+    \node[review box,minimum width=\width cm,minimum height=.85cm,inner sep=0pt] at (\left+\width/2,0) {\label};
+    \node[below=3pt] at (\left+\width/2,-.425) {\size};
+  }
+  \draw[review line,decorate,decoration={brace,amplitude=5pt}] (5.6,.57) -- (0,.57) node[midway,above=6pt,review heading] {frame header};
+\end{tikzpicture}

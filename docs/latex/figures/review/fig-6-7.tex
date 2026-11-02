@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+\draw[review arrow] (0,3) -- (10,3);
+\draw[review arrow] (0,0) -- (10,0) node[below] {time};
+\node[review heading,anchor=east] at (-0.25,3) {station j};
+\node[review heading,anchor=east] at (-0.25,0) {station i};
+\draw[review arrow,densely dashed] (0.7,0) -- (3.6,3);
+\foreach \x/\lab in {0.7/tbs,3.6/tbs+dt,6.5/tbs+dt+Tif} {\draw[review line] (\x,0) -- +(0,-0.75); \node[below] at (\x,-0.85) {\lab};}
+\draw[review arrow] (1.45,-0.35) -- (0.7,-0.35);
+\draw[review arrow] (2.85,-0.35) -- (3.6,-0.35);
+\node at (2.15,-0.38) {dt};
+\draw[review arrow] (4.35,-0.35) -- (3.6,-0.35);
+\draw[review arrow] (5.75,-0.35) -- (6.5,-0.35);
+\node at (5.05,-0.38) {Tif};
+\draw[review line] (6.5,3) -- +(0,0.7);
+\draw[review arrow] (6.5,3.35) -- (5.05,3.35);
+\draw[review arrow] (6.5,3.35) -- (7.95,3.35);
+\node[above] at (5.55,3.65) {sense idle};
+\node[above] at (7.45,3.65) {sense busy};
+\end{tikzpicture}

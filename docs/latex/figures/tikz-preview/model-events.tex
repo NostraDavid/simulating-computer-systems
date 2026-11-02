@@ -1,0 +1,52 @@
+\begin{tikzpicture}[x=1cm,y=1cm, line width=1.2pt,
+  every node/.style={font=\sffamily\mdseries\fontsize{8}{9.4}\selectfont},
+  eventarrow/.style={-{Triangle[round,length=4mm,width=3.5mm]},line width=1.3pt}]
+  % Event transitions, including the self-scheduled TransmitFrame event.
+  \draw[eventarrow] (3.9,-2.9) -- (3.9,-4.0); % 1 -> 2
+  \draw[eventarrow] (3.9,-7.15) -- (3.9,-8.4); % 2 -> 3
+  \draw[eventarrow] (3.9,-11.9) -- (3.9,-13.0); % 3 -> 5
+  \draw[eventarrow] (6.1,-9.72) -- (7.6,-9.72) -- (7.6,-5.65) -- (10.55,-5.65) -- (10.55,-6.75); % 3 -> 4
+  \draw[eventarrow] (6.1,-10.17) -- (8.35,-10.17); % 3 -> 6
+  \draw[eventarrow] (10.55,-8.8) -- (10.55,-9.9); % 4 -> 6
+  \draw[eventarrow] (12.75,-8.4) -- (13.5,-8.4) -- (13.5,-0.3) -- (6.1,-0.3); % 4 -> 1
+  \draw[eventarrow] (1.7,-14.8) -- (0.95,-14.8) -- (0.95,-4.25) -- (1.7,-4.25); % 5 -> 2
+  \draw[eventarrow] (1.7,-16.1) -- (0.2,-16.1) -- (0.2,-0.3) -- (1.7,-0.3); % 5 -> 1
+  \draw[eventarrow] (1.7,-2.2) -- (0.95,-2.2) -- (0.95,-0.9) -- (1.7,-0.9); % 1 -> 1
+  % The arched bridge crosses both outgoing paths without joining them.
+  \draw[line width=4.5pt,white] (6.85,-10.43) .. controls (7.32,-10.35) and (7.32,-9.55) .. (6.85,-9.47);
+  \draw[line width=1.3pt] (6.85,-10.43) .. controls (7.32,-10.35) and (7.32,-9.55) .. (6.85,-9.47);
+  \draw[line width=1.3pt] (10.55,-11.9) -- (10.55,-12.55) -- (6.85,-12.55) -- (6.85,-10.43);
+  \draw[eventarrow] (6.85,-9.47) -- (6.85,-8.7) -- (6.1,-8.7);
+
+  % Boxes and title rules.
+  \draw (1.7,0) rectangle (6.1,-2.9) (1.7,-0.55) -- (6.1,-0.55);
+  \draw (1.7,-4.0) rectangle (6.1,-7.15) (1.7,-4.55) -- (6.1,-4.55);
+  \draw (1.7,-8.4) rectangle (6.1,-11.9) (1.7,-8.95) -- (6.1,-8.95);
+  \draw (1.7,-13.0) rectangle (6.1,-16.45) (1.7,-13.55) -- (6.1,-13.55);
+  \draw (8.35,-6.75) rectangle (12.75,-8.8) (8.35,-7.3) -- (12.75,-7.3);
+  \draw (8.35,-9.9) rectangle (12.75,-11.9) (8.35,-10.45) -- (12.75,-10.45);
+
+  \node[anchor=west,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (2.05,-0.275) {TransmitFrame};
+  \node[anchor=east,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (5.75,-0.275) {1};
+  \node[anchor=north west,align=left,inner sep=0pt] at (2.05,-0.75) {\textbullet\ initialize counters, record\\ arrival time\\\textbullet\ schedule event 2\\\textbullet\ schedule event 1 (next\\ frame transmit request)};
+
+  \node[anchor=west,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (2.05,-4.275) {Defer};
+  \node[anchor=east,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (5.75,-4.275) {2};
+  \node[anchor=north west,align=left,inner sep=0pt] at (2.05,-4.75) {is channel sensed busy?\\\textbullet\ yes: request -> defer wait\\ list\\\textbullet\ no: compute remaining\\ deference time, schedule\\ event 3};
+
+  \node[anchor=west,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (2.05,-8.675) {StartTransmit};
+  \node[anchor=east,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (5.75,-8.675) {3};
+  \node[anchor=north west,align=left,inner sep=0pt] at (2.05,-9.15) {is channel busy?\\\textbullet\ no: busy -> channel,\\ schedule event 4\\\textbullet\ yes: if 1st collision, cancel\\ event 4 \& schedule event 6;\\ schedule event 5 for colliding\\ request(s)};
+
+  \node[anchor=west,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (2.05,-13.275) {InitBackoff};
+  \node[anchor=east,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (5.75,-13.275) {5};
+  \node[anchor=north west,align=left,inner sep=0pt] at (2.05,-13.75) {attempts <= 16?\\\textbullet\ yes: compute new backoff\\ delay. if 0, request -> defer\\ wait list; if > 0, schedule\\ event 2\\\textbullet\ no: abandon request,\\ reschedule event 1};
+
+  \node[anchor=west,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (8.7,-7.025) {EndTransmit};
+  \node[anchor=east,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (12.4,-7.025) {4};
+  \node[anchor=north west,align=left,inner sep=0pt] at (8.7,-7.5) {\textbullet\ compute frame delay time\\\textbullet\ schedule event 6\\\textbullet\ reschedule event 1};
+
+  \node[anchor=west,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (8.7,-10.175) {Deassert};
+  \node[anchor=east,font=\sffamily\bfseries\fontsize{9}{10}\selectfont] at (12.4,-10.175) {6};
+  \node[anchor=north west,align=left,inner sep=0pt] at (8.7,-10.65) {\textbullet\ idle -> channel\\\textbullet\ schedule event 3 for all\\ stations on defer wait list};
+\end{tikzpicture}

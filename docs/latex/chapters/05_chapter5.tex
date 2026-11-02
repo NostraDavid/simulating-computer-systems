@@ -1,4 +1,4 @@
-% OCR draft from PDF pages 151-152. Needs cleanup and verification.
+% Source: PDF pages 151--181, printed pages 129--159.
 \chapter{A Multiprocessor System Model}
 \label{chap:multiprocessor-system}
 
@@ -19,74 +19,48 @@ eliminate some of the assumptions used in the analytic approach.
 \label{sec:mp-system}
 
 The system we'll be studying is diagrammed in Figure 5.1. It comprises $N$
-processors and $M$ global memory modules (or, simply, memories) interconnected
-by $B$ buses so that every processor can access every memory. Transfers between
-processors and memories take place in fixed-size units equal to the bus width,
-so that each transfer requires one bus cycle. The system is synchronous: all
-memory requests are initiated at the same point in a cycle.
+processors and $M$ global memory modules (or, simply, memories)
+interconnected by $B$ buses so that every processor can access every memory.
+Transfers between processors and memories take place in fixed-size units
+equal to the bus width, so that each transfer requires one bus cycle. The
+system is synchronous: all memory requests are initiated at the same point in
+a cycle.
 
-We'll assume -- at least for now -- that the $N$ processors are physically and
-functionally identical. Each processor has its own local memory, which may be a
-cache or may take the form of data registers and an instruction buffer. When
-executing, a processor issues an instruction fetch or an operand fetch or store
-request in every machine cycle. This request is satisfied in the processor's
-local memory with probability $h$ and requires access to (global) memory with
-probability $p = 1 - h$. $h$ is called the hit ratio and $p$ is called the miss
-ratio. Memory request processing takes place as follows.
+We'll assume --- at least for now --- that the $N$ processors are physically
+and functionally identical. Each processor has its own local memory, which
+may be a cache or may take the form of data registers and an instruction
+buffer. When executing, a processor issues an instruction fetch or an operand
+fetch or store request in every machine cycle. This request is satisfied in the
+processor's local memory with probability $h$ and requires access to (global)
+memory with probability $p=1-h$. $h$ is called the hit ratio and $p$ is called
+the miss ratio. Memory request processing takes place as follows.
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}[x=0.75cm,y=0.75cm]
-  \draw[line width=0.9pt] (1,6.5) rectangle (2.2,7.2) node[midway]{\small 1};
-  \draw[line width=0.9pt] (4.1,6.5) rectangle (5.3,7.2) node[midway]{\small 2};
-  \draw[line width=0.9pt] (8.2,6.5) rectangle (9.4,7.2) node[midway]{\small M};
-  \node at (6.2,7.55) {\small memories};
-  \draw[decorate,decoration={brace,amplitude=4pt}] (0.8,7.35) -- (9.6,7.35);
-
-  \draw[line width=1.1pt] (0.9,5.7) -- (9.5,5.7);
-  \draw[line width=1.1pt] (0.9,5.2) -- (9.5,5.2);
-  \draw[line width=1.1pt] (0.9,4.7) -- (9.5,4.7);
-  \node[right] at (9.7,5.7) {\small 1};
-  \node[right] at (9.7,5.2) {\small 2};
-  \node[right] at (9.7,4.7) {\small B};
-  \node at (10.45,5.2) {\small buses};
-
-  \draw[line width=0.9pt] (1,3.1) rectangle (2.2,3.8) node[midway]{\small 1};
-  \draw[line width=0.9pt] (4.1,3.1) rectangle (5.3,3.8) node[midway]{\small 2};
-  \draw[line width=0.9pt] (8.2,3.1) rectangle (9.4,3.8) node[midway]{\small N};
-  \node at (6.2,2.75) {\small processors};
-  \draw[decorate,decoration={brace,mirror,amplitude=4pt}] (0.8,2.95) -- (9.6,2.95);
-
-  \foreach \x in {1.6,4.7,8.8} {
-    \draw[line width=0.9pt] (\x,6.5) -- (\x,5.2);
-    \draw[line width=0.9pt] (\x,4.7) -- (\x,3.8);
-  }
-  \draw[densely dotted] (5.9,6.85) -- (7.1,6.85);
-  \draw[densely dotted] (5.9,3.45) -- (7.1,3.45);
-\end{tikzpicture}
+\includegraphics[width=.85\textwidth]{figures/ch5-system.png}
 \caption{Multiprocessor System Elements}
 \end{figure}
 
 \begin{enumerate}
 \item A processor initiates a memory request at the start of a machine cycle
-  and simultaneously suspends execution. Multiple requests for the same module
-  are resolved by an arbitration mechanism. We'll assume that this mechanism
-  tries to provide fair service via a cyclical scan of processors for requests,
-  with the scan starting point being advanced on each new scan.
+and simultaneously suspends execution. Multiple requests for the same module
+are resolved by an arbitration mechanism. We'll assume that this mechanism
+tries to provide fair service via a cyclical scan of processors for requests,
+with the scan starting point being advanced on each new scan.
 \item If a request is successful, the module is reserved for the processor;
-  otherwise, the request is reissued at the start of the next cycle. From the
-  set of up to $M$ successful requests, a second arbitration mechanism selects
-  up to $B$ requests and reserves buses for these requests. We'll assume this is
-  done in the same order in which modules were reserved. If a request is
-  unsuccessful in obtaining a bus, the module is released and the request
-  reissued at the start of the next cycle.
-\item Next, for a successful request, the address and data (if the request is
-  a store) are transmitted over the bus to memory; if the request is a fetch,
-  data is returned over the bus at the end of the cycle.
+otherwise, the request is reissued at the start of the next cycle. From the
+set of up to $M$ successful requests, a second arbitration mechanism selects
+up to $B$ requests and reserves buses for these requests. We'll assume this is
+done in the same order in which modules were reserved. If a request is
+unsuccessful in obtaining a bus, the module is released and the request
+reissued at the start of the next cycle.
+\item Next, for a successful request, the address and data, if the request is
+a store, are transmitted over the bus to memory; if the request is a fetch,
+data is returned over the bus at the end of the cycle.
 \item When the bus cycle ends, processors whose requests were successfully
-  completed are returned to execution, and the buses and modules reserved by
-  these requests are released. Unsuccessful requests are reissued, together
-  with new requests, at the start of the next cycle.
+completed are returned to execution, and the buses and modules reserved by
+these requests are released. Unsuccessful requests are reissued, together with
+new requests, at the start of the next cycle.
 \end{enumerate}
 
 Our objective is to determine how processor performance is affected by
@@ -94,718 +68,1195 @@ contention for memory modules and buses.
 
 This system, in various forms, has received a great deal of attention over
 the years. When the number of buses is equal to the number of memories
-($B = M$), the interconnection between processors and memories is equivalent to
-a crossbar network, and performance is affected only by memory contention.
+($B=M$), the interconnection between processors and memories is equivalent
+to a crossbar network, and performance is affected only by memory contention.
 Most of the early analysis work focused on this problem; most recent work
-encompasses systems with $B < M$ and considers both bus and memory contention.
+encompasses systems with $B<M$ and considers both bus and memory
+contention.
 
 \section{An Approximate Analytic Model}
 \label{sec:mp-analytic-model}
 
-The analytic model developed here is based on Mudge et al.\ [1984]; the
-references in that paper provide a good starting point for surveying work in
-this area. There are several measures of performance of interest; the one
-considered first is system bandwidth, $BW$. This is the overall transfer rate
-between processors and memory, in transfers per unit time. Since transfer time
-is one cycle, overall bus utilization is (numerically, though not
-dimensionally) equal to $BW$, and $BW$ is sometimes defined as the average
+The analytic model we'll develop in this section is based on that
+described by Mudge et al. [1984]: the references in that paper provide a good
+starting point for surveying work done in this area. There are several
+measures of performance of interest to us; the one we'll look at first is the
+system bandwidth, $BW$. This is the overall transfer rate between processors
+and memory, expressed in terms of transfers per unit time. Since the transfer
+time is 1 cycle, the overall bus utilization is (numerically but not
+dimensionally) equal to $BW$, and $BW$ sometimes is defined as the average
 number of busy buses.
 
 The miss ratio $p$ was defined as the probability that a processor issues a
-(global) memory request in a given cycle. If we assume that the probability of
-issuing a request in one cycle is the same as, and independent of, the
+(global) memory request in a given cycle. If we assume that the probability
+of issuing a request in any one cycle is the same as, and independent of, the
 probability of issuing a request in any other cycle, then a processor's
 execution interval corresponds to a sequence of Bernoulli trials. Execution
-intervals therefore have a geometric distribution with mean
-$x = (1-p)/p$ and variance $\sigma_x^2 = (1-p)/p^2$. We also assume that memory
-requests are independently and uniformly distributed across memories.
+intervals therefore have a geometric distribution with mean $x=(1-p)/p$
+and variance $\sigma^2=(1-p)/p^2$ (see, for example, Allen [1978] or Trivedi
+[1982]). The geometric distribution is the discrete counterpart of the negative
+exponential distribution. We'll also assume that memory requests are
+independently and uniformly distributed across memories (since memory module
+selection typically is based on the low-order address bits).
 
-Looking first at cycles with no reissued requests from the preceding cycle, the
-probability that processor $i$ requests memory $j$ is $p/M$, and the
-probability that none of the $N$ processors requests memory $j$ is
-$(1 - p/M)^N$. Therefore the probability $q$ that there is at least one request
-for memory $j$ is
-
+Consider the long-term behavior of the system, looking first at those
+cycles which have no reissued requests from the preceding cycle. Based on
+the assumptions of the preceding paragraph, the probability that processor $i$
+requests memory $j$ is $p/M$ for all $i$ and $j$. The probability that processor $i$ does
+not request memory $j$ is $1-p/M$, and the probability that none of the $N$
+processors requests memory $j$ is $(1-p/M)^N$. Therefore, the probability $q$ that
+there is at least one request for memory $j$ is
 \begin{equation}
-q = 1 - (1 - p/M)^N
+q=1-(1-p/M)^N
 \label{eq:mp-q-p}
 \end{equation}
 
-Assuming request probabilities are identical and independent, the probability
-$f_i$ that exactly $i$ of $M$ memories have requests is binomial:
-
+Assuming memory request probabilities are identical and independent, the
+probability $f_i$ that exactly $i$ of $M$ memories have requests is binomial:\footnote{This is an approximation: note, for example, that $f_0$ should be 0 for $p=1$, while (5.1) and (5.2) give $f_0>0$. However, the error is small, even for $M$ as small as 4.}
 \begin{equation}
-f_i = \binom{M}{i} q^i (1-q)^{M-i}
+f_i=\binom{M}{i}q^i(1-q)^{M-i}
 \label{eq:mp-fi}
 \end{equation}
 
-The expected number of distinct memories requested in a cycle is $qM$. While up
-to $qM$ requests may be presented to bus arbitration in a cycle, no more than
-$B$ requests can be granted. The expected number of bus requests granted in a
-cycle (equal numerically to bandwidth) is
+The expected number of distinct memories requested in the cycle is $qM$.
 
+While $qM$ requests may be presented to the bus arbitration mechanism in
+a cycle, no more than $B$ requests can be granted. The expected number of bus
+requests granted in a cycle --- equal numerically to the bandwidth --- is
 \begin{equation}
-BW = B\sum_{i=B}^{M} f_i + \sum_{i=1}^{B-1} i f_i
+BW=B\sum_{i=B}^{M} f_i+\sum_{i=1}^{B-1} i f_i
 \label{eq:mp-bw}
 \end{equation}
 
-The bandwidth estimate from (\ref{eq:mp-q-p})--(\ref{eq:mp-bw}) applies only to
-cycles in which no requests are reissued; in that case the average request rate
-per processor is the miss rate $p$, and overall request rate is $Np$. In the
-general case, considering all cycles, the per-processor request rate $r$ is
-greater than $p$ (because it includes both initial and reissued requests). An
+The bandwidth estimated from (5.1)--(5.3) applies only to cycles in which no
+requests are reissued; in this case, the average request rate per processor is
+the same as the miss rate $p$, and the overall request rate is $Np$. In the
+general case, considering all cycles, the per processor request rate $r$ is greater
+than the miss rate (since it comprises both initial and reissued requests). An
 exact analysis is difficult; however, if we can estimate $r$, we can use it in
-place of $p$ in (\ref{eq:mp-q-p}) to obtain an improved estimate of $BW$.
+place of $p$ in (5.1) and obtain an improved estimate of $BW$.
 
-Now consider the processor inter-request interval between successful request
-completions. Its mean overall length is $T$, and can be divided into three
-parts: an execution interval of mean length $x = (1-p)/p$, a delay interval of
-mean length $b$, and a one-cycle transfer time for the accepted request. The
-single-processor request rate (counting blocked and accepted requests) is
+Now look at the processor inter-request interval --- the interval between
+two successful memory request completions --- shown in Figure 5.2. The mean
+overall length of this interval is $T$. We can divide $T$ into three parts: an
+execution interval of mean length $x=(1-p)/p$, a delay interval whose mean
+length is defined as $b$, and a 1-cycle transfer time for the accepted request. $b$
+represents the delay incurred when a request is blocked and reissued in the
+succeeding cycle. The single processor request rate (counting both blocked and
+accepted requests) is
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}[x=0.9cm,y=0.9cm]
-  % Processor inter-request interval: execution x, blocked delay b, transfer 1.
-  \draw[line width=0.9pt] (0,0) -- (11,0);
-  \foreach \x in {0,5,10,11} {
-    \draw[line width=0.9pt] (\x,0.24) -- (\x,-0.24);
-  }
-  \draw[decorate,decoration={brace,amplitude=5pt}] (0,0.6) -- (5,0.6)
-    node[midway,above=7pt] {$x$};
-  \draw[decorate,decoration={brace,amplitude=5pt}] (5,0.6) -- (10,0.6)
-    node[midway,above=7pt] {$b$};
-  \draw[decorate,decoration={brace,amplitude=5pt}] (10,0.6) -- (11,0.6)
-    node[midway,above=7pt] {$1$};
-  \node[below=10pt] at (0,0) {request completion $i$};
-  \node[below=10pt] at (11,0) {request completion $i{+}1$};
-\end{tikzpicture}
+\includegraphics[width=.9\textwidth]{figures/ch5-interval.png}
 \caption{Processor Inter-Request Interval Timing}
-\label{fig:ch5-inter-request-interval}
 \end{figure}
 
 \begin{equation}
-r = (b+1)/T = (b+1)/(x+b+1)
-\label{eq:mp-r}
+r=(b+1)/T=(b+1)/(x+b+1)
 \end{equation}
-
-or
-
+dividing numerator and denominator by $b+1$,
 \begin{equation}
-r = \left[1 + x/(b+1)\right]^{-1}
-\label{eq:mp-r-alt}
+r=[1+x/(b+1)]^{-1}
 \end{equation}
-
-The per-processor request completion rate is $BW/N$, so $T = N/BW$, and
-$b+1 = rT = Nr/BW$. Substituting in (\ref{eq:mp-r-alt}),
-
+Since $r$ represents both blocked and accepted requests, $b+1=rT$ is the total
+number of requests issued in $T$. The per processor request completion rate is
+$BW/N$: the reciprocal of this rate is the mean interval between completed
+requests $T$, so $T=N/BW$ and $b+1=Nr/BW$. Substituting the last for $b+1$
+in (5.5),
 \begin{equation}
-r = \left[1 + xBW/(Nr)\right]^{-1}
-\label{eq:mp-r-fp}
+r=[1+xBW/Nr]^{-1}
 \end{equation}
-
-which defines $r$ as a fixed-point function of itself and can be solved
-iteratively:
+(5.6) defines $r$ as a function of $r$ (both directly and indirectly, since $BW$ is a
+function of $r$), and can be used in a simple fixed-point iterative algorithm
+(see, for example, Rice [1983]) to estimate $BW$. This algorithm works as
+follows.
 
 \begin{enumerate}
-\item Use (\ref{eq:mp-q-p})--(\ref{eq:mp-bw}) to compute an initial bandwidth
-  estimate $BW_1$. Define $r_1 = p$.
+\item Use (5.1)--(5.3) to compute an initial bandwidth estimate
+$BW_0$. Define $r_0=p$.
 \item Compute an improved estimate of $r$ from
-  \begin{equation}
-  r_i = \left[1 + xBW_{i-1}/(Nr_{i-1})\right]^{-1}
-  \label{eq:mp-ri}
-  \end{equation}
+\begin{equation}
+r_i=[1+xBW_{i-1}/Nr_{i-1}]^{-1}
+\end{equation}
 \item Compute
-  \begin{equation}
-  q = 1 - (1-r_i/M)^N
-  \label{eq:mp-q-r}
-  \end{equation}
-  and use (\ref{eq:mp-fi}) and (\ref{eq:mp-bw}) to compute a new estimate
-  $BW_i$.
-\item If $|BW_i - BW_{i-1}| < \epsilon$, where $\epsilon$ depends on desired
-  accuracy, terminate; otherwise return to step 2.
+\begin{equation}
+q=1-(1-r_i/M)^N
+\end{equation}
+and use (5.2) and (5.3) to compute a new estimate $BW_i$.
+\item If $|BW_i-BW_{i-1}|<\epsilon$, where $\epsilon$ depends on the desired
+accuracy, terminate; otherwise, return to step 2.
 \end{enumerate}
 
-A C implementation with $\epsilon=0.005$ is shown in Figure~\ref{fig:ch5-bw-code}.
+A C implementation of this algorithm, with $\epsilon=0.005$, is given in Figure 5.3.
+You'll need to provide a main program to call \texttt{BW()} with values of $p$, $B$, $M$, $N$,
+and to report results. Timing diagram relationships, together with the
+operational laws discussed in Section 1.4, can be used to obtain other
+measures: let's look at some of these.
 
-\begin{figure}[ht]
+\begin{figure}[p]
 \centering
-\begin{minipage}{0.86\textwidth}
-\begin{verbatim}
-real BW(real p, int B, int M, int N)
-{
-  real r = p, bw_prev = 0.0, bw = 0.0;
-  while (1) {
-    real q = 1.0 - pow(1.0 - r/M, N);
-    bw = 0.0;
-    for (int i = 1; i <= M; ++i) {
-      real fi = comb(M,i) * pow(q,i) * pow(1-q, M-i);
-      bw += (i < B) ? i*fi : B*fi;
+\begin{minipage}{.92\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+real BW(p,B,M,N)
+  real p; int B,M,N;
+    {
+      real bw0,bw1=p*N,r=p,x=1.0/p-1.0,BWi();
+      do
+        {
+          bw0=bw1; r=1.0/(1.0+x*bw0/(N*r));
+          bw1=BWi(r,B,M,N);
+        }
+      while (fabs(bw1-bw0)>0.005);
+      return(bw1);
     }
-    if (fabs(bw - bw_prev) < 0.005) break;
-    r = 1.0 / (1.0 + ((1-p)/p) * bw / (N*r));
-    bw_prev = bw;
-  }
-  return bw;
-}
-\end{verbatim}
+
+real BWi(r,B,M,N)
+  real r; int B,M,N;
+    { /* compute bandwidth for request rate r */
+      int i; real q,bw=0.0,f();
+      q=1.0-pow(1.0-r/M,(real)N);
+      for (i=1; i<B; i++) bw+=i*f(i,M,q);
+      for (i=B; i<=M; i++) bw+=B*f(i,M,q);
+      return(bw);
+    }
+
+real Fact(n)
+  int n;
+    { /* compute n factorial */
+      real z=1.0;
+      while (n) {z*=n; n--;}
+      return(z);
+    }
+
+real C(n,k)
+  int n,k;
+    { /* compute binomial coefficient */
+      return(Fact(n)/(Fact(k)*Fact(n-k)));
+    }
+
+real f(i,M,q)
+  int i,M; real q;
+    { /* compute binomial probability */
+      real z;
+      z=C(M,i)*pow(q,(real)i)*pow(1.0-q,(real)(M-i));
+      return(z);
+    }
+\end{lstlisting}
 \end{minipage}
 \caption{Bandwidth Computation Algorithm}
-\label{fig:ch5-bw-code}
 \end{figure}
 
-Timing relationships and operational laws give other measures. Average
-utilization of a single bus, memory module, and processor are respectively
-$U_B = BW/B$, $U_M = BW/M$, and $U_P = xBW/N$. Average waiting time per request
-is $b$, where from $T=N/BW$ and $x+1=1/p$:
-
+\noindent\textbf{Utilizations and waiting time.} The average utilizations of a single bus,
+single memory module, and single processor are, respectively, $U_B=BW/B$,
+$U_M=BW/M$, and $U_P=xBW/N$ (from the Utilization Law). The average
+waiting (blocked) time per request is $b$: from Figure 5.2, $b=T-x-1$. Since
+$T=N/BW$ and $x+1=1/p$,
 \begin{equation}
-b = (N/BW) - (1/p)
-\label{eq:mp-b}
+b=(N/BW)-(1/p)
 \end{equation}
-
-Mean number of blocked requests per processor $L_b$ follows from Little's Law:
-
+We could also obtain this result via the Response Time Law (Section 1.4).
+This law typically is presented in the context of a time-sharing system,
+where it has the form
 \begin{equation}
-L_b = bBW/N
-\label{eq:mp-lb}
+R=(N/X)-Z
 \end{equation}
+Here, $R$ is the mean response time at a terminal, $N$ is the number of
+terminals, $X$ is the computer system throughput, and $Z$ is the mean think
+time at a terminal (mean time between successive system requests). The
+correspondence between this system and our multiprocessor system is
+\begin{center}
+\begin{tabular}{rcl}
+computer system & --- & memory/bus subsystem \\
+$N$ terminals & --- & $N$ processors \\
+mean think time $Z$ & --- & mean execution interval $x$ \\
+system throughput $X$ & --- & bandwidth $BW$ \\
+mean response time $R$ & --- & mean request processing time $b+1$
+\end{tabular}
+\end{center}
+Making the appropriate substitutions in (5.10) results in (5.9).
 
-so
-
+\noindent\textbf{Mean queue length.} Let $L_b$ be the average number of blocked requests
+outstanding per processor. From Little's Law,
 \begin{equation}
-L_b = 1 - BW/(Np)
-\label{eq:mp-lb-alt}
+L_b=bBW/N
 \end{equation}
-
-For system throughput, if each task requires an average of $n$ execution
-intervals, service time per task is $nx$. Throughput is $N[U_P/(nx)]$ tasks per
-unit time. A normalized throughput $\eta$ with $nx=1$ is
-
+from which
 \begin{equation}
-\eta = N U_P = BW\left[(1/p)-1\right]
-\label{eq:mp-eta}
+L_b=1-BW/Np
 \end{equation}
+(5.12) also can be obtained as follows. In any given period of time, a processor
+spends, on the average, proportions $U_P$ executing, $L_b$ waiting, and $BW/N$
+transferring: thus, $U_P+BW/N+L_b=1$. Substituting for $U_P$ and subsequently
+for $x$, and rearranging terms gives (5.12).
 
-This bandwidth analysis is approximate, in part because
-(\ref{eq:mp-q-p})--(\ref{eq:mp-fi}) assume independent memory request
-probabilities. In the actual system, a blocked request for module $j$ is
-reissued to $j$, so request probability for module $j$ in cycle $n$ is not
-independent of cycle $n-1$. The next section develops a simulation model for
-verification and evaluation of this assumption.
+\noindent\textbf{System throughput.} While the bandwidth provides a direct measure of
+memory-bus subsystem performance, it is only an indirect measure of system
+performance. For a given configuration ($B$, $M$, $N$), a processor design change
+which increases the miss rate will result in an increase in $BW$ but reduced
+system throughput. Suppose the unit of work in this system is a task, and
+each task requires an average of $n$ execution intervals: the average service
+time per task, then, is $nx$. From the Utilization Law, the system throughput
+is $N[U_P/nx]$ tasks per unit time. For design comparisons, it may be useful to
+work with the \emph{normalized} system throughput $\eta$, obtained by taking $nx=1$:
+\begin{equation}
+\eta=NU_P=N[xBW/N]=BW[(1/p)-1]
+\end{equation}
+Note that if there are no contention delays, $BW=Np$ and $\eta=N(1-p)$, and
+if the miss rate $p$ is zero, $\eta=N$.
+
+Our bandwidth analysis is approximate because, among other things, it
+assumes that memory request probabilities are independent in (5.1) and (5.2).
+This is equivalent to assuming that a request blocked on access to module $j$ is
+assigned at random to one of the $M$ modules when reissued. In the actual
+system, a blocked request for module $j$ is reissued to module $j$, so the probability
+that module $j$ is referenced in cycle $n$ is not independent of whether or
+not it was referenced in cycle $n-1$. In the next section, we'll look at a
+simulation model which can be used to verify the approximate analytic
+model and also evaluate the effect of this independence assumption.
 
 \section{Verifying the Analytic Model}
 \label{sec:mp-verify}
 
-The simulation model used for analytic verification depends on objective. Here
-the objective is to verify that the analytic model adequately represents system
-behavior, so the simulation model reflects system structure. A smpl model for
-this purpose (called \texttt{bws1} in the book) is given in Figure 5.4.
+The kind of simulation model we develop for analytic model verification
+depends on our objectives. In the case of the multiprocessor system, our
+objective is to verify that the analytic model adequately represents the
+behavior of the system, so the simulation model reflects the structure of the
+system. Sometimes, though, our objective may be to check the assumptions
+and mathematics of the analysis itself, and our model may be much more
+abstract in form. As a simple example of this case, suppose we need to determine
+the average seek distance on a disk. We assume disk requests are
+independently and uniformly distributed across the $C$ cylinders of a disk,\footnote{This assumption frequently has been shown to be invalid in practice: see, for example, McNutt [1984].}
+and our derivation results in an average seek distance of approximately $C/3$.
+We can verify this result via a simple simulation in which we generate a
+sequence of random numbers $X_1, X_2, \ldots$, each of which is uniformly distributed
+in $[1,C]$, and compute the average absolute difference $|X_i-X_{i-1}|$. This type
+of checking is a great help in catching mistakes in analytic models; we may
+not be able to apply it to a model as a whole, but often can use it to check
+individual steps.
 
-\begin{figure}[ht]
+A smpl simulation model developed to validate our analytic model is
+shown in Figure 5.4; for reference purposes, we'll call this model \emph{bws1}. This
+model defines memory modules and buses as smpl facilities, while processors
+are represented as tokens. Global declarations define the miss rate $p$, the
+number of processors $N$, the number of memory modules $M$, and the number of
+buses \texttt{nB} (remember that \texttt{B} is a smpl function name), together with the
+facility descriptors \texttt{module[]} and \texttt{bus}. \texttt{treq[n]} is used to record the next
+memory request issue time for processor $n$, and \texttt{req[n]} to record the module
+number of a request; \texttt{tn}, the earliest-occurring request time, is initialized to
+a large value.
+
+Model initialization is straightforward. \texttt{smpl()} is called to initialize
+the simulation subsystem, facilities are declared, \texttt{next\_access()} is called
+to determine the initial access time for each processor and to compute \texttt{tn}, and
+the first event is scheduled at time \texttt{tn}. Each memory module is defined as a
+single-server facility, while the set of buses is defined as a multiserver
+facility; since any bus can be used for a transfer, buses need not be distinguishable.
+
+The \texttt{next\_access()} function generates a processor execution interval by
+generating a random variate from a geometric distribution with mean
+$(1-p)/p$; it then adds this interval to the current simulation time to obtain
+the simulation time at which the processor's next memory request is to be
+issued. (Note that \texttt{treq[n]} is an event occurrence time, not an inter-event
+time.) If the request issue time \texttt{t} computed for processor $n$ is less than the
+current earliest-occurring request time \texttt{tn}, \texttt{tn} is set to \texttt{t}. A geometric variate
+is generated by the expression
+\begin{center}
+\texttt{floor(log(ranf())/log(1-p))}
+\end{center}
+This is obtained from the inverse distribution function of the geometric
+distribution (see problem 2(c), Chapter 1). Because of the use of the \texttt{floor()}
+function, simulation times will be non-fractional.
+
+\begin{figure}[p]
 \centering
-\begin{minipage}{0.86\textwidth}
-\begin{verbatim}
-/* model bws1: synchronous multiprocessor */
-init_model(p, N, M, B) {
-  for (j=1; j<=M; j++) module[j] = facility("module", 1);
-  bus = facility("bus", B);
-  for (n=1; n<=N; n++) schedule(BEGIN_CYCLE, 0.0, n);
-}
+\begin{minipage}{.98\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+#include <smpl.h>
+#define busy 1
 
-begin_cycle(n) {
-  if (req[n] != 0) return;
-  if (drand() < p) {
-    req[n] = randint(1, M);
-    schedule(REQ_MODULE, 0.0, n);
-  } else {
-    schedule(BEGIN_CYCLE, 1.0, n);
+real
+  p=0.250,         /* local memory miss rate                */
+  treq[17],        /* next request time for processor       */
+  tn=1.0E6;        /* earliest-occurring request time       */
+int
+  N=8,M=4,nB=2,    /* no. processors, memories, & buses     */
+  module[17],bus,  /* memory & bus facility descriptors     */
+  nbs=0,           /* no. busy buses in current cycle       */
+  req[17],         /* currently-requested memory module     */
+  next=1;          /* arbitration scan starting point       */
+
+/*------------  MEMORY-BUS BANDWIDTH MODEL  ------------*/
+main()
+  {
+    int event,i,n;
+    smpl(0,"Bandwidth Model");
+    bus=facility("bus",nB);
+    for (i=1; i<=M; i++) module[i]=facility("module",1);
+    for (n=1; n<=N; n++) {req[n]=0; next_access(n);}
+    schedule(1,tn,0);
+    while (time()<10000.0)
+      {
+        cause(&event,&n);
+        switch(event)
+          {
+            case 1: begin_cycle(); break;
+            case 2: req_module(n); break;
+            case 3: end_cycle(n);  break;
+          }
+      }
+    printf("BW = %.3f\n",U(bus));
   }
-}
 
-req_module(n) {
-  if (!busy(module[req[n]]) && !busy(bus)) {
-    reserve(module[req[n]]); reserve(bus);
-    schedule(END_CYCLE, 1.0, n);
-  } else {
-    schedule(REQ_MODULE, 1.0, n);   /* reissue */
-  }
-}
-
-end_cycle(n) {
-  release(module[req[n]]); release(bus);
-  req[n] = 0; schedule(BEGIN_CYCLE, 0.0, n);
-}
-\end{verbatim}
+/*-------------  COMPUTE NEXT ACCESS TIME  -------------*/
+next_access(n)
+  int n;
+    {
+      real t;
+      t=floor(log(ranf())/log(1.0-p))+time();
+      treq[n]=t; if (t<tn) then tn=t;
+    }
+\end{lstlisting}
 \end{minipage}
-\caption{Multiprocessor Simulation Model \texttt{bws1}}
-\label{fig:ch5-bws1}
+\caption{Multiprocessor Simulation Model \emph{bws1}}
 \end{figure}
 
-In this model, memory modules and buses are smpl facilities, while processors
-are represented as tokens. Global declarations define miss rate $p$, number of
-processors $N$, memories $M$, and buses $B$ (named \texttt{nB} to avoid
-conflict with \texttt{B()} in smpl), with facility descriptors
-\texttt{module[]} and \texttt{bus}. \texttt{treg[n]} records next memory request
-issue time for processor $n$, \texttt{req[n]} records requested module number,
-and \texttt{tn} is the earliest request time. Initialization calls
-\texttt{smpl()}, declares facilities, computes each initial access time, and
-schedules the first event.
+\addtocounter{figure}{-1}
+% PDF page 161 (printed 139): the listing prints no closing parenthesis
+% after module[req[n]] in the status test, and a colon after req[n]=0.
+% Both apparent source typographical errors are retained verbatim.
+\begin{figure}[p]
+\centering
+\begin{minipage}{.98\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+/*--------------  EVENT 1: BEGIN CYCLE  ---------------*/
+begin_cycle()
+  {
+    int i,n=next; real t,tmin=1.0E6;
+    for (i=0; i<N; i++)
+      {
+        if (!req[n]) then
+          { /* in this version, req[n] always is 0 here */
+            if ((t=treq[n])==tn)
+              then
+                {req[n]=random(1,M); schedule(2,0.0,n);}
+              else if (t<tmin) then tmin=t;
+          }
+        n=(n%N)+1;
+      }
+    next=(next%N)+1; tn=tmin;
+  }
 
-The continuation of the model appears in Figure~5.4 (continued): event 1
-(\texttt{begin cycle()}) scans processors for requests at time \texttt{tn};
-event 2 (\texttt{req module()}) requests memory and bus resources; and event 3
-(\texttt{end cycle()}) releases resources and schedules follow-on work.
+/*---------  EVENT 2: REQUEST MEMORY AND BUS  ---------*/
+req_module(n)
+  int n;
+    {
+      if (status(module[req[n]]!=busy&&status(bus)!=busy)
+        then
+          {
+            request(module[req[n]],n,0); request(bus,n,0);
+            nbs++; schedule(3,1.0,n);
+          }
+        else
+          {req[n]=0; if (++treq[n]<tn) then tn=treq[n];}
+    }
 
-The geometric variate generation used in \texttt{next access()} is
+/*---------------  EVENT 3: END CYCLE  ----------------*/
+end_cycle(n)
+  int n;
+    {
+      release(bus,n); release(module[req[n]],n);
+      req[n]=0: next_access(n);
+      if (--nbs==0) then schedule(1,tn-time(),0);
+    }
+\end{lstlisting}
+\end{minipage}
+\caption{Multiprocessor Simulation Model \emph{bws1} (continued)}
+\end{figure}
 
-\[
-\left\lfloor \frac{\log(\texttt{ranf()})}{\log(1-p)} \right\rfloor
-\]
+The major difference between this model and the simulation models of
+Chapters 1 and 2 is its synchronous operation. In this model, the unit of time
+is the bus cycle; time advances in integer multiples of this unit, and events
+occur either at the beginning or at the end of a cycle. Since the end of one
+cycle corresponds to the beginning of the next and so are the same instant in
+simulation time, we can't rely on the event list to insure that events occur in
+the proper order. In this model, order is maintained by ``batching'' memory
+request initiations and completions. There are a variety of other ways to
+accomplish this. For example, in the actual system, a bus cycle divides into
+some number of clock cycles. Using the clock cycle as the unit of time would
+solve the problem, since the beginning of bus cycle $n$ would occur at a later
+clock cycle than the end of bus cycle $n-1$. Another possibility is to extend the
+event list mechanism to provide $T-$ and $T+$ scheduling (i.e., to recognize the
+beginning and end of a time unit).
 
-which comes from the inverse distribution function of the geometric
-distribution. Because of \texttt{floor()}, simulation times are integral cycle
-counts.
+The model proper comprises three event routines: \texttt{begin\_cycle()},
+\texttt{req\_module()}, and \texttt{end\_cycle()}. At any point during the simulation,
+\texttt{treq[n]} is the next request issue time for processor $n$, and \texttt{tn} is the earliest-
+occurring request issue time. Event 1 is scheduled to occur at time \texttt{tn} as part of
+model initialization and, subsequently, by \texttt{end\_cycle()}. \texttt{begin\_cycle()}
+scans the set of $N$ processors for those issuing requests at time \texttt{tn} and, for each
+such processor, assigns a random memory module as the request destination
+and schedules the memory (and bus) request, event 2. This check is made only
+for processors for which \texttt{req[n]} is zero: this always is true for model \emph{bws1}
+(but not for the variant we'll look at in the next section). Each scan of the
+processor set begins with processor \texttt{next}, which is advanced at the end of
+each scan. This represents the arbitration mechanism of the system more
+closely than it does the assumed random processor selection of our analytic
+model. However, it is more efficient to simulate than random processing,
+introduces less bias than a $1$--$N$ scan, and has little effect on the results. As
+\texttt{begin\_cycle()} does its scan, it keeps track of the earliest-occurring request
+issue time following \texttt{tn} and, at the end of the scan, updates \texttt{tn} to this time.
 
-This model is synchronous: the unit of time is the bus cycle, and events occur
-at cycle boundaries. Since ``end of cycle $n$'' and ``beginning of cycle
-$n+1$'' are the same simulation instant, event-list ordering alone is
-insufficient; request starts and completions are batched explicitly.
-
-At any simulation point, \texttt{treg[n]} is processor $n$'s next request issue
-time, and \texttt{tn} is the earliest pending request time. \texttt{begin cycle}
-schedules memory/bus request events for processors issuing at \texttt{tn},
-advances the arbitration scan start point, and updates \texttt{tn} to the next
-earliest issue time.
-
-\texttt{req module()} checks whether both the target memory module and a bus are
-free. If both are free, both are reserved and completion is scheduled one cycle
-later. Otherwise, the request is blocked and reissued next cycle by incrementing
-\texttt{treg[n]}. In this model, blocked requests are effectively reassigned
-random destinations when reissued, matching the independence assumption of the
+\texttt{begin\_cycle()} schedules event 2 for each processor it finds with a
+request issue time of \texttt{tn}: this event, like event 1, occurs at the beginning of a
+cycle. The event 2 routine, \texttt{req\_module()}, checks to see if the requested
+memory module is free and if a bus is free. If these conditions are met, the
+module and a bus are reserved, the number of buses busy in this cycle, \texttt{nbs}, is
+incremented, and completion of the request is scheduled to occur at the end of
+the cycle. (Note that the inter-event time is 1.) If the requested module is
+busy or if a bus cannot be obtained, the request is blocked for reissue at the
+start of the next cycle: \texttt{req[n]} is set to zero and the request issue time
+\texttt{treq[n]} is incremented. If this new request issue time is less than \texttt{tn}, \texttt{tn} is
+adjusted accordingly. When the request is reissued, a memory module will
+selected at random for it, thus satisfying the independence assumption of our
 analytic model.
 
-\texttt{end cycle()} releases reserved resources, computes the processor's next
-access time, and when all completions in the current cycle are done, schedules
-the next \texttt{begin cycle()} event. At run end, bus utilization is printed as
-bandwidth; this numeric equivalence holds because bus service time is one cycle.
+Event 3 marks the completion of a request at the end of a bus cycle. The
+bus and memory module are released, \texttt{req[n]} is set to zero, and
+\texttt{next\_access()} is called to compute the next request issue time for the processor.
+\texttt{nbs} is decremented and, if end-of-cycle processing is complete for all
+bus transfers initiated in the current cycle (\texttt{nbs} = 0), event 1 is scheduled at
+time \texttt{tn}. The \texttt{nbs} count provides the basic mechanism for the request
+``batching'' mentioned earlier. Note that, since \texttt{tn} is an event occurrence
+time, the current simulation time has to be subtracted from it in making the
+\texttt{schedule()} call.
 
-\paragraph{Output analysis.}
-For verification runs, tighter confidence intervals are typically used than in
-routine problem analysis so differences between analytic and simulation models
-are less likely to be hidden by sampling variation. A sequential batch-means
-procedure with continuous-time batches can be used here by sampling
-\texttt{U(bus)} at fixed simulation intervals, resetting accumulators each
-batch, and testing relative half-width against target accuracy.
+At the end of the simulation interval specified in the \texttt{while} statement
+in \texttt{main()}, the utilization of the bus is printed as the bandwidth and model
+execution then is terminated. Remember that bus utilization and bandwidth
+are numerically the same only because the bus service time is 1.
 
-\paragraph{Comparison strategy.}
-Because this model has multiple parameters ($N$, $M$, $B$, and $p$), exhaustive
-analytic-vs-simulation comparison is expensive. A practical approach is to
-inspect response-shape plots (e.g., $BW$ vs.\ $B$ for fixed $N$, $M$, $p$) and
-verify at:
-\begin{itemize}
-\item low-$B$ points (bus-limited region),
-\item transition points where curvature changes,
-\item high-$B$ points (memory-limited region).
-\end{itemize}
-If agreement is good at these structurally informative points, effort is then
-shifted to other regions of parameter space.
+The simulation model in Figure 5.4 was coded for compactness and can be
+improved in several ways. Its performance can be improved by the use of
+pointers, and by precomputing the factor \texttt{1.0/(1.0-p)} in geometric variate
+generation. Its usefulness can be improved by providing a procedure to read
+values of the input parameters \texttt{nB}, $M$, $N$, and $p$ (with SMPL, they can be
+defined as SMPL parameters and their values then specified via the parameter
+display). Finally, procedures for specifying the desired accuracy and
+determining the requisite run length are needed.
+
+\noindent\textbf{Output analysis.} Methods of determining the run length required to
+achieve a specified simulation accuracy were discussed in Chapter 4. A
+sequential procedure using the batch means method was recommended, and a
+set of procedures implementing this method for a discrete-time output
+variable was presented in Figure 4.7. In our present problem, the simulation
+output variable --- the bandwidth --- is a continuous-time variable, so the
+procedures of Figure 4.7 can't be used directly. However, a similar approach
+can be used, and the code will be even simpler, since collection of values for
+and computation of individual batch means doesn't have to be done. For a
+continuous-time variable, the batch size is defined as a fixed-length simulation
+interval $t$. The model schedules an event every $t$ cycles and, when the
+event occurs, calls \texttt{U(bus)} to get the bandwidth --- the current batch mean ---
+for the interval, and then calls \texttt{reset()} to reinitialize smpl's counters and
+accumulators. Given that at least two batch means have been collected, a
+confidence interval can be computed and the relative half-width compared
+with the required accuracy to determine whether to terminate the run or to
+go on and collect another batch. You'll find extending the batch means
+analysis module of Figure 4.7 to handle continuous-time as well as discrete-
+time output variables is not only a good exercise but also a worthwhile
+enhancement to your set of simulation tools. (See problem 4, Chapter 4.)
+
+When using simulation to verify analytic results, we'll frequently want
+to use tighter confidence intervals and higher confidence levels than we
+would in problem analysis so that differences in results due to inherent
+differences in the two models won't be attributed to sampling variation.
+(This desire is tempered by the run lengths which may result.) The author's
+simulations of this system were performed using the sequential batch means
+procedure discussed above with a specified confidence level and relative
+half-width of, respectively, 99 percent and 1 percent, a batch ``size'' of 1000
+cycles, and a minimum number of batches equal to 10. Over the range of
+parameters studied ($2\le N\le16$, $N/2\le M\le N$, $1\le B\le M$, $0.1\le p\le1$), the desired
+accuracy was obtained with the minimum number of batches. Long runs were
+not required because the coefficient of variation of bus utilization is low: the
+system is closed, the population (in the study range) is low, and the service
+time is constant.
+
+\noindent\textbf{Comparison of results.} Our multiprocessor model has four parameters:
+three are discrete-valued and one ($p$) is continuous-valued. If we limit
+verification to the parameters mentioned in the preceding paragraph, using
+an increment of 0.1 for $p$, checking each parameter value combination will
+require an extremely large number of runs: 30 runs would be required just for
+$N=2$. (How many would be required at $N=16$?) An exhaustive comparison
+of analytic and simulation results, then, probably is not feasible; we need to
+find a more selective approach.\footnote{While in this case we want to verify an analytic model (the test model) against a simulation model (the base model), the same problem arises when their roles are reversed so that the simulation model is the test model and the analytic model is the base model.}
+
+One thing we can do is plot the analytic results to see how $BW$ changes
+with changes in parameter values, and concentrate our verification efforts on
+the more ``interesting'' points. What are these? Consider Figure 5.5, which
+plots bandwidth versus the number of buses, $B$, for $M=N=8$ and $p=0.5$. When
+the number of buses is small, the bandwidth is bus-limited (the buses are
+said to be saturated), and $BW=B$. The test model probably will yield this
+result for small values of $B$ even if it's not a very good model. In the case at
+hand, we can verify this by inspection: we don't need to run a simulation. As
+the number of buses becomes large, bus delays become small and $BW$
+approaches a limit determined by memory delays: this limit is parallel to
+the contention-free bandwidth $Np$. Since the rate of change in this range is
+very small, we can limit our comparison to the endpoint $B=16$. The
+interesting points are those for $B=7,8$ and $9$: the points which fall between
+the region in which $BW$ is bus-limited and the region in which it is memory-
+limited. If the test and base model results at these points and at endpoints
+are in close agreement, further verification effort probably should be
+directed elsewhere in the parameter space.
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.72\textwidth,
-  height=0.34\textwidth,
-  xmin=0,
-  xmax=18,
-  ymin=0,
-  ymax=16,
-  xlabel={$B$},
-  ylabel={$BW$},
-  axis line style={line width=0.9pt},
-  tick style={line width=0.8pt},
-  ticklabel style={font=\small},
-  major grid style={draw=black!15},
-  grid=major,
-  legend style={font=\small,draw=none,fill=none,at={(0.98,0.02)},anchor=south east},
-]
-  % Response-shape sketch used to pick low/transition/high verification points.
-  \addplot[line width=1.1pt] table[row sep=\\] {
-    1 1.1\\
-    2 2.1\\
-    3 3.0\\
-    4 3.9\\
-    5 4.8\\
-    6 5.6\\
-    7 6.2\\
-    8 6.8\\
-    9 7.2\\
-    10 7.5\\
-    11 7.7\\
-    12 7.85\\
-    14 8.0\\
-    16 8.1\\
-    18 8.15\\
-  };
-  \addplot[densely dashed,line width=1.0pt] table[row sep=\\] {
-    1 1.4\\
-    2 2.7\\
-    3 3.8\\
-    4 4.8\\
-    5 5.8\\
-    6 6.6\\
-    7 7.2\\
-    8 7.7\\
-    9 8.1\\
-    10 8.4\\
-    11 8.6\\
-    12 8.7\\
-    14 8.85\\
-    16 8.95\\
-    18 9.0\\
-  };
-  \addlegendentry{$N{=}32,\;M{=}16,\;p{=}0.20$}
-  \addlegendentry{$N{=}64,\;M{=}16,\;p{=}0.20$}
-\end{axis}
-\end{tikzpicture}
-\caption{Bandwidth Response Shape for Verification-Point Selection}
-\label{fig:ch5-verification-shape}
+\includegraphics[width=.9\textwidth]{figures/ch5-bandwidth.png}
+\caption{Bandwidth Versus No. of Buses for $N=M=8$, $p=0.5$}
 \end{figure}
+
+In this approach, each plot usually is generated as a set of curves (e.g.,
+$BW$ versus $B$ for $p=0.1,0.2,\ldots,1.0$), and so gives us a kind of two-dimensional
+view of what, in this case, is a four-dimensional response surface. (If you
+have actual three-dimensional plotting capability, so much the better!)
+
+While a number of plots are needed, practice brings proficiency in selecting
+the parameter combinations which provide the most revealing views.
+
+When working blind (without plots), a common approach is to choose
+verification points at logarithmic increments in parameter values. For
+example, in the case of the parameters represented in Figure 5.5, we might
+compare $BW$ values at $B$ values of 1, 2, 4, 8, and 16. The risk in doing this is
+the possibility of missing a point of inflection in the response curve when the
+separation between comparison points is large; this shouldn't be a problem if
+we have a general idea of what this curve should look like.
+
+In a later section, we'll compare some of the results from \emph{bws1} with those
+of the analytic model. For now, let's assume that the analytic model has
+been verified to our satisfaction and consider changing some of the assumptions
+made in the analytic model and incorporated in \emph{bws1}.
 
 \section{A Synchronous Queueing Model}
-\label{sec:mp-sync-queue}
 
-The analytic model and \texttt{bws1} assume that a blocked request to module
-$j$ may be reassigned randomly on reissue. To remove that assumption, a
-queueing model is used in which module and bus requests are handled in
-first-in, first-out order.
+Our analytic model effectively assumes that a request blocked on access
+to module $j$ is reassigned at random to any one of the $M$ modules when
+reissued, and this assumption was reflected in simulation model \emph{bws1}. This
+assumption easily is removed from \emph{bws1}: delete the statement \texttt{req[n]=0} in
+\texttt{req\_module()} and, in \texttt{begin\_cycle()}, delete the \texttt{if (!req[n])} statement
+and add an \texttt{if} statement to select a module for the processor's request
+only if \texttt{req[n]} is zero. The resulting model provides more or less random
+selection of requests for queues and buses, while the actual system may
+provide some type of request queueing. To see how much effect this has on
+performance, let's look at a model of the system in which module and bus
+requests are queued on a first-in, first-out basis.
 
-The queueing model structure (Figure~5.6) is still a closed queueing network.
-Processors are represented by a delay server (no queueing at the processor
-node). A request selects a memory module, queues for that module, then queues
-for a bus, and transfer proceeds only when both resources are held. This
-simultaneous resource possession is a common pattern in computer systems.
-
-In this notation:
-\begin{itemize}
-\item memory modules are modeled as token-based resources (reserve/release),
-\item buses are modeled as a multiserver queue.
-\end{itemize}
+\noindent\textbf{Model diagram.} A queueing model for the system is diagrammed in
+Figure 5.6. While this is a closed queueing network like that of Figure 2.1,
+the symbols are new. In Figure 2.1, each symbol represents a simple single-
+server queue at which requests arrive, queue for service, reserve the server,
+receive service, release the server, and depart. In Figure 5.6, processors are
+represented by a \emph{delay server}, whose symbol is a set of circles enclosed in
+braces. (This sometimes is called an \emph{infinite server}.) A delay server always
+has enough servers to accommodate requests and so has no queueing: requests
+arrive, receive service, and depart. The terminals of a timesharing system
+model can be viewed as a delay server, with the service corresponding to
+think times. In the multiprocessor system model, this service corresponds to
+processor execution intervals. Generally, we won't use a smpl facility to
+represent a delay server unless we need to directly determine its utilization;
+in this case, we can represent it by a facility set whose size is sufficient to
+prevent queueing. (This, however, increases simulation overhead. It usually
+is more efficient to measure the throughput and mean service time, and
+compute the utilization via the Utilization Law.)
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}[node distance=1.2cm]
-  \node[draw,circle,minimum size=0.9cm] (cpu1) {CPU};
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm,right=2.2cm of cpu1] (mqueue) {M-queue};
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm,right=1.8cm of mqueue] (mods) {M mods};
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm,below=1.4cm of mods] (bqueue) {B-queue};
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm,left=1.8cm of bqueue] (bus) {B buses};
-  \node[draw,circle,minimum size=0.9cm,left=2.2cm of bus] (cpu2) {CPU};
-
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (cpu1) -- node[above,sloped] {request} (mqueue);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (mqueue) -- (mods);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (mods) -- (bqueue);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (bqueue) -- (bus);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (bus) -- node[below,sloped] {completion} (cpu2);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (cpu2) to[bend left=20] node[left] {next cycle} (cpu1);
-\end{tikzpicture}
+\includegraphics[width=.9\textwidth]{figures/ch5-queue-model.png}
 \caption{Multiprocessor System Queueing Model Diagram}
-\label{fig:ch5-queue-diagram}
 \end{figure}
 
-\paragraph{Simulation model \texttt{bws2}.}
-A queueing-based model can be built by reusing parts of \texttt{bws1}
-(declarations, initialization framework, and \texttt{begin cycle()}) and
-replacing request/completion logic with separate module-queue and bus-queue
-event routines (book Figure~5.7). In \texttt{main()}, switch dispatch is
-adjusted accordingly, and \texttt{report()} can be used to obtain memory and bus
-queue lengths in addition to utilizations.
+When a processor issues a memory request, the request queues for the
+selected memory module, reserves it, queues for the bus, and reserves the bus.
+The bus transfer is performed, the bus is released, and the memory module
+then released. The memory module and the bus must be simultaneously
+reserved to perform the transfer. This \emph{simultaneous resource possession} frequently
+occurs in computer systems (and complicates the analytic solution of
+queueing network models of these systems: for a discussion in the context of a
+memory-bus contention model, see Jacobson and Lazowska [1981]). Other
+examples of simultaneous resource possession include the simultaneous
+reservation of a disk, control unit, and channel required for data transfer in
+an IO operation, and the simultaneous reservation of memory space and
+processor in executing a task. The symbols representing memory operations in
+Figure 5.6 indicate that queueing and reservation operations are disjoint from
+release. The interpretation of the symbols is as follows. Upon creation, the
+box (labeled ``memories'' here) has $m$ tokens, each corresponding to an
+allocatable resource unit. In this model, there is one token for each memory
+module; in a communication system model, there might be one token for each
+message buffer at a node. A request arrives and queues until a token can be
+reserved for it: this reservation is represented by the upright triangle.
+When the request no longer requires the resource, it releases it: the release is
+represented by the inverted triangle.
 
-Operationally, \texttt{bws2} remains synchronous. Processors with
-\texttt{req[n] != 0} already have queued or active requests and are skipped in
-\texttt{begin cycle()}. Module requests queue at module servers; admitted module
-requests then queue at the bus server; transfer completion events mark requests
-done and drive cycle-end release and scheduling logic.
+Buses are represented as a multiple server: the symbol is an extension of
+the single server symbol. A request arriving at a multiple server queues for
+services, reserves any available server and, after receiving service, releases
+the server and departs.
 
-\begin{figure}[ht]
+Symbols used in queueing diagrams in this book are, with variations, in
+common use. There is, however, no accepted standard.
+
+\noindent\textbf{Simulation model.} In building a multiprocessor system simulation model
+with memory and bus queueing, we can reuse several parts of \emph{bws1}, including
+the global declarations, the model initialization section in \texttt{main()}, and the
+\texttt{begin\_cycle()} event routine. The main change required is replacement of
+the \texttt{req\_module()} and \texttt{end\_cycle()} functions in Figure 5.4 with the
+\texttt{req\_module()}, \texttt{req\_bus()}, and \texttt{end\_cycle()} functions of Figure 5.7.
+Also, the \texttt{switch} statement in \texttt{main()} must be changed so that \texttt{req\_bus()}
+is called on event 3 and \texttt{end\_cycle()} is called on event 4. Finally,
+replacing the \texttt{printf} statement in \texttt{main()} with a call to \texttt{report()} will
+provide mean memory and bus queue lengths, in addition to utilizations.
+We'll call the model resulting from these modifications \emph{bws2}.
+
+\emph{bws2}, like \emph{bws1}, is a synchronous model. Time advances in units of a bus
+cycle, memory requests are initiated at the beginning of a cycle, and transfers
+complete at the end of a cycle. \texttt{begin\_cycle()} scans processors for requests
+just as it did in \emph{bws1}; in \emph{bws2}, however, processors which have requests
+queued for a memory module or a bus will have \texttt{req[n]} non-zero, and so will
+be skipped in this scan. For each processor which has a request to be issued
+at the current time, a memory module is selected and event 2 scheduled.
+
+In \texttt{req\_module()}, the event routine for event 2, the request is queued if
+its memory module is busy; otherwise, the module is reserved and event 3
+scheduled. In the event routine for this event, \texttt{req\_bus()}, a bus is requested.
+If no bus is available, the request is queued. If a bus is available, it is
+reserved, the count \texttt{nbs} of the number of busy buses in this cycle is incremented,
+and the transfer completion, event 4, is scheduled.
+
+The event 4 routine, \texttt{end\_cycle()}, is called as each bus request issued in
+the current cycle completes. It changes \texttt{req[n]} to a negative value to
+indicate that processor $n$'s request is complete, and decrements \texttt{nbs}. When
+\texttt{nbs} reaches 0 (all current bus requests complete), \texttt{end\_cycle()} scans the set
+of processors for those with completed requests and, for each such processor,
+releases the bus and the memory module, sets \texttt{req[n]} to zero, and calls
+\texttt{next\_access()} to compute the next request time for the processor. When
+this scan is complete, event 1 is scheduled to issue the next batch of requests.
+
+\begin{figure}[p]
 \centering
-\begin{minipage}{0.86\textwidth}
-\begin{verbatim}
-/* delta from bws1 to bws2 */
-- req_module() reserves module and bus simultaneously
-+ req_module() queues by module, then issues req_bus()
+\begin{minipage}{.95\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+/*-------------  EVENT 2: REQUEST MEMORY  -------------*/
+req_module(n)
+  int n;
+    {
+      if (request(module[req[n]],n,0)==0) then
+        schedule(3,0.0,n);
+    }
 
-+ req_bus() {
-+   if (busy(bus)) queue(bus); else reserve(bus);
-+   schedule(END_CYCLE, 1.0, token);
-+ }
+/*--------------  EVENT 3: REQUEST BUS  ---------------*/
+req_bus(n)
+  int n;
+    {
+      if (request(bus,n)==0) then
+        {nbs++; schedule(4,1.0,n);}
+    }
 
-- end_cycle() releases module/bus immediately
-+ end_cycle() defers release until all cycle requests complete
-+ and then triggers begin_cycle() for next machine cycle
-
-+ report() now prints U(bus), U(module[j]), Q(module[j]), Q(bus)
-\end{verbatim}
+/*---------------  EVENT 4: END CYCLE  ----------------*/
+end_cycle(n)
+  int n;
+    {
+      req[n]=-req[n]; nbs--;
+      if (nbs==0) then
+        {
+          for (n=1; n<=N; n++)
+            if (req[n]<0) then
+              {
+                release(bus,n);
+                release(module[-req[n]],n);
+                req[n]=0; next_access(n);
+              }
+          schedule(1,tn-time(),0);
+        }
+    }
+\end{lstlisting}
 \end{minipage}
-\caption{Changes to \texttt{bws1} for Memory and Bus Queueing}
-\label{fig:ch5-bws2-delta}
+\caption{Changes to \emph{bws1} for Memory and Bus Queueing}
 \end{figure}
 
-A key difference from \texttt{bws1} is that release operations are deferred
-until all bus requests issued in the current cycle complete. Without this
-deferral, resource release could trigger immediate dequeue/reschedule behavior
-that invalidates cycle-level accounting.
+A key difference between \emph{bws1} and \emph{bws2} is that, in the latter, release
+operations are deferred until all bus requests issued in the current cycle have
+completed. If this was not done, then releasing a bus, for example, might
+cause a queued request to be dequeued and rescheduled for event 3, where it
+would increment \texttt{nbs} and make this count invalid. As implemented in
+Figure 5.7, all requests issued in the current cycle are allowed to complete,
+and release operations then performed. This --- conceptually --- marks the
+end of the current cycle. The release operations may cause queued requests to
+be dequeued and rescheduled which --- again, conceptually --- occurs at the
+beginning of the next cycle, and \texttt{begin\_cycle()} may schedule additional
+requests at this time.
+
+Bandwidths from \emph{bws1} and \emph{bws2} agree closely over a wide range of
+parameter values (although not the entire range): we'll look at some results
+later. One advantage of \emph{bws2} is that the mean delay per request, $b$, can be
+decomposed into memory delays and bus delays.
 
 \section{An Asynchronous Queueing Model}
-\label{sec:mp-async-queue}
 
-\texttt{bws1} and \texttt{bws2} are synchronous, fixed-cycle models. Queueing
-network models are often used without strict synchronous constraints, so an
-asynchronous variant is useful for comparison.
+\emph{bws1} and \emph{bws2} were constructed to represent the synchronous operation of
+a real system: both models used fixed-unit time advancement and carefully
+aligned request initiation and completion on cycle endpoints. This construction
+also seemed to be a natural counterpart of the analytic model developed
+in Section 5.3, which focused on the probability distributions of the number of
+memory and bus requests made in a cycle. However, queueing network models
+have been used with some success to model multiprocessor systems, and these
+have not been constrained to represent synchronous behavior.\footnote{See, for example, Jacobson and Lazowska [1981], Smilauer [1985], and Towsley [1986].} It is
+interesting, then, to see how results from an asynchronous queueing model
+compare with those of our synchronous models.
 
-An asynchronous model (\texttt{bws3}) is obtained by simplifying \texttt{bws2}:
-batching logic for cycle alignment is removed, event routines are compacted,
-and processor execution intervals are generated from an exponential
-distribution rather than geometric (since integer cycle counts are no longer
-required).
+An asynchronous simulation model of a multiprocessor system is shown in
+Figure 5.8: we'll call it \emph{bws3}. It is another possible realization of the
+queueing model diagram of Figure 5.6. \emph{bws3} is derived from, and is a simplification
+of, \emph{bws2}. The code involved with batching request initiation and
+completion operations has been discarded: since this left only a handful of
+statements, the event routines were integrated into \texttt{main()}. The distribution
+used to generate processor execution intervals has been changed from
+geometric to exponential, since we're not concerned about producing integer-
+valued execution times. \texttt{x} represents the mean execution interval; note that
+its value is computed when it is declared.
 
-\begin{figure}[ht]
+% PDF page 171 (printed 149): the listing omits a closing parenthesis in
+% schedule(1,expntl(x),n;}, prints a semicolon after switch(event), and
+% omits the case 1 label. These apparent source errors are retained.
+\begin{figure}[p]
 \centering
-\begin{minipage}{0.86\textwidth}
-\begin{verbatim}
-/* bws3 asynchronous model outline */
-initialize modules[M], buses[B], processors[N]
-for each processor n: schedule(ISSUE, expntl(1/p), n)
+\begin{minipage}{.98\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+#include <smpl.h>
+#define queued 1
 
-ISSUE(n):
-  j = randint(1, M)
-  if (module[j] and bus available) then
-    reserve(module[j]); reserve(bus)
-    schedule(COMPLETE, 1.0, n)
-  else
-    enqueue request (n,j)
+real p=0.250;     /* local memory miss rate                */
+int  N=8,M=4,nB=2,/* no. processors, memories, & buses     */
+     module[17],  /* facility descriptors for modules      */
+     bus,         /* facility descriptor for buses         */
+     req[17];     /* currently-requested memory module     */
 
-COMPLETE(n):
-  release resources for n
-  schedule(ISSUE, expntl(1/p), n)
-  dequeue waiting requests if resources become available
-\end{verbatim}
+/*------------  MEMORY-BUS BANDWIDTH MODEL  ------------*/
+main()
+  {
+    int event,i,n; real x=1.0/p-1.0;
+    smpl(0,"Bandwidth Model");
+    bus=facility("bus",nB);
+    for (i=1; i<=M; i++) module[i]=facility("module",1);
+    for (n=1; n<=N; n++)
+      {req[n]=random(1,M); schedule(1,expntl(x),n;}
+    while (time()<10000.0)
+      {
+        cause(&event,&n);
+        switch(event);
+          {
+              if (request(module[req[n]],n,0)!=queued)
+                then schedule(2,0.0,n);
+            break;
+          case 2: /* reserve bus & initiate transfer  */
+            if (request(bus,n,0)!=queued) then
+              schedule(3,1.0,n);
+            break;
+          case 3: /* complete: schedule next request */
+            release(bus,n);
+            release(module[req[n]],n);
+            req[n]=random(1,M);
+            schedule(1,expntl(x),n);
+          break;
+          }
+      }
+    report();
+  }
+\end{lstlisting}
 \end{minipage}
-\caption{Multiprocessor Simulation Model \texttt{bws3}}
-\label{fig:ch5-bws3}
+\caption{Multiprocessor Simulation Model \emph{bws3}}
 \end{figure}
 
 \section{Model Results}
-\label{sec:mp-results}
 
-With the analytic model and simulation models (\texttt{bws1}, \texttt{bws2},
-\texttt{bws3}), representative comparisons are shown in Table~\ref{tab:ch5-results}.
+We now have an analytic model and three simulation models of this
+system: let's look at some of the model results.
 
 \begin{table}[ht]
 \centering
-\small
 \begin{tabular}{rrrrrrrr}
-\toprule
-$N$ & $M$ & $B$ & $p$ & bwa & bws1 & bws2 & bws3 \\
-\midrule
+\multicolumn{4}{c}{parameters} & \multicolumn{4}{c}{bandwidth} \\
+$N$ & $M$ & $B$ & $p$ & \emph{bwa} & \emph{bws1} & \emph{bws2} & \emph{bws3} \\
 4 & 4 & 4 & 1.000 & 2.734 & 2.739 & 2.619 & 2.613 \\
 4 & 4 & 2 & .500 & 1.583 & 1.668 & 1.664 & 1.665 \\
 4 & 4 & 1 & .250 & .807 & .827 & .927 & .839 \\
+4 & 2 & 1 & .250 & .818 & .827 & .927 & .839 \\
 4 & 2 & 1 & .125 & .481 & .487 & .737 & .484 \\
-8 & 8 & 8 & 1.000 & 9.231 & 9.253 & 4.948 & 4.934 \\
+\noalign{\smallskip}
+8 & 8 & 8 & 1.000 & 5.251 & 5.253 & 4.948 & 4.934 \\
 8 & 8 & 4 & .500 & 3.273 & 3.379 & 3.334 & 3.352 \\
-8 & 8 & 2 & .250 & 1.706 & 1.744 & 1.791 & 1.739 \\
+8 & 8 & 2 & .250 & 1.706 & 1.744 & 1.751 & 1.739 \\
 8 & 4 & 2 & .250 & 1.690 & 1.711 & 1.718 & 1.709 \\
 8 & 4 & 1 & .125 & .860 & .866 & .993 & .861 \\
+\noalign{\smallskip}
 16 & 16 & 16 & 1.000 & 10.303 & 10.305 & 9.614 & 9.586 \\
 16 & 16 & 8 & .500 & 6.713 & 6.847 & 6.744 & 6.736 \\
 16 & 16 & 4 & .250 & 3.553 & 3.598 & 3.601 & 3.596 \\
 16 & 8 & 4 & .250 & 3.483 & 3.524 & 3.510 & 3.490 \\
-16 & 8 & 2 & .125 & 1.794 & 1.794 & 1.810 & .877 \\
-\bottomrule
+16 & 8 & 2 & .125 & 1.794 & 1.794 & 1.810 & 1.871
 \end{tabular}
 \caption{Analytic and Simulation Model Results}
-\label{tab:ch5-results}
 \end{table}
 
-In these comparisons, analytic and \texttt{bws1} bandwidths are generally close.
-\texttt{bws2} and \texttt{bws3} are also close over most settings, with notable
-differences for some single-bus configurations. The table supports two points:
-(1) the analytic model is a useful approximation in much of the parameter
-space, and (2) queueing semantics and synchrony assumptions can matter in edge
-configurations.
+Results for selected sets of parameter values are shown in Table 5.1. The
+\emph{bwa} column shows bandwidths from the analytic model of Section 5.3; the
+\emph{bws1}, \emph{bws2}, and \emph{bws3} columns show bandwidths from those simulation
+models. In constructing this table, values of $M$, $N$, and $p$ were selected first,
+and $B$ then was chosen equal to $Np$. This should place bandwidth values in
+the ``interesting'' region discussed in Section 5.4.
+
+For the parameters represented in this table, \emph{bwa} and \emph{bws1} bandwidths
+different at most by about 5 percent (over a wider parameter range, the
+maximum difference was about 6 percent); thus, we can consider the analytic
+model to be satisfactorily verified --- at least in terms of its derivation. The
+analytic model assumes random selection of memory and bus requests, with
+random reselection of memory modules for blocked requests; \emph{bws1}'s selection
+is quasi-random (for lack of a better name) because of its its processor scan
+mechanism, and it also has random reselection. On the other hand, \emph{bws2} and
+\emph{bws3} both provide first-in, first-out queueing of memory and bus requests, and
+retain the original selection for blocked memory requests. The operation of
+the actual system probably falls somewhere between these two representations,
+so it is reassuring that the results from all four models generally are
+close. At a miss rate of $p=1.0$, the bandwidths produced by \emph{bma} and \emph{bws1}
+are noticeably greater than those produced by \emph{bws2} and \emph{bws3}; however, the
+difference is not large at $p=1.0$, and decreases as $p$ decreases, except as noted
+below.
+
+Results for the synchronous queueing model \emph{bws2} and the asynchronous
+queueing model \emph{bws3} agree closely except for the single bus ($B=1$) configurations.
+At $N=4$, $M=2$, $B=1$, and $p=0.125$, the bandwidth of 0.737 from \emph{bws2} is
+about 50 percent greater than the 0.484 value produced by \emph{bws3}. Note,
+though, that the latter value agrees closely with the bandwidth values of
+\emph{bwa} and \emph{bws1}. We won't explore the difference here, but you may want to
+implement the two models and examine it more closely. Look at the queueing
+delays in both cases and also keep in mind the different execution interval
+distributions.
+
+The simulation results in Table 5.1 all were obtained using a simulation
+interval of 10,000 cycles; as noted in Section 5.4, this is a consequence of using
+a batch size of 1000 cycles and a minimum of 10 batches as batch means
+analysis parameters. Therefore, the models of Figures 5.4 and 5.8 are shown
+with this simulation interval (determined by the \texttt{while} statement in
+\texttt{main()}). If these models are used ``as is'', smpl implementations using 16-bit
+\texttt{int}s may incur \texttt{int} overflow, since the average facility release rate can
+approach $Np$ releases per cycle. The batch means analysis extensions to
+these models included a call to \texttt{reset()} at the end of each batch, so the
+problem did not arise in these cases.
 
 \section{Extending the Multiprocessor System Model}
-\label{sec:mp-extensions}
 
-Natural extensions include:
+We now have an analytic model and three simulation models whose
+results generally are in close agreement, and we can proceed with some
+confidence to extend any one of these models. Extensions we might consider
+include the following.
 \begin{itemize}
-\item non-identical processors (different miss rates and execution
-  distributions),
-\item non-uniform/non-random memory addressing (including burst behavior),
-\item variable transfer lengths (multi-cycle transfers),
-\item different bus and memory service times.
+\item \textbf{non-identical request rates.} We assumed that processors
+were identical, each with a request (miss) rate of $p$. We
+might want to model a system composed of different
+processor types with different request rates, such as a mix of
+central and IO processors. (Also, we may want to incorporate
+different execution interval distributions for the different
+types of processors.)
+\item \textbf{non-random and non-uniform memory addressing.} We
+assumed that requests were independently, randomly, and
+uniformly distributed across memory modules. We may want
+to represent ``bursting'' of requests to a particular module
+(e.g., because of software lock accesses), or the patterns of
+references to sequential memory addresses generated by block
+transfers.
+\item \textbf{variable transfer lengths.} We assumed a transfer of one
+unit (e.g., one word) per request; we may want to extend this
+to permit multiple units to be transferred per request (requiring multiple cycles).
+\item \textbf{different bus and memory service times.} We assumed that
+a transfer kept the both memory module and the bus busy for
+one cycle; we may want to model memory subsystems in
+which the memory module busy time is longer than the data
+transfer time.
 \end{itemize}
 
-All of these are straightforward to incorporate in the simulation framework
-once processor/request state is explicitly represented.
+Analytic models incorporating some of these extensions have been developed.
+For example, the model of Mudge and Al-Sadoun [1985] provides
+variable transfer lengths and an arbitrary execution interval distribution.
+Also, any or all of these extensions easily can be included in a simulation
+model: once the data structures for processor and request attributes are
+specified, implementation of the model should be straightforward.
 
 \section{A CPU Modeling Project}
-\label{sec:mp-cpu-project}
 
-The chapter then introduces a project model of a pipelined CPU, intended as a
-processor element that could sit inside the multiprocessor environment.
-Principal elements are a four-stage instruction pipeline, a unified cache, an
-instruction fetch buffer, and a data fetch buffer (Figure~5.9).
+The objective of this project is to develop a model of a pipelined CPU and
+use this model to evaluate design alternatives for the pipeline's instruction
+fetch mechanism. This CPU might be the processor element of the multiprocessor
+system studied earlier in this chapter. This pipeline model, like
+the multiprocessor model, will be synchronous, with fixed-unit time
+advancement and events occurring on cycle boundaries. From the viewpoint of
+this project, the major elements of the CPU are a four-stage instruction
+pipeline, a single cache for both instructions and data, an instruction fetch
+(Ifetch) buffer, and a data fetch (Dfetch) buffer, as shown in Figure 5.9.
+Other CPU elements include a set of general-purpose registers and an
+arithmetic and logical operation unit (ALU).
+
+The CPU has a simple, register-oriented instruction set in which all
+memory accesses for data are performed by register load word and store word
+instructions. All instruction are one word in length, and the paths between
+the cache and the pipeline are one word wide. The pipeline permits up to
+four different instructions to be executing (in different stages) simultaneously.
+All instructions spend at least one cycle in each stage of the pipeline, so the
+minimum instruction execution time is four cycles. However, because of pipelining,
+the CPU has a maximum execution rate of one instruction per cycle.
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}[x=0.9cm,y=0.9cm]
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (if) at (0,2.6) {Ifetch};
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (pipeD) at (2.0,2.6) {D};
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (pipeA) at (3.6,2.6) {A};
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (pipeX) at (5.2,2.6) {X};
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (pipeW) at (6.8,2.6) {W};
-  \node[draw,rectangle,minimum width=2.0cm,minimum height=0.8cm] (cache) at (3.6,1.1) {Cache};
-  \node[draw,rectangle,minimum width=1.2cm,minimum height=0.8cm] (df) at (6.8,1.1) {Dfetch};
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (if) -- (pipeD);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (pipeD) -- (pipeA);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (pipeA) -- (pipeX);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (pipeX) -- (pipeW);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (pipeA) -- (cache);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (cache) -- (df);
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (df) -- (pipeX);
-\end{tikzpicture}
+\includegraphics[width=.75\textwidth]{figures/ch5-cpu-elements.png}
 \caption{Major CPU Elements}
-\label{fig:ch5-cpu-elements}
 \end{figure}
 
-Pipeline stages are fetch/decode (D), address generation (A), execute (X), and
-write-back (W). At least one cycle is spent in each stage, so minimum
-instruction latency is four cycles, while peak throughput is one instruction
-per cycle due to overlap.
+The pipeline is divided into instruction fetch/decode (D), address
+generate (A), execute (X), and write register (W) stages. (The pipeline is a
+static entity; execution of an instruction is a dynamic entity. An instruction
+may spend several machine cycles in a pipeline stage, either because of its
+own requirements or because it is blocked by instructions ahead of it. Thus,
+we distinguish between the X \emph{stage} of the pipeline and the X \emph{cycle(s)} of an
+instruction.) Instructions flow through the pipeline as follows.
 
-Branch and fetch/store behavior, cache arbitration, and multi-cycle execute
-operations introduce holes and blocking effects in the completion stream, which
-makes this a useful project for studying pipeline-control and memory-system
-interaction under simulation.
+The pipeline attempts to issue an instruction every machine cycle.
+Unless inhibited, the D stage fetches the next word from the Ifetch buffer
+and decodes the instruction. This fetch/decode operation is inhibited if the
+Ifetch buffer is empty, if there already is an instruction in the D stage, or if a
+taken branch is pending. An instruction can spend more than one cycle in the
+D stage because the pipeline stage ahead of it is blocked. Also, in every
+machine cycle, the pipeline issues a cache request, called a sequential Ifetch,
+to fetch another word into the Ifetch buffer (unless the buffer is full or a
+taken branch is pending).
 
-Figure~5.10 in the original text illustrates representative pipeline sequences
-and delay patterns for instruction classes:
-\begin{itemize}
-\item \textbf{FS}: load/store/non-taken branch instructions (issue cache request
-  in first A cycle),
-\item \textbf{BR}: taken branch instructions (issue target fetch in first A
-  cycle),
-\item \textbf{ALU}: arithmetic/logic instructions (may require multiple X
-  cycles).
-\end{itemize}
+A stage actions depend on the type of instruction. In the first A cycle of a
+fetch or a branch instruction, the memory address is generated and a cache
+request (data fetch or target fetch) is initiated; the data or instruction word
+being fetched will be available when the instruction reaches the W stage.
+Also, the pipeline determines late in the A cycle whether or not the branch
+will be taken and, if so, discards the instructions in the D stage and Ifetch
+buffer, cancels the sequential Ifetch, and sets a branch pending flag to inhibit
+further instruction fetches. Similarly, in the first A cycle of a store instruction,
+the memory address is generated and a cache request initiated: the
+word to be stored is sent to the cache as part of the request. For all other
+instructions, register operands are gated to ALU input registers in the final A
+cycle of the instruction.
 
-\begin{figure}[ht]
+ALU operations are performed in the X stage; some instructions (e.g.,
+multiply) require multiple X cycles.
+
+In the W cycle of an instruction, the result of an ALU operation or a data
+word fetched from the cache is stored in a register (the word fetched for a
+non-taken branch instruction simply is discarded). For a taken branch, the
+word fetched is sent to the Ifetch buffer and the branch pending flag cleared.
+Pipeline timing is such that the W cycle of the branch and the D cycle of its
+target effectively overlap, and occur in the same machine cycle.
+
+At the end of each cycle, instructions advance to the next pipeline stage
+unless that stage ahead is blocked or unless the instruction is in the X stage
+and requires additional ALU cycles.
+
+The cache has an access time of two cycles; however, it also is pipelined,
+and can accept a request every cycle. The instruction pipeline issues cache
+requests for both instruction and data. If both a sequential Ifetch request and
+a data fetch or store request are attempted in the same cycle, the data
+request is given priority. The P and C stages of the cache pipeline can be
+viewed as corresponding to the A and X stages of the instruction pipeline.
+
+Various kinds of delays perturb the flow of instructions through the
+pipeline, creating ``holes'' in the stream of instructions observed completing
+in the W stage. Instructions which require multiple ALU cycles stay in the X
+stage until complete, blocking the progress of subsequent instructions but
+providing an opportunity for the instruction fetch mechanism to fill the
+instruction buffer. (When a fetch instruction follows an instruction with
+multiple X cycles, the cache delivers the word being fetched before the fetch
+instruction arrives at the W stage; the word is held in the Dfetch buffer
+until it can be stored in a register in the W cycle of the fetch instruction.)
+
+Two other delays are sequential instruction fetch (Ifetch) holes and
+taken branch holes. A sequential instruction fetch request is delayed if an A
+stage cache request is issued in the same cycle; this can result in the instruction
+buffer being empty in a later cycle, so that no instruction can be delivered
+to the D stage. A taken branch causes a multi-cycle hole in the instruction
+stream, since its target is not available until the start of its W cycle.
+
+\begin{figure}[p]
 \centering
-\begin{minipage}{0.86\textwidth}
-\centering
-\small
-\begin{tabular}{l|cccccccc}
-sequence & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ hline
-(a) ALU  & D & A & X & W & D & A & X & W \\ 
-(b) FS   & D & A & C & W & O & D & A & W \\ 
-(c) BR   & D & A & B & O & O & D & A & W \\ 
-(d) mix  & D & A & X & X & W & D & A & W \\ 
-(e) mix  & D & A & B & O & D & A & X & W \\ 
-\end{tabular}
-\par\vspace{0.4em}
-\footnotesize O = hole, C = cache arbitration delay, B = taken branch delay
-\end{minipage}
+\includegraphics[width=.9\textwidth,height=.78\textheight,keepaspectratio]{figures/ch5-pipeline-sequences.png}
 \caption{Pipeline Sequence Examples}
-\label{fig:ch5-pipeline-examples}
 \end{figure}
 
-In these sequences, \texttt{O} marks holes propagating through the pipeline and
-\texttt{@} marks a delay cycle (a cycle in which no instruction completes).
-Important effects shown in the examples:
-\begin{itemize}
-\item multi-X-cycle ALU instructions interlock following instructions;
-\item FS requests can delay sequential instruction fetches and create holes;
-\item taken branches can create multi-cycle holes due to target-fetch latency;
-\item some holes are masked by other delays (e.g., long X-stage occupancy).
-\end{itemize}
+Figure 5.10 shows various pipeline delay sequences. For purposes of this
+model, instructions can be grouped into three operation types: FS, BR, and
+ALU. FS instruction are load, store, and non-taken branch instructions, which
+issue cache requests in their first A cycle. (An instruction can have multiple
+A cycles because it is blocked by an instruction with multiple X cycles.) BR
+instructions are taken branch instructions, which also issue cache requests in
+their first A cycle. ALU instructions do not issue A-cycle cache requests, but
+may have multiple X cycles; FS and BR instructions have single X cycles.
 
-\paragraph{Workload description.}
-Design evaluations for this project use the following instruction mix:
+In the sequences of Figure 5.10, each instruction occupies a single row,
+with its pipeline cycles shown in columns of that row. It is assumed that the
+Ifetch buffer has a capacity of 3 or more instructions and is empty at the start
+of each sequence. The cache cycles used to fetch a sequential instruction are
+shown as part of the pipeline cycle sequence for that instruction: e.g.,
+P C D A X W. Cache cycles for data requests are shown as superscripts of
+the corresponding pipeline cycle: e.g., $A^P$. The symbol O represents holes
+propagating through the pipeline, and the symbol $\bullet$ marks a delay cycle ---
+a cycle in which an instruction does not complete. Not all holes cause delays.
+Each sequence begins execution at machine cycle 1.
 
-\begin{table}[ht]
-\centering
+Figure 5.10(a) shows a sequence of 4 ALU instructions; the first, third,
+and fourth instructions have single-cycle ALU operations, while the second
+has a four-cycle ALU operation. An observer positioned at the W stage of
+the pipeline would count three delay cycles. Note how instructions following
+the multi-X-cycle instruction are blocked, or \emph{interlocked}, until the next
+stage becomes free.
+
+Figure 5.10(b) shows the delay caused by cache access contention. The FS
+instruction at location $n$ initiates a cache request in its A cycle (cycle 4). The
+sequential Ifetch request which would otherwise be initiated in cycle 4 is
+delayed until cycle 5, creating a hole in the pipeline flow and a one-cycle
+delay in instruction execution. Note that if either of the ALU instructions
+preceding the instruction at $n+3$ had been multi-X-cycle instructions, this
+hole would have been masked by the additional X cycles.
+
+A delay caused by a taken branch is shown in Figure 5.10(c). The BR
+instruction initiates a cache request to fetch the target instruction in its A
+cycle and, at the same time, cancels execution of the sequential instructions
+which follow it at locations $n+1$ and $n+2$. The target instruction, here a
+single-X-cycle ALU instruction, begins execution in cycle 6. Sequential
+instruction fetching also is resumed in cycle 6 but, since two cycles are needed
+to fetch an instruction, a pipeline hole occurs between instructions $m$ and $m+1$.
+A taken branch, then, can result in a delay of three cycles.
+
+The holes created by a taken branch can be partly or fully masked by
+other delays. In Figure 5.10(d), a taken branch follows a multi-X-cycle ALU
+instruction; the X cycles completely mask the branch holes. Figure 5.10(e)
+shows an instruction sequence in which a taken branch has another taken
+branch as its target; the sequential Ifetch delay usually caused by a taken
+branch does not occur for the first branch, since execution of its target is not
+followed by execution of a sequential instruction. (For compactness, Figures
+5.10(d) and (e) do not show the hole sequences for the sequential instructions
+cancelled by a taken branch.)
+
+There are various other cases in which holes are masked by other
+delays. Try diagramming the pipeline sequences for FS-BR-ALU and FS-
+ANY-BR-ALU instructions sequences.
+
+\noindent\textbf{Workload description.} Design evaluations are to be based on the following instruction mix.
+\begin{center}
 \begin{tabular}{lr}
-\toprule
-Instruction type & Proportion \\
-\midrule
-BR  & 0.1437 \\
-FS  & 0.4002 \\
+instruction type & proportion of instructions \\
+BR & 0.1437 \\
+FS & 0.4002 \\
 ALU & 0.4561 \\
-\midrule
-Total & 1.0000 \\
-\bottomrule
+ & 1.0000
 \end{tabular}
-\caption{CPU Project Instruction Mix}
-\label{tab:ch5-instr-mix}
-\end{table}
+\end{center}
+FS instructions are 49.5 percent fetches, 17.5 percent stores, and 33.0 percent
+non-taken branches.
 
-FS instructions are approximately 49.5\% fetches, 17.5\% stores, and 33.0\%
-non-taken branches. BR and FS instructions always have single-cycle X stages.
-ALU instructions use a variable number of X cycles:
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{lr}
-\toprule
-ALU X cycles & Proportion of ALU instructions \\
-\midrule
-1  & 0.40 \\
-2  & 0.40 \\
-4  & 0.10 \\
-8  & 0.07 \\
+A BR or a FS instruction always has a single X cycle. An ALU instruction,
+depending on the ALU operation it performs, can have multiple X cycles.
+The distribution of ALU operation times is as follows.
+\begin{center}
+\begin{tabular}{rr}
+ALU (X) cycles & proportion of ALU instructions \\
+1 & 0.40 \\
+2 & 0.40 \\
+4 & 0.10 \\
+8 & 0.07 \\
 16 & 0.03 \\
-\midrule
-Total & 1.00 \\
-\bottomrule
+ & 1.00
 \end{tabular}
-\caption{ALU Operation-Time Mix}
-\label{tab:ch5-alu-mix}
-\end{table}
+\end{center}
 
-Inter-branch headways (instructions between taken branches) are generated from
-the distribution used earlier in Chapter 1. BR instructions terminate a
-headway; other instructions in a headway are assigned independently as FS or
-ALU according to the proportions above.
+The distribution of inter-branch headways --- the number of instructions
+executed between taken branches --- is tabulated in problem 1, Chapter 1; the
+function of problem 1.2(c), Chapter 1, can be used to generate sample
+headways. BR instructions are, by definition, the last instructions of a
+headway; other instructions in a headway divide randomly and independently
+into FS and ALU instructions in accordance with the proportions
+tabulated earlier.
 
-\paragraph{Building and validating the model.}
-A compact smpl model is feasible (the original notes indicate under 100 lines
-of C excluding debug instrumentation). A practical implementation strategy is to
-compute stage transitions backward (W$\rightarrow$A) per cycle rather than
-forward.
+\noindent\textbf{Building and validating the model.} A smpl model of the pipeline need
+not be very large: the author's version comprises less than 100 lines of C code,
+exclusive of debugging instrumentation. The key is to work backward
+through the pipeline (W stage $\rightarrow$ A stage), rather than forward, to determine
+what happens in each machine cycle.
 
-Validation in this project is primarily trace-based (in the absence of direct
-analytic baselines for all behaviors). A useful cycle trace includes D/A/X/W
-stage contents and key state such as Ifetch-buffer occupancy and sequential
-fetch/branch flags.
+Since neither measurement data nor analytic results are available to
+check simulation results, model debugging and validation will rely heavily
+on examination of traces. The simplest trace to implement produces a line for
+each machine cycle, with columns showing the contents of each pipeline
+stage at the end of the cycle, and resembles the following.
+\begin{center}
+\begin{tabular}{rrrrrl}
+cycle & -D- & -A- & -X- & -W- & counters and flags \\
+25 & BR & inv & FS & inv & $\ldots\quad\ldots\quad\ldots\quad\ldots\quad\ldots$ \\
+26 & inv & BR & inv & FS & $\ldots\quad\ldots\quad\ldots\quad\ldots\quad\ldots$ \\
+27 & inv & inv & BR & inv & $\ldots\quad\ldots\quad\ldots\quad\ldots\quad\ldots$ \\
+28 & ALU & inv & inv & BR & $\ldots\quad\ldots\quad\ldots\quad\ldots\quad\ldots$ \\
+29 & inv & ALU & inv & inv & $\ldots\quad\ldots\quad\ldots\quad\ldots\quad\ldots$
+\end{tabular}
+\end{center}
+In this example, ``inv'' marks stages which do not contain a valid instruction.
+The ``counters and flags'' part of the trace line includes such things as the
+number of instructions remaining in the Ifetch buffer and whether or not a
+sequential Ifetch request was issued.
 
-\paragraph{Pipeline design analyses.}
-Primary performance metric: mean instruction execution time per instruction,
-$I$ cycles/instruction. If cycle time is $C$ microseconds, throughput in MIPS is
-$(IC)^{-1}$. Also collect mean X-stage cycles per instruction, $E$; branch/Ifetch
-delay contribution is then $D = I - E$.
+Traces are useful in checking short runs. Long runs can be checked by
+analyzing delays produced with constrained instruction mixes and with the
+Ifetch buffer capacity set to one instruction. For example, suppose all ALU
+instructions are limited to single ALU cycles and no FS instructions are generated.
+All delays, then, will be caused by BR instructions; these will cause 2-
+cycle delays when the target is another BR and 3-cycle delays otherwise.
+When instruction, total cycle, and delay counts balance, FS instruction generation
+can be restored and the reconcilation of counts repeated. (Try specifying
+the delays which can occur in this case.)
 
-The base case is Ifetch-buffer capacity of one instruction. Alternatives to
-evaluate relative to this baseline:
+\noindent\textbf{Pipeline design analyses.} The performance measure of interest in
+pipeline analysis is the mean instruction execution time in cycle, $I$, which can
+be obtained by dividing the simulation run time in cycles by the number of
+instruction completed in the run. Note that $(IC)^{-1}$, where $C$ is the cycle time
+in microseconds, gives the mean instruction execution rate in millions of
+instructions per second (MIPS). It also is useful to obtain the average X stage
+execution time (X cycles) per instruction, $E$. (Compare the measured value of
+$E$ with that estimated from instruction mix parameters.) The average
+number of delay cycles per instruction due to branch and Ifetch holes, $D$, then
+is given by $I-E$.
+
+The mean instruction execution time obtained with an Ifetch buffer
+capacity of one instruction is to be considered as the ``base case''. The
+following design alternatives are to be evaluated in terms of their performance
+relative to this case. (In specifying confidence intervals for your simulations,
+note that the differences in $I$ for some of these cases may be small.)
+
 \begin{enumerate}
-\item increase Ifetch-buffer capacity to 2, 3, or 4 instructions;
-\item widen cache$\rightarrow$Ifetch path so sequential/target fetch can return two
-  instructions per cache access (with and without enforced branch-target
-  alignment);
-\item delayed-branch architecture variant where the sequential instruction
-  following a branch always executes (assume useful work 70\%, NOP 30\%);
-\item repeat evaluations assuming multi-cycle ALU execution times are reduced by
-  50\% in a future implementation.
+\renewcommand{\labelenumi}{(\alph{enumi})}
+\item An increase in Ifetch buffer capacity to 2, 3, or 4 instructions.
+\item An increase in the width of the path between the cache and the Ifetch
+buffer so that a sequential Ifetch or a target fetch can fetch two instructions
+in a single cache access. (Assume that the compiler will force target alignment
+to a double-word boundary at the cost of reduced code density; what
+would be the effect on performance of not forcing alignment?)
+\item An architectural change which specifies that the sequential instruction
+following a branch always is executed, regardless of whether or not the
+branch is taken. (This \emph{delayed branch} instruction is common in current reduced
+instruction set computers, or RISCs. Patterson and S\'equin [1981] trace it
+back to the MANIAC I, circa 1951.) In evaluating the performance of this
+alternative, assume that the sequential instruction following a branch
+(taken or not taken) performs useful work 70\% of the time and is a NOP (no
+operation) 30\% of the time, and adjust your relative performance estimate
+accordingly.
+\item Assume that a future implementation of this CPU will take advantage
+of new technology to reduce the execution time of multi-cycle ALU operations
+by 50 percent. Determine how the above alternatives will perform in this
+new implementation.
 \end{enumerate}

@@ -1,0 +1,46 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+% Five fields per record, ordered L5 through L1.
+\foreach \y in {0,.9,1.8,4.2,6.3,7.8} {
+ \draw[review line] (0,\y) rectangle (10,\y+.9);
+ \foreach \x in {2,4,6,8} \draw[review line] (\x,\y)--(\x,\y+.9);
+}
+\foreach \y in {1.8,4.2} {
+ \node[align=center] at (1,\y+.45) {busy period\\start};
+ \node[align=center] at (3,\y+.45) {busy period\\sum};
+ \node[align=center] at (5,\y+.45) {release\\count};
+ \node[align=center] at (7,\y+.45) {user's\\priority};
+ \node[align=center] at (9,\y+.45) {user's\\token no.};
+}
+\foreach \x in {0,1,3,5,7,9,10} \draw[review line,dotted] (\x,2.7)--(\x,4.2);
+\node[align=center] at (1,.45) {last queue\\change time};
+\node[align=center] at (3,.45) {queue\\exit count};
+\node[align=center] at (5,.45) {queue\\length};
+\node[align=center] at (7,.45) {no. of busy\\servers};
+\node[align=center] at (9,.45) {no. of\\servers};
+\node[align=center] at (1,1.35) {length-time\\product sum};
+\node[align=center] at (3,1.35) {preempt\\count};
+\node[align=center] at (5,1.35) {index of\\name};
+\node[align=center] at (7,1.35) {facility\\chain link};
+\node[align=center] at (9,1.35) {head of\\queue link};
+\foreach \y/\last in {6.3/queue link,7.8/0} {
+ \node at (1,\y+.45) {priority};
+ \node[align=center] at (3,\y+.45) {remaining\\event time};
+ \node at (5,\y+.45) {event no.};
+ \node at (7,\y+.45) {token no.};
+ \node at (9,\y+.45) {\last};
+}
+\foreach \i/\t in {0/L5,1/L4,2/L3,3/L2,4/L1} \node at (1+2*\i,-.35) {\t};
+\node at (9,9.03) {Tail of Queue};
+\node at (9,6.0) {Head of Queue};
+\draw[review line,decorate,decoration={brace,amplitude=6pt}] (-.25,8.7)--(-.25,6.3);
+\draw[review line,decorate,decoration={brace,amplitude=6pt}] (-.25,5.1)--(-.25,1.8);
+\draw[review line,decorate,decoration={brace,amplitude=6pt}] (-.25,1.8)--(-.25,0);
+\node[rotate=90,font=\sffamily\footnotesize] at (-.85,7.5) {Queue Elements};
+\node[rotate=90,font=\sffamily\footnotesize] at (-.85,3.45) {Server Elements};
+\node[rotate=90,font=\sffamily\footnotesize] at (-.85,.9) {Header};
+\fill (10,1.35) circle (2pt) (10,6.9) circle (2pt);
+\draw[review arrow] (10,1.35)--(10.6,1.35)--(10.6,6.6)--(10,6.6);
+\draw[review line] (10,6.9)--(10.6,6.9)--(10.6,7.2);
+\draw[review line,dotted] (10.6,7.2)--(10.6,7.75);
+\draw[review arrow] (10.6,7.75)--(10.6,8.25)--(10,8.25);
+\end{tikzpicture}

@@ -1,23 +1,20 @@
-\documentclass[17pt]{extbook}
+% Rebuilt book: editable text, mathematics, tables, and source listings.
+% Figures are vector drawings or individual cropped figure assets, never pages.
+\documentclass[11pt]{book}
 
 \input{preamble}
+\hypersetup{
+  pdftitle={Simulating Computer Systems: Techniques and Tools},
+  pdfauthor={M. H. MacDougall},
+  pdfsubject={LaTeX reconstruction}
+}
 
 \title{Simulating Computer Systems}
 \author{M. H. MacDougall}
 \date{}
 
-% Keep scan-wrapper pages optional.
-% Set \scanwrappertrue only when you want to reproduce the archive wrapper
-% pages (MIT LIBRARIES / IA notices) ahead of the actual cover.
-\newif\ifscanwrapper
-\scanwrapperfalse
-% \scanwrappertrue
-
 \begin{document}
 \pagenumbering{gobble}
-\ifscanwrapper
-\include{chapters/00_scan_prelim}
-\fi
 \begin{titlepage}
   \thispagestyle{empty}
   \pagecolor{coverblue}
@@ -74,4 +71,5 @@
 \backmatter
 \include{chapters/11_references}
 \include{chapters/12_indexes}
+\include{chapters/13_endmatter}
 \end{document}

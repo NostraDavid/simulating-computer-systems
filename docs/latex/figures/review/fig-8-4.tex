@@ -1,0 +1,20 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+\foreach \y/\last in {0/link,1.5/link,3.9/0} {
+ \draw[review line] (0,\y) rectangle (10,\y+.85);
+ \foreach \x in {2,4,6,8} \draw[review line] (\x,\y)--(\x,\y+.85);
+ \node[align=center] at (1,\y+.425) {occurrence\\time};
+ \node at (3,\y+.425) {unused};
+ \node at (5,\y+.425) {event no.};
+ \node at (7,\y+.425) {token no.};
+ \node at (9,\y+.425) {\last};
+}
+\node at (9.2,5.05) {End of List};
+\foreach \i/\t in {0/L5,1/L4,2/L3,3/L2,4/L1} \node at (1+2*\i,-.4) {\t};
+\node[review box,minimum width=1.4cm,minimum height=.55cm] (evl) at (9.3,-1.45) {evl};
+\fill (evl.east) circle (2pt) (10,.57) circle (2pt) (10,2.07) circle (2pt);
+\draw[review arrow] (evl.east)--(10.6,-1.45)--(10.6,.27)--(10,.27);
+\draw[review arrow] (10,.57)--(10.6,.57)--(10.6,1.77)--(10,1.77);
+\draw[review line] (10,2.07)--(10.6,2.07)--(10.6,2.4);
+\draw[review line,dotted] (10.6,2.4)--(10.6,3.9);
+\draw[review arrow] (10.6,3.9)--(10.6,4.32)--(10,4.32);
+\end{tikzpicture}

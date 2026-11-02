@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+\foreach \x/\a/\b/\c in {0/{last storage\\change time}/{length-time\\product sum}/{last queue\\change time},1/{space-time\\product sum}/unused/{queue\\exit count},2/{deallocation\\count}/{index of\\name}/{queue\\length},3/unused/{storage\\chain link}/{space\\remaining},4/unused/{head of\\queue link}/{space\\defined}} {
+ \node[review box,minimum width=2.5cm,minimum height=1.1cm] at (2.5*\x,0) {\a};
+ \node[review box,minimum width=2.5cm,minimum height=1.1cm] at (2.5*\x,-1.1) {\b};
+ \node[review box,minimum width=2.5cm,minimum height=1.1cm] at (2.5*\x,-2.2) {\c};
+ \node at (2.5*\x,-3.1) {L\the\numexpr5-\x\relax};
+}
+\node[rotate=90] at (-2,-1.1) {Header};
+\draw[review line] (-1.5,.55) -- (-1.65,.55) -- (-1.65,-2.75) -- (-1.5,-2.75);
+\foreach \x/\t in {0/priority,1/{space\\requested},2/{event no.},3/{token no.},4/0} \node[review box,minimum width=2.5cm,minimum height=1.1cm] at (2.5*\x,5.2) {\t};
+\foreach \x/\t in {0/priority,1/{space\\requested},2/{event no.},3/{token no.},4/{queue link}} \node[review box,minimum width=2.5cm,minimum height=1.1cm] at (2.5*\x,3.4) {\t};
+\node[anchor=west] at (8.75,6.05) {Tail of Queue};
+\node[anchor=west] at (8.75,2.55) {Head of Queue};
+\node[rotate=90] at (-2,4.3) {Queue Elements};
+\draw[review line] (-1.5,5.75) -- (-1.65,5.75) -- (-1.65,2.85) -- (-1.5,2.85);
+\fill (11.25,-1.1) circle (2.5pt) (11.25,3.4) circle (2.5pt);
+\draw[review arrow] (11.25,-1.1) -- (12,-1.1) -- (12,3.05) -- (11.25,3.05);
+\draw[review line] (11.25,3.4) -- (12,3.4) -- (12,3.8);
+\draw[review line,dotted] (12,3.8) -- (12,4.8);
+\draw[review arrow] (12,4.8) -- (12,5.2) -- (11.25,5.2);
+\end{tikzpicture}

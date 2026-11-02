@@ -1,0 +1,6 @@
+\begin{tikzpicture}
+\foreach \x/\t in {0/p1,1/p2,2/{distribution\\chain link},3/seed,4/{type\\(encoded)}} {
+  \node[review box,minimum width=2.6cm,minimum height=1.1cm] at (2.6*\x,0) {\t};
+  \node at (2.6*\x,-.9) {L\the\numexpr5-\x\relax};
+}
+\end{tikzpicture}

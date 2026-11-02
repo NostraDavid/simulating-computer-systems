@@ -1,0 +1,3172 @@
+{
+  "method": "Numbered caption OCR matched against original PDF pages 23–279, with page offset PDF = printed + 22. Figure 6.10 was visually verified because its caption is absent from the text layer. Types manually corrected from obvious misclassifications and source/asset contact-sheet inspection, but a complete visual audit of every existing asset has not been performed.",
+  "entries": [
+    {
+      "id": "figure 1.1",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 1,
+      "caption_tex": "Distribution of File Lengths",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 316,
+      "line_end": 387,
+      "representation": [
+        "TikZ",
+        "tabular"
+      ],
+      "type": "plot",
+      "assets": [],
+      "original_pdf_pages": [
+        30
+      ],
+      "original_printed_pages": [
+        8
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.1. Distribution   of File Lengths",
+      "other_candidates": [
+        {
+          "pdf_page": 29,
+          "score": 0.5,
+          "line": "produced the file length distribution shown in Figure 1.1. This is a discrete"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-1-1-p8.png",
+          "printed_page": 8,
+          "source_pdf_page": 30
+        }
+      ]
+    },
+    {
+      "id": "figure 1.2",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 2,
+      "caption_tex": "Sampling the File Length Distribution",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 389,
+      "line_end": 477,
+      "representation": [
+        "TikZ"
+      ],
+      "type": "plot",
+      "assets": [],
+      "original_pdf_pages": [
+        30
+      ],
+      "original_printed_pages": [
+        8
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.2. Sampling the File Length Distribution",
+      "other_candidates": [
+        {
+          "pdf_page": 31,
+          "score": 0.57,
+          "line": "This process is illustrated in Figure 1.2. The cumulative distribution of"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-1-2-p8.png",
+          "printed_page": 8,
+          "source_pdf_page": 30
+        }
+      ]
+    },
+    {
+      "id": "figure 1.3",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 3,
+      "caption_tex": "A Single Server Queueing System",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 663,
+      "line_end": 667,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch1-figure-1-3.png"
+      ],
+      "original_pdf_pages": [
+        35
+      ],
+      "original_printed_pages": [
+        13
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.3. A Single Server Queueing System",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch1-figure-1-3.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 1.4",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 4,
+      "caption_tex": "Queueing System Simulation Model",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 697,
+      "line_end": 724,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        36
+      ],
+      "original_printed_pages": [
+        14
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.4. Queueing System Simulation                             Model",
+      "other_candidates": [
+        {
+          "pdf_page": 37,
+          "score": 0.71,
+          "line": "While the program of Figure 1.4 may successfully model the behavior of"
+        },
+        {
+          "pdf_page": 35,
+          "score": 0.71,
+          "line": "^ The C program       of Figure 1 .4 is a simulation          model of this system, and is"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-1-4-p14.png",
+          "printed_page": 14,
+          "source_pdf_page": 36
+        }
+      ]
+    },
+    {
+      "id": "figure 1.5",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 5,
+      "caption_tex": "Queueing System Behavior",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 736,
+      "line_end": 740,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch1-figure-1-5.png"
+      ],
+      "original_pdf_pages": [
+        37
+      ],
+      "original_printed_pages": [
+        15
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.5. Queueing System Behavior",
+      "other_candidates": [
+        {
+          "pdf_page": 36,
+          "score": 0.63,
+          "line": "Figure 1.5 graphically illustrates the behavior of the simulated system."
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch1-figure-1-5.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ],
+      "panels": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "id": "figure 1.6",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 6,
+      "caption_tex": "Instrumented Queueing System Simulation Model",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 933,
+      "line_end": 967,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        42
+      ],
+      "original_printed_pages": [
+        20
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.6. Instrumented                        Queueing System Simulation                      Model",
+      "other_candidates": [
+        {
+          "pdf_page": 42,
+          "score": 0.38,
+          "line": "The model of Figure 1.6 can be extended      in certain ways without"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-1-6-p20.png",
+          "printed_page": 20,
+          "source_pdf_page": 42
+        }
+      ]
+    },
+    {
+      "id": "figure 1.7",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 7,
+      "caption_tex": "smpl Queueing System Simulation Model",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 1062,
+      "line_end": 1097,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        45
+      ],
+      "original_printed_pages": [
+        23
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.7. smpl Queueing System Simulation                                                 Model",
+      "other_candidates": [
+        {
+          "pdf_page": 77,
+          "score": 0.57,
+          "line": "1. Run the M/M/1 queue simulation model of Figure 1.7 and use the data"
+        },
+        {
+          "pdf_page": 45,
+          "score": 0.49,
+          "line": "The model parameters specified in Figure 1.7 result in the simulation of 1025"
+        },
+        {
+          "pdf_page": 141,
+          "score": 0.38,
+          "line": "lation program of Figure 1.7 to estimate the mean queue length."
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-1-7-p23.png",
+          "printed_page": 23,
+          "source_pdf_page": 45
+        }
+      ]
+    },
+    {
+      "id": "figure 1.8",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 8,
+      "caption_tex": "Triangular Distribution",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 1200,
+      "line_end": 1237,
+      "representation": [
+        "TikZ"
+      ],
+      "type": "plot",
+      "assets": [],
+      "original_pdf_pages": [
+        48
+      ],
+      "original_printed_pages": [
+        26
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.8. Triangular       Distribution",
+      "other_candidates": [
+        {
+          "pdf_page": 47,
+          "score": 0.47,
+          "line": "and mode c; its mean is (a + b + c)/3.         Figure 1.8 shows a sketch of the"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-1-8-p26.png",
+          "printed_page": 26,
+          "source_pdf_page": 48
+        }
+      ]
+    },
+    {
+      "id": "figure 1.9",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 9,
+      "caption_tex": "Timesharing System",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 1254,
+      "line_end": 1258,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch1-figure-1-9.png"
+      ],
+      "original_pdf_pages": [
+        48
+      ],
+      "original_printed_pages": [
+        26
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.9. Timesharing          System",
+      "other_candidates": [
+        {
+          "pdf_page": 48,
+          "score": 0.47,
+          "line": "4. A small timesharing   system (Figure 1.9) has 16 user terminals connected to"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch1-figure-1-9.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 1.10",
+      "kind": "figure",
+      "chapter": 1,
+      "number": 10,
+      "caption_tex": "Program Graph",
+      "source_tex": "docs/latex/chapters/01_chapter1.tex",
+      "line_start": 1288,
+      "line_end": 1292,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch1-figure-1-10.png"
+      ],
+      "original_pdf_pages": [
+        50
+      ],
+      "original_printed_pages": [
+        28
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 1.10. Program Graph",
+      "other_candidates": [
+        {
+          "pdf_page": 49,
+          "score": 0.47,
+          "line": "The graph of Figure 1.10 represents a computer program.     Diamonds"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch1-figure-1-10.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 2.1",
+      "kind": "figure",
+      "chapter": 2,
+      "number": 1,
+      "caption_tex": "Central Server Queueing Network",
+      "source_tex": "docs/latex/chapters/02_chapter2.tex",
+      "line_start": 566,
+      "line_end": 570,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch2-figure-2-1.png"
+      ],
+      "original_pdf_pages": [
+        64
+      ],
+      "original_printed_pages": [
+        42
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 2.1. Central Server Queueing Network",
+      "other_candidates": [
+        {
+          "pdf_page": 64,
+          "score": 0.47,
+          "line": "is represented by the queueing network of Figure 2.1. Networks with this"
+        },
+        {
+          "pdf_page": 166,
+          "score": 0.46,
+          "line": "the symbols are new. In Figure 2.1, each symbol represents a simple single-"
+        },
+        {
+          "pdf_page": 112,
+          "score": 0.39,
+          "line": "Figure 2.1. Compute the mean CPU queue length (including the task in"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch2-figure-2-1.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 2.2",
+      "kind": "figure",
+      "chapter": 2,
+      "number": 2,
+      "caption_tex": "Queueing Network Simulation Program",
+      "source_tex": "docs/latex/chapters/02_chapter2.tex",
+      "line_start": 653,
+      "line_end": 707,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        66,
+        67
+      ],
+      "original_printed_pages": [
+        44,
+        45
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 2.2. Queueing Network Simulation Program",
+      "other_candidates": [
+        {
+          "pdf_page": 67,
+          "score": 0.95,
+          "line": "Figure 2.2. Queueing Network Simulation                                                       Program (continued)"
+        }
+      ],
+      "continuation": false,
+      "continuations": [
+        {
+          "caption_tex": "Queueing Network Simulation Program (continued)",
+          "source_tex": "docs/latex/chapters/02_chapter2.tex",
+          "line_start": 711,
+          "line_end": 745,
+          "representation": [
+            "verbatim"
+          ],
+          "type": "code",
+          "assets": [],
+          "original_pdf_pages": [
+            67
+          ],
+          "original_printed_pages": [
+            45
+          ],
+          "match_confidence": 1.0,
+          "matched_ocr_line": "Figure 2.2. Queueing Network Simulation                                                       Program (continued)",
+          "other_candidates": [
+            {
+              "pdf_page": 66,
+              "score": 0.88,
+              "line": "Figure 2.2. Queueing Network Simulation Program"
+            }
+          ],
+          "continuation": true
+        }
+      ],
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-2-2-p44.png",
+          "printed_page": 44,
+          "source_pdf_page": 66
+        },
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-2-2-p45.png",
+          "printed_page": 45,
+          "source_pdf_page": 67
+        }
+      ]
+    },
+    {
+      "id": "figure 2.3",
+      "kind": "figure",
+      "chapter": 2,
+      "number": 3,
+      "caption_tex": "smpl Trace Message Sequence",
+      "source_tex": "docs/latex/chapters/02_chapter2.tex",
+      "line_start": 944,
+      "line_end": 978,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "terminal",
+      "assets": [],
+      "original_pdf_pages": [
+        72
+      ],
+      "original_printed_pages": [
+        50
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 2.3. smpl Trace Message Sequence",
+      "other_candidates": [
+        {
+          "pdf_page": 250,
+          "score": 0.71,
+          "line": "sequence of Figure 2.3 shows most of the message formats."
+        },
+        {
+          "pdf_page": 247,
+          "score": 0.51,
+          "line": "operations performed.       Figure 2.3 shows an example of the messages"
+        },
+        {
+          "pdf_page": 73,
+          "score": 0.51,
+          "line": "Figure 2.3 shows a sequence of trace messages from the execution of the"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-2-3-p50.png",
+          "printed_page": 50,
+          "source_pdf_page": 72
+        }
+      ]
+    },
+    {
+      "id": "figure 2.4",
+      "kind": "figure",
+      "chapter": 2,
+      "number": 4,
+      "caption_tex": "smpl Simulation Report",
+      "source_tex": "docs/latex/chapters/02_chapter2.tex",
+      "line_start": 1087,
+      "line_end": 1107,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "terminal",
+      "assets": [],
+      "original_pdf_pages": [
+        75
+      ],
+      "original_printed_pages": [
+        53
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 2.4. smpl Simulation                   Report",
+      "other_candidates": [
+        {
+          "pdf_page": 74,
+          "score": 0.63,
+          "line": "output destination.     Figure 2.4 shows the simulation report obtained by"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-2-4-p53.png",
+          "printed_page": 53,
+          "source_pdf_page": 75
+        }
+      ]
+    },
+    {
+      "id": "figure 2.5",
+      "kind": "figure",
+      "chapter": 2,
+      "number": 5,
+      "caption_tex": "smpl Function Summary",
+      "source_tex": "docs/latex/chapters/02_chapter2.tex",
+      "line_start": 1225,
+      "line_end": 1278,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        78
+      ],
+      "original_printed_pages": [
+        56
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 2.5. smpl Function                   Summary",
+      "other_candidates": [
+        {
+          "pdf_page": 77,
+          "score": 0.42,
+          "line": "rized in Figure 2.5. Afew utility functions were not described here; you'll"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-2-5-p56.png",
+          "printed_page": 56,
+          "source_pdf_page": 78
+        }
+      ]
+    },
+    {
+      "id": "figure 2.6",
+      "kind": "figure",
+      "chapter": 2,
+      "number": 6,
+      "caption_tex": "Timesharing System Queueing Diagram",
+      "source_tex": "docs/latex/chapters/02_chapter2.tex",
+      "line_start": 1331,
+      "line_end": 1335,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch2-figure-2-6.png"
+      ],
+      "original_pdf_pages": [
+        80
+      ],
+      "original_printed_pages": [
+        58
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 2.6 Timesharing   System Queueing Diagram",
+      "other_candidates": [
+        {
+          "pdf_page": 79,
+          "score": 0.71,
+          "line": "identical disks. Figure 2.6 shows a queueing diagram of this system. Work-"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch2-figure-2-6.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 3.1",
+      "kind": "figure",
+      "chapter": 3,
+      "number": 1,
+      "caption_tex": "The Modeling and Analysis Process",
+      "source_tex": "docs/latex/chapters/03_chapter3.tex",
+      "line_start": 50,
+      "line_end": 76,
+      "representation": [
+        "TikZ"
+      ],
+      "type": "flowchart",
+      "assets": [],
+      "original_pdf_pages": [
+        84
+      ],
+      "original_printed_pages": [
+        62
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 3.1. The Modeling and Analysis Process",
+      "other_candidates": [
+        {
+          "pdf_page": 83,
+          "score": 0.37,
+          "line": "The modeling and analysis process is outlined in Figure 3.1. (The nice"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-3-1-p62.png",
+          "printed_page": 62,
+          "source_pdf_page": 84
+        }
+      ]
+    },
+    {
+      "id": "figure 3.2",
+      "kind": "figure",
+      "chapter": 3,
+      "number": 2,
+      "caption_tex": "Simulation and Analytic Components of the Hybrid Model",
+      "source_tex": "docs/latex/chapters/03_chapter3.tex",
+      "line_start": 412,
+      "line_end": 416,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch3-figure-3-2.png"
+      ],
+      "original_pdf_pages": [
+        92
+      ],
+      "original_printed_pages": [
+        70
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 3.2. Simulation                 and Analytic Components          of the Hybrid Model",
+      "other_candidates": [
+        {
+          "pdf_page": 92,
+          "score": 0.47,
+          "line": "model components of this hybrid model are illustrated in Figure 3.2. The"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch3-figure-3-2.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 3.3",
+      "kind": "figure",
+      "chapter": 3,
+      "number": 3,
+      "caption_tex": "Hybrid Model Event Routines and Simulation Functions",
+      "source_tex": "docs/latex/chapters/03_chapter3.tex",
+      "line_start": 480,
+      "line_end": 524,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        93
+      ],
+      "original_printed_pages": [
+        71
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 3.3. Hybrid Model Event Routines and Simulation Functions",
+      "other_candidates": [
+        {
+          "pdf_page": 94,
+          "score": 0.37,
+          "line": "outlined in Figure 3.3. arrival is caused when a job arrival events occurs. It"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-3-3-p71.png",
+          "printed_page": 71,
+          "source_pdf_page": 93
+        }
+      ]
+    },
+    {
+      "id": "figure 3.4",
+      "kind": "figure",
+      "chapter": 3,
+      "number": 4,
+      "caption_tex": "Asymptotic Bounds for a Timesharing System",
+      "source_tex": "docs/latex/chapters/03_chapter3.tex",
+      "line_start": 1179,
+      "line_end": 1183,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch3-figure-3-4.png"
+      ],
+      "original_pdf_pages": [
+        110
+      ],
+      "original_printed_pages": [
+        88
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 3.4 Asymptotic Bounds for a Timesharing                                System",
+      "other_candidates": [
+        {
+          "pdf_page": 109,
+          "score": 0.47,
+          "line": "shown in Figure 3.4(a)."
+        },
+        {
+          "pdf_page": 110,
+          "score": 0.37,
+          "line": "for other requests                         and so has a response           time of ND.            Figure 3.4(b) shows the"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch3-figure-3-4.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 3.5",
+      "kind": "figure",
+      "chapter": 3,
+      "number": 5,
+      "caption_tex": "Queueing Network Analysis Program",
+      "source_tex": "docs/latex/chapters/03_chapter3.tex",
+      "line_start": 1214,
+      "line_end": 1256,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        111
+      ],
+      "original_printed_pages": [
+        89
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 3.5 Queueing Network Analysis Program",
+      "other_candidates": [
+        {
+          "pdf_page": 112,
+          "score": 0.47,
+          "line": "4. Use the program of Figure 3.5 to analyze the queueing network model of"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-3-5-p89.png",
+          "printed_page": 89,
+          "source_pdf_page": 111
+        }
+      ]
+    },
+    {
+      "id": "table 4.1",
+      "kind": "table",
+      "chapter": 4,
+      "number": 1,
+      "caption_tex": "Selected Values of $t_{\\alpha/2,\\,N-1}$",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 282,
+      "line_end": 303,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        120
+      ],
+      "original_printed_pages": [
+        98
+      ],
+      "match_confidence": 0.91,
+      "matched_ocr_line": "Table      4.1.      Selected   Values          of fa/2;N-i",
+      "other_candidates": [
+        {
+          "pdf_page": 119,
+          "score": 0.54,
+          "line": "generate Table 4.1. As N increases, the t distribution        approaches  the normal"
+        },
+        {
+          "pdf_page": 119,
+          "score": 0.54,
+          "line": "Table 4.1 is an abbreviated     tabulation of values of fa/2;N-i. More exten-"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/table-4-1-p98.png",
+          "printed_page": 98,
+          "source_pdf_page": 120
+        }
+      ]
+    },
+    {
+      "id": "figure 4.1",
+      "kind": "figure",
+      "chapter": 4,
+      "number": 1,
+      "caption_tex": "A Queueing Time Sequence in an M/M/1 Queue",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 390,
+      "line_end": 394,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch4-figure-4-1.png"
+      ],
+      "original_pdf_pages": [
+        122
+      ],
+      "original_printed_pages": [
+        100
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 4.1. A Queueing Time Sequence in an M/M/1 Queue",
+      "other_candidates": [
+        {
+          "pdf_page": 121,
+          "score": 0.4,
+          "line": "simulation (with Ta = 125 and Ts = 100) is illustrated in Figure 4.1, which"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch4-figure-4-1.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "table 4.2",
+      "kind": "table",
+      "chapter": 4,
+      "number": 2,
+      "caption_tex": "Required Sample Sizes for 5\\% Accuracy in M/M/1 Queueing Time Estimation",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 556,
+      "line_end": 575,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        125
+      ],
+      "original_printed_pages": [
+        103
+      ],
+      "match_confidence": 0.99,
+      "matched_ocr_line": "Table 4.2. Required Sample Sizes for 5% Accuracy in M/M /I Queueing Time",
+      "other_candidates": [
+        {
+          "pdf_page": 136,
+          "score": 0.55,
+          "line": "in Table 4.2 gives n = 47463. (While we're looking at Table 4.2, note the"
+        },
+        {
+          "pdf_page": 126,
+          "score": 0.47,
+          "line": "Values of n in Table 4.2 are relevant only to queueing times in the M/M/1"
+        },
+        {
+          "pdf_page": 136,
+          "score": 0.4,
+          "line": "in Table 4.2 gives n = 47463. (While we're looking at Table 4.2, note the"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/table-4-2-p103.png",
+          "printed_page": 103,
+          "source_pdf_page": 125
+        }
+      ]
+    },
+    {
+      "id": "figure 4.2",
+      "kind": "figure",
+      "chapter": 4,
+      "number": 2,
+      "caption_tex": "Mean Queueing Time in a Queueing Network Simulation",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 839,
+      "line_end": 843,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch4-figure-4-2.png"
+      ],
+      "original_pdf_pages": [
+        131
+      ],
+      "original_printed_pages": [
+        109
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 4.2. Mean Queueing Time in a Queueing Network Simulation",
+      "other_candidates": [
+        {
+          "pdf_page": 131,
+          "score": 0.45,
+          "line": "The effect of deletion on the initial transient is illustrated in Figure 4.2."
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch4-figure-4-2.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 4.3",
+      "kind": "figure",
+      "chapter": 4,
+      "number": 3,
+      "caption_tex": "Mean Queueing Time in an M/M/1 Queue Simulation (Single Run)",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 861,
+      "line_end": 865,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch4-figure-4-3.png"
+      ],
+      "original_pdf_pages": [
+        132
+      ],
+      "original_printed_pages": [
+        110
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 4.3. Mean Queueing Time in an M/M/1 Queue Simulation                 (Single Run)",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch4-figure-4-3.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 4.4",
+      "kind": "figure",
+      "chapter": 4,
+      "number": 4,
+      "caption_tex": "Mean Queueing Time in an M/M/1 Queue Simulation (10 Runs)",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 875,
+      "line_end": 879,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch4-figure-4-4.png"
+      ],
+      "original_pdf_pages": [
+        133
+      ],
+      "original_printed_pages": [
+        111
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 4.4. Mean Queueing Time in an M/M/1   Queue Simulation (10 Runs)",
+      "other_candidates": [
+        {
+          "pdf_page": 132,
+          "score": 0.37,
+          "line": "Figure 4.4 is more encouraging.   This figure again plots mean queueing"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch4-figure-4-4.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 4.5",
+      "kind": "figure",
+      "chapter": 4,
+      "number": 5,
+      "caption_tex": "Mean Queueing Time in an M/M/1 Queue Simulation (200 Runs)",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 881,
+      "line_end": 885,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch4-figure-4-5.png"
+      ],
+      "original_pdf_pages": [
+        133
+      ],
+      "original_printed_pages": [
+        111
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 4.5. Mean Queueing Time in an M/M/1   Queue Simulation      (200 Runs)",
+      "other_candidates": [
+        {
+          "pdf_page": 134,
+          "score": 0.5,
+          "line": "Figure 4.5 plots the mean queueing time after n customer completions"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch4-figure-4-5.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "table 4.3",
+      "kind": "table",
+      "chapter": 4,
+      "number": 3,
+      "caption_tex": "Relative Half-Widths for M/M/1 Queue Simulations",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 923,
+      "line_end": 938,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        135
+      ],
+      "original_printed_pages": [
+        113
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Table     4.3. Relative   Half-Widths              for M/M/1            Queue   Simulations",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/table-4-3-p113.png",
+          "printed_page": 113,
+          "source_pdf_page": 135
+        }
+      ]
+    },
+    {
+      "id": "table 4.4",
+      "kind": "table",
+      "chapter": 4,
+      "number": 4,
+      "caption_tex": "Measured Coverages for M/M/1 Queue Simulations",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 947,
+      "line_end": 962,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        135
+      ],
+      "original_printed_pages": [
+        113
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Table 4.4. Measured       Coverages               for M/M/1           Queue Simulations",
+      "other_candidates": [
+        {
+          "pdf_page": 134,
+          "score": 0.46,
+          "line": "Now look at Table 4.4, which shows measured                coverages — the pro-"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/table-4-4-p113.png",
+          "printed_page": 113,
+          "source_pdf_page": 135
+        }
+      ]
+    },
+    {
+      "id": "figure 4.6",
+      "kind": "figure",
+      "chapter": 4,
+      "number": 6,
+      "caption_tex": "Batch Means Analysis Output for an M/M/1 Queue Simulation",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 1116,
+      "line_end": 1120,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch4-figure-4-6.png"
+      ],
+      "original_pdf_pages": [
+        139
+      ],
+      "original_printed_pages": [
+        117
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 4.6. Batch Means Analysis Output for an M/M/1 Queue Simulation",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch4-figure-4-6.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 4.7",
+      "kind": "figure",
+      "chapter": 4,
+      "number": 7,
+      "caption_tex": "Batch Means Analysis Module",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 1128,
+      "line_end": 1170,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        140
+      ],
+      "original_printed_pages": [
+        118
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 4.7. Batch Means Analysis Module",
+      "other_candidates": [
+        {
+          "pdf_page": 138,
+          "score": 0.95,
+          "line": "straightforward.   Figure 4.7 shows a simple batch means analysis module"
+        },
+        {
+          "pdf_page": 164,
+          "score": 0.35,
+          "line": "analysis module of Figure 4.7 to handle continuous-time           as well as discrete-"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-4-7-p118.png",
+          "printed_page": 118,
+          "source_pdf_page": 140
+        }
+      ]
+    },
+    {
+      "id": "figure 4.8",
+      "kind": "figure",
+      "chapter": 4,
+      "number": 8,
+      "caption_tex": "Distribution of Means for 300 M/M/1 Queue Simulations",
+      "source_tex": "docs/latex/chapters/04_chapter4.tex",
+      "line_start": 1267,
+      "line_end": 1271,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch4-figure-4-8.png"
+      ],
+      "original_pdf_pages": [
+        142
+      ],
+      "original_printed_pages": [
+        120
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 4.8. Distribution   of Means for 300 M/M/1 Queue Simulations",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch4-figure-4-8.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 5.1",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 1,
+      "caption_tex": "Multiprocessor System Elements",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 38,
+      "line_end": 42,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch5-system.png"
+      ],
+      "original_pdf_pages": [
+        152
+      ],
+      "original_printed_pages": [
+        130
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 5.1. Multiprocessor          System Elements",
+      "other_candidates": [
+        {
+          "pdf_page": 151,
+          "score": 0.4,
+          "line": "The system we'll be studying is diagrammed in Figure 5.1. It comprises N"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch5-system.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 5.2",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 2,
+      "caption_tex": "Processor Inter-Request Interval Timing",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 148,
+      "line_end": 152,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch5-interval.png"
+      ],
+      "original_pdf_pages": [
+        155
+      ],
+      "original_printed_pages": [
+        133
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 5.2. Processor        Inter-Request         Interval Timing",
+      "other_candidates": [
+        {
+          "pdf_page": 154,
+          "score": 0.39,
+          "line": "two successful memory request completions —shown in Figure 5.2. The mean"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch5-interval.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 5.3",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 3,
+      "caption_tex": "Bandwidth Computation Algorithm",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 196,
+      "line_end": 247,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        157
+      ],
+      "original_printed_pages": [
+        135
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 5.3. Bandwidth Computation                                           Algorithm",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-5-3-p135.png",
+          "printed_page": 135,
+          "source_pdf_page": 157
+        }
+      ]
+    },
+    {
+      "id": "figure 5.4",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 4,
+      "caption_tex": "Multiprocessor Simulation Model \\emph{bws1}",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 370,
+      "line_end": 421,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        160,
+        161
+      ],
+      "original_printed_pages": [
+        138,
+        139
+      ],
+      "match_confidence": 0.97,
+      "matched_ocr_line": "Figure 5.4. Multiprocessor                         Simulation Model bwsl",
+      "other_candidates": [
+        {
+          "pdf_page": 161,
+          "score": 0.85,
+          "line": "Figure 5.4. Multiprocessor                                Simulation Model bwsl                 (continued)"
+        }
+      ],
+      "continuation": false,
+      "continuations": [
+        {
+          "caption_tex": "Multiprocessor Simulation Model \\emph{bws1} (continued)",
+          "source_tex": "docs/latex/chapters/05_chapter5.tex",
+          "line_start": 427,
+          "line_end": 474,
+          "representation": [
+            "verbatim"
+          ],
+          "type": "code",
+          "assets": [],
+          "original_pdf_pages": [
+            161
+          ],
+          "original_printed_pages": [
+            139
+          ],
+          "match_confidence": 0.98,
+          "matched_ocr_line": "Figure 5.4. Multiprocessor                                Simulation Model bwsl                 (continued)",
+          "other_candidates": [
+            {
+              "pdf_page": 160,
+              "score": 0.85,
+              "line": "Figure 5.4. Multiprocessor                         Simulation Model bwsl"
+            }
+          ],
+          "continuation": true
+        }
+      ],
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-5-4-p138.png",
+          "printed_page": 138,
+          "source_pdf_page": 160
+        },
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-5-4-p139.png",
+          "printed_page": 139,
+          "source_pdf_page": 161
+        }
+      ]
+    },
+    {
+      "id": "figure 5.5",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 5,
+      "caption_tex": "Bandwidth Versus No. of Buses for $N=M=8$, $p=0.5$",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 610,
+      "line_end": 614,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch5-bandwidth.png"
+      ],
+      "original_pdf_pages": [
+        165
+      ],
+      "original_printed_pages": [
+        143
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure   5.5.   Bandwidth     Versus   No.   of Buses    for N = M = 8, p = 0.5",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch5-bandwidth.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 5.6",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 6,
+      "caption_tex": "Multiprocessor System Queueing Model Diagram",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 669,
+      "line_end": 673,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch5-queue-model.png"
+      ],
+      "original_pdf_pages": [
+        167
+      ],
+      "original_printed_pages": [
+        145
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 5.6. Multiprocessor      System Queueing Model Diagram",
+      "other_candidates": [
+        {
+          "pdf_page": 166,
+          "score": 0.39,
+          "line": "Figure 5.6. While this is a closed queueing network like that of Figure 2.1,"
+        },
+        {
+          "pdf_page": 167,
+          "score": 0.35,
+          "line": "Figure 5.6 indicate that queueing and reservation operations are disjoint from"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch5-queue-model.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 5.7",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 7,
+      "caption_tex": "Changes to \\emph{bws1} for Memory and Bus Queueing",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 741,
+      "line_end": 781,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        169
+      ],
+      "original_printed_pages": [
+        147
+      ],
+      "match_confidence": 0.98,
+      "matched_ocr_line": "Figure 5.7. Changes to bwsl for Memory and Bus Queueing",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-5-7-p147.png",
+          "printed_page": 147,
+          "source_pdf_page": 169
+        }
+      ]
+    },
+    {
+      "id": "figure 5.8",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 8,
+      "caption_tex": "Multiprocessor Simulation Model \\emph{bws3}",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 827,
+      "line_end": 874,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        171
+      ],
+      "original_printed_pages": [
+        149
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 5.8. Multiprocessor                    Simulation       Model bws3",
+      "other_candidates": [
+        {
+          "pdf_page": 170,
+          "score": 0.47,
+          "line": "Figure 5.8: we'll call it bws3. It is another possible realization of the"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-5-8-p149.png",
+          "printed_page": 149,
+          "source_pdf_page": 171
+        }
+      ]
+    },
+    {
+      "id": "table 5.1",
+      "kind": "table",
+      "chapter": 5,
+      "number": 1,
+      "caption_tex": "Analytic and Simulation Model Results",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 881,
+      "line_end": 905,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        172
+      ],
+      "original_printed_pages": [
+        150
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Table     5.1.    Analytic         and   Simulation       Model       Results",
+      "other_candidates": [
+        {
+          "pdf_page": 173,
+          "score": 0.45,
+          "line": "The simulation results in Table 5.1 all were obtained using a simulation"
+        },
+        {
+          "pdf_page": 172,
+          "score": 0.38,
+          "line": "Results for selected sets of parameter values are shown in Table 5.1. The"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/table-5-1-p150.png",
+          "printed_page": 150,
+          "source_pdf_page": 172
+        }
+      ]
+    },
+    {
+      "id": "figure 5.9",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 9,
+      "caption_tex": "Major CPU Elements",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 1013,
+      "line_end": 1017,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch5-cpu-elements.png"
+      ],
+      "original_pdf_pages": [
+        175
+      ],
+      "original_printed_pages": [
+        153
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 5.9. Major CPU Elements",
+      "other_candidates": [
+        {
+          "pdf_page": 174,
+          "score": 0.63,
+          "line": "(Ifetch) buffer, and a data fetch (Dfetch) buffer, as shown in Figure 5.9."
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch5-cpu-elements.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 5.10",
+      "kind": "figure",
+      "chapter": 5,
+      "number": 10,
+      "caption_tex": "Pipeline Sequence Examples",
+      "source_tex": "docs/latex/chapters/05_chapter5.tex",
+      "line_start": 1088,
+      "line_end": 1092,
+      "representation": [
+        "image"
+      ],
+      "type": "table",
+      "assets": [
+        "figures/ch5-pipeline-sequences.png"
+      ],
+      "original_pdf_pages": [
+        177
+      ],
+      "original_printed_pages": [
+        155
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 5.10. Pipeline Sequence Examples",
+      "other_candidates": [
+        {
+          "pdf_page": 178,
+          "score": 0.53,
+          "line": "Figure 5.10 shows various pipeline delay sequences. For purposes of this"
+        },
+        {
+          "pdf_page": 179,
+          "score": 0.39,
+          "line": "instruction; the X cycles completely mask the branch holes. Figure 5.10(e)"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch5-pipeline-sequences.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ],
+      "type_note": "Five lettered pipeline timing tables (a)–(e).",
+      "panels": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ]
+    },
+    {
+      "id": "figure 6.1",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 1,
+      "caption_tex": "A Simple Ethernet Network",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 13,
+      "line_end": 18,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch6-ethernet-network.png"
+      ],
+      "original_pdf_pages": [
+        183
+      ],
+      "original_printed_pages": [
+        161
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.1. A Simple Ethernet       Network",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-ethernet-network.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 6.2",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 2,
+      "caption_tex": "Ethernet Frame Format",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 22,
+      "line_end": 26,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch6-frame-format.png"
+      ],
+      "original_pdf_pages": [
+        184
+      ],
+      "original_printed_pages": [
+        162
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.2. Ethernet               Frame Format",
+      "other_candidates": [
+        {
+          "pdf_page": 183,
+          "score": 0.35,
+          "line": "(Figure 6.2). A frame comprises header, data, and CRC fields. The data"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-frame-format.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 6.3",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 3,
+      "caption_tex": "Colliding Transmissions in Ethernet",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 36,
+      "line_end": 49,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch6-collision.png"
+      ],
+      "original_pdf_pages": [
+        185
+      ],
+      "original_printed_pages": [
+        163
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.3 Colliding Transmissions                    in Ethernet",
+      "other_candidates": [
+        {
+          "pdf_page": 186,
+          "score": 0.4,
+          "line": "the timing diagram of Figure 6.3.) In this case, both of the stations involved"
+        },
+        {
+          "pdf_page": 185,
+          "score": 0.36,
+          "line": "collision window. Figure 6.3 shows the events involved in a collision.                   In this"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-6-3-p163.png",
+          "printed_page": 163,
+          "source_pdf_page": 185,
+          "verification": "Source-page crop includes timing diagram and t1–t7 key; visually bounded by parent review."
+        }
+      ]
+    },
+    {
+      "id": "figure 6.4",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 4,
+      "caption_tex": "Maximum Network Throughput as a Function of $\\alpha$",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 102,
+      "line_end": 106,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch6-throughput.png"
+      ],
+      "original_pdf_pages": [
+        190
+      ],
+      "original_printed_pages": [
+        168
+      ],
+      "match_confidence": 0.98,
+      "matched_ocr_line": "Figure 6.4. Maximum Network Throughput    as a Function of a",
+      "other_candidates": [
+        {
+          "pdf_page": 189,
+          "score": 0.54,
+          "line": "Figure 6.4 plots Smax versus a; note how maximum throughput falls off"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-throughput.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 6.5",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 5,
+      "caption_tex": "Function to Compute Lam's Mean Frame Delay",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 127,
+      "line_end": 146,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        191
+      ],
+      "original_printed_pages": [
+        169
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.5. Function               to Compute Lam’s Mean Frame Delay",
+      "other_candidates": [
+        {
+          "pdf_page": 205,
+          "score": 0.59,
+          "line": "run {X = S/Tf), the C function of Figure 6.5 used to compute the delay"
+        },
+        {
+          "pdf_page": 191,
+          "score": 0.38,
+          "line": "A C function to compute Td is shown in Figure 6.5; its arguments are t, the"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-6-5-p169.png",
+          "printed_page": 169,
+          "source_pdf_page": 191
+        }
+      ]
+    },
+    {
+      "id": "figure 6.6",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 6,
+      "caption_tex": "\\emph{ether} Simulation Model Events",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 198,
+      "line_end": 202,
+      "representation": [
+        "image"
+      ],
+      "type": "flowchart",
+      "assets": [
+        "figures/ch6-model-events.png"
+      ],
+      "original_pdf_pages": [
+        195
+      ],
+      "original_printed_pages": [
+        173
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.6. ether Simulation Model Events",
+      "other_candidates": [
+        {
+          "pdf_page": 194,
+          "score": 0.56,
+          "line": "routines shown in Figure 6.6. (We'll look at the simulation program itself in"
+        },
+        {
+          "pdf_page": 192,
+          "score": 0.41,
+          "line": "routines involved in transmission request processing are shown in Figure 6.6."
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-model-events.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 6.7",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 7,
+      "caption_tex": "Channel State Sensing Timing",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 210,
+      "line_end": 214,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch6-sensing.png"
+      ],
+      "original_pdf_pages": [
+        196
+      ],
+      "original_printed_pages": [
+        174
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.7 Channel State Sensing Timing",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-sensing.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 6.8",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 8,
+      "caption_tex": "Remaining Deference Time Computation",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 220,
+      "line_end": 224,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch6-deference.png"
+      ],
+      "original_pdf_pages": [
+        197
+      ],
+      "original_printed_pages": [
+        175
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.8 Remaining                  Deference         Time Computation",
+      "other_candidates": [
+        {
+          "pdf_page": 197,
+          "score": 0.95,
+          "line": "Figure 6.8 shows the times involved in computation of the remaining"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-deference.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 6.9",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 9,
+      "caption_tex": "The \\emph{ether} Simulation Program",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 253,
+      "line_end": 408,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "code",
+      "assets": [],
+      "original_pdf_pages": [
+        200,
+        201,
+        202,
+        203
+      ],
+      "original_printed_pages": [
+        178,
+        179,
+        180,
+        181
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.9. The ether Simulation Program (including three continued captions)",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-6-9-p178.png",
+          "printed_page": 178,
+          "source_pdf_page": 200
+        },
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-6-9-p179.png",
+          "printed_page": 179,
+          "source_pdf_page": 201
+        },
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-6-9-p180.png",
+          "printed_page": 180,
+          "source_pdf_page": 202
+        },
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-6-9-p181.png",
+          "printed_page": 181,
+          "source_pdf_page": 203
+        }
+      ]
+    },
+    {
+      "id": "figure 6.10",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 10,
+      "caption_tex": "Normalized Delay versus Throughput at $\\alpha=0.05$",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 420,
+      "line_end": 424,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch6-delay-comparison.png"
+      ],
+      "original_pdf_pages": [
+        205
+      ],
+      "original_printed_pages": [
+        183
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Caption visually verified on PDF 205: Figure 6.10. Normalized Delay versus Throughput at α = 0.05",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-delay-comparison.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "table 6.1",
+      "kind": "table",
+      "chapter": 6,
+      "number": 1,
+      "caption_tex": "Measurement and Simulation Throughput Results",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 445,
+      "line_end": 456,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        207
+      ],
+      "original_printed_pages": [
+        185
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Table     6.1.   Measurement        and   Simulation     Throughput          Results",
+      "other_candidates": [
+        {
+          "pdf_page": 206,
+          "score": 0.42,
+          "line": "Table 6.1 compares Gonsalves' throughput        measurements     with through-"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/table-6-1-p185.png",
+          "printed_page": 185,
+          "source_pdf_page": 207
+        }
+      ]
+    },
+    {
+      "id": "figure 6.11",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 11,
+      "caption_tex": "A Token Ring Network",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 498,
+      "line_end": 502,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch6-token-ring.png"
+      ],
+      "original_pdf_pages": [
+        211
+      ],
+      "original_printed_pages": [
+        189
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.11. A Token Ring Network",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-token-ring.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 6.12",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 12,
+      "caption_tex": "Token Format",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 508,
+      "line_end": 512,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch6-token-format.png"
+      ],
+      "original_pdf_pages": [
+        212
+      ],
+      "original_printed_pages": [
+        190
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.12. Token Format",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-token-format.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 6.13",
+      "kind": "figure",
+      "chapter": 6,
+      "number": 13,
+      "caption_tex": "Token Ring Frame Format",
+      "source_tex": "docs/latex/chapters/06_chapter6.tex",
+      "line_start": 518,
+      "line_end": 522,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch6-ring-frame.png"
+      ],
+      "original_pdf_pages": [
+        213
+      ],
+      "original_printed_pages": [
+        191
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 6.13. Token Ring Frame Format",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch6-ring-frame.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 7.1",
+      "kind": "figure",
+      "chapter": 7,
+      "number": 1,
+      "caption_tex": "The SMPL Simulation Environment",
+      "source_tex": "docs/latex/chapters/07_chapter7.tex",
+      "line_start": 49,
+      "line_end": 54,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch7-figure-7-1.png"
+      ],
+      "original_pdf_pages": [
+        221
+      ],
+      "original_printed_pages": [
+        199
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 7.1. The SMPL Simulation Environment",
+      "other_candidates": [
+        {
+          "pdf_page": 221,
+          "score": 0.47,
+          "line": "Figure 7.1 provides a user-level view: lower-level SMPL modules, such as"
+        },
+        {
+          "pdf_page": 220,
+          "score": 0.47,
+          "line": "The SMPL simulation environment is illustrated in Figure 7.1. Basic"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch7-figure-7-1.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 7.2",
+      "kind": "figure",
+      "chapter": 7,
+      "number": 2,
+      "caption_tex": "SMPL/PC Function Keys",
+      "source_tex": "docs/latex/chapters/07_chapter7.tex",
+      "line_start": 112,
+      "line_end": 132,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        223
+      ],
+      "original_printed_pages": [
+        201
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 7.2. SMPL/PC Function Keys",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-7-2-p201.png",
+          "printed_page": 201,
+          "source_pdf_page": 223
+        }
+      ],
+      "type_note": "Current tabular function-key summary; original is a key-layout schematic."
+    },
+    {
+      "id": "figure 7.3",
+      "kind": "figure",
+      "chapter": 7,
+      "number": 3,
+      "caption_tex": "\\texttt{dump} Module Output Example",
+      "source_tex": "docs/latex/chapters/07_chapter7.tex",
+      "line_start": 241,
+      "line_end": 287,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "terminal",
+      "assets": [],
+      "original_pdf_pages": [
+        226
+      ],
+      "original_printed_pages": [
+        204
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 7.3. dump Module Output Example",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-7-3-p204.png",
+          "printed_page": 204,
+          "source_pdf_page": 226
+        }
+      ]
+    },
+    {
+      "id": "figure 7.4",
+      "kind": "figure",
+      "chapter": 7,
+      "number": 4,
+      "caption_tex": "\\texttt{bma} Input and Output Displays",
+      "source_tex": "docs/latex/chapters/07_chapter7.tex",
+      "line_start": 428,
+      "line_end": 474,
+      "representation": [
+        "verbatim"
+      ],
+      "type": "terminal",
+      "assets": [],
+      "original_pdf_pages": [
+        230
+      ],
+      "original_printed_pages": [
+        208
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 7.4. bma Input and Output Displays",
+      "other_candidates": [
+        {
+          "pdf_page": 231,
+          "score": 0.51,
+          "line": "An example of the bma report is shown in Figure 7.4(b). When bma is"
+        },
+        {
+          "pdf_page": 229,
+          "score": 0.38,
+          "line": "The bma input display, shown in Figure 7.4(a), is invoked by key sF5."
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-7-4-p208.png",
+          "printed_page": 208,
+          "source_pdf_page": 230
+        }
+      ],
+      "panels": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "id": "figure 7.5",
+      "kind": "figure",
+      "chapter": 7,
+      "number": 5,
+      "caption_tex": "\\texttt{dis} ``step mode'' Plot",
+      "source_tex": "docs/latex/chapters/07_chapter7.tex",
+      "line_start": 553,
+      "line_end": 558,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch7-figure-7-5.png"
+      ],
+      "original_pdf_pages": [
+        233
+      ],
+      "original_printed_pages": [
+        211
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 7.5. dis \"step mode\" Plot",
+      "other_candidates": [
+        {
+          "pdf_page": 232,
+          "score": 0.71,
+          "line": "Figure 7.5 shows a plot of current queue length versus time generated"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch7-figure-7-5.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 8.1",
+      "kind": "figure",
+      "chapter": 8,
+      "number": 1,
+      "caption_tex": "\\textit{smpl.c} Functions",
+      "source_tex": "docs/latex/chapters/08_chapter8.tex",
+      "line_start": 32,
+      "line_end": 77,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        236
+      ],
+      "original_printed_pages": [
+        214
+      ],
+      "match_confidence": 0.97,
+      "matched_ocr_line": "Figure 8.1. smpLc Functions",
+      "other_candidates": [
+        {
+          "pdf_page": 237,
+          "score": 0.95,
+          "line": "Function names in Figure 8.1 appear in the same order as functions in the"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-8-1-p214.png",
+          "printed_page": 214,
+          "source_pdf_page": 236
+        }
+      ]
+    },
+    {
+      "id": "figure 8.2",
+      "kind": "figure",
+      "chapter": 8,
+      "number": 2,
+      "caption_tex": "The \\textbf{smpl} Element Pool",
+      "source_tex": "docs/latex/chapters/08_chapter8.tex",
+      "line_start": 166,
+      "line_end": 170,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch8-figure-8-2.png"
+      ],
+      "original_pdf_pages": [
+        239
+      ],
+      "original_printed_pages": [
+        217
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 8.2. The smpl Element Pool",
+      "other_candidates": [
+        {
+          "pdf_page": 240,
+          "score": 0.71,
+          "line": "element pool is viewed as an array of elements (Figure 8.2), with blk —"
+        },
+        {
+          "pdf_page": 238,
+          "score": 0.47,
+          "line": "two forms, as shown in Figure 8.2: each has its own mode of allocation."
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch8-figure-8-2.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 8.3",
+      "kind": "figure",
+      "chapter": 8,
+      "number": 3,
+      "caption_tex": "\\textbf{smpl} Facility Descriptor and Queue Structure",
+      "source_tex": "docs/latex/chapters/08_chapter8.tex",
+      "line_start": 242,
+      "line_end": 246,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch8-figure-8-3.png"
+      ],
+      "original_pdf_pages": [
+        241
+      ],
+      "original_printed_pages": [
+        219
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 8.3. smpl Facility Descriptor                      and Queue Structure",
+      "other_candidates": [
+        {
+          "pdf_page": 248,
+          "score": 0.39,
+          "line": "should be clear from looking at the code together with Figure 8.3."
+        },
+        {
+          "pdf_page": 240,
+          "score": 0.37,
+          "line": "descriptor (and queue) structure is shown in Figure 8.3. A descriptor for a"
+        },
+        {
+          "pdf_page": 263,
+          "score": 0.35,
+          "line": "adapting the facility descriptor data structure of Figure 8.3; the server"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch8-figure-8-3.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 8.4",
+      "kind": "figure",
+      "chapter": 8,
+      "number": 4,
+      "caption_tex": "\\textbf{smpl} Event List Structure",
+      "source_tex": "docs/latex/chapters/08_chapter8.tex",
+      "line_start": 266,
+      "line_end": 270,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch8-figure-8-4.png"
+      ],
+      "original_pdf_pages": [
+        242
+      ],
+      "original_printed_pages": [
+        220
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 8.4. smpl Event List Structure",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch8-figure-8-4.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 8.5",
+      "kind": "figure",
+      "chapter": 8,
+      "number": 5,
+      "caption_tex": "Trace Message Parameters and Phrases",
+      "source_tex": "docs/latex/chapters/08_chapter8.tex",
+      "line_start": 597,
+      "line_end": 621,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        250
+      ],
+      "original_printed_pages": [
+        228
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 8.5. Trace Message Parameters                            and Phrases",
+      "other_candidates": [
+        {
+          "pdf_page": 250,
+          "score": 0.52,
+          "line": "Figure 8.5 shows the various msg ( ) parameter combinations and the"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-8-5-p228.png",
+          "printed_page": 228,
+          "source_pdf_page": 250
+        }
+      ]
+    },
+    {
+      "id": "figure 8.6",
+      "kind": "figure",
+      "chapter": 8,
+      "number": 6,
+      "caption_tex": "\\textit{rand.c} Functions",
+      "source_tex": "docs/latex/chapters/08_chapter8.tex",
+      "line_start": 687,
+      "line_end": 700,
+      "representation": [
+        "tabular"
+      ],
+      "type": "table",
+      "assets": [],
+      "original_pdf_pages": [
+        252
+      ],
+      "original_printed_pages": [
+        230
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 8.6. rand.c Functions",
+      "other_candidates": [
+        {
+          "pdf_page": 251,
+          "score": 0.46,
+          "line": "function names are listed in Figure 8.6: all of these functions can be called"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-8-6-p230.png",
+          "printed_page": 230,
+          "source_pdf_page": 252
+        }
+      ]
+    },
+    {
+      "id": "figure 8.7",
+      "kind": "figure",
+      "chapter": 8,
+      "number": 7,
+      "caption_tex": "Simulated Double Precision Multiply Operands and Operations",
+      "source_tex": "docs/latex/chapters/08_chapter8.tex",
+      "line_start": 746,
+      "line_end": 750,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch8-figure-8-7.png"
+      ],
+      "original_pdf_pages": [
+        253
+      ],
+      "original_printed_pages": [
+        231
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 8.7. Simulated Double Precision Multiply Operands and Operations",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch8-figure-8-7.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 9.1",
+      "kind": "figure",
+      "chapter": 9,
+      "number": 1,
+      "caption_tex": "Multi-Path Disk String",
+      "source_tex": "docs/latex/chapters/09_chapter9.tex",
+      "line_start": 94,
+      "line_end": 98,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch9-fig01.png"
+      ],
+      "original_pdf_pages": [
+        261
+      ],
+      "original_printed_pages": [
+        239
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 9.1. Multi-Path Disk String",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch9-fig01.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 9.2",
+      "kind": "figure",
+      "chapter": 9,
+      "number": 2,
+      "caption_tex": "Mean Insert/Remove Times for Linked Lists and Implicit Heaps",
+      "source_tex": "docs/latex/chapters/09_chapter9.tex",
+      "line_start": 260,
+      "line_end": 264,
+      "representation": [
+        "image"
+      ],
+      "type": "plot",
+      "assets": [
+        "figures/ch9-fig02.png"
+      ],
+      "original_pdf_pages": [
+        265
+      ],
+      "original_printed_pages": [
+        243
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 9.2. Mean Insert /Remove Times for Linked Lists and Implicit Heaps",
+      "other_candidates": [
+        {
+          "pdf_page": 265,
+          "score": 0.6,
+          "line": "and so offer a potential improvement in simulation run time. Figure 9.2"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch9-fig02.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 9.3",
+      "kind": "figure",
+      "chapter": 9,
+      "number": 3,
+      "caption_tex": "Storage Descriptor and Queue Structure",
+      "source_tex": "docs/latex/chapters/09_chapter9.tex",
+      "line_start": 332,
+      "line_end": 336,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch9-fig03.png"
+      ],
+      "original_pdf_pages": [
+        267
+      ],
+      "original_printed_pages": [
+        245
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 9.3. Storage Descriptor              and Queue Structure",
+      "other_candidates": [
+        {
+          "pdf_page": 268,
+          "score": 0.38,
+          "line": "Figure 9.3; note the similarity between it and the facility descriptor struc-"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch9-fig03.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 9.4",
+      "kind": "figure",
+      "chapter": 9,
+      "number": 4,
+      "caption_tex": "smpl Table Report",
+      "source_tex": "docs/latex/chapters/09_chapter9.tex",
+      "line_start": 445,
+      "line_end": 468,
+      "representation": [
+        "tabular"
+      ],
+      "type": "terminal",
+      "assets": [],
+      "original_pdf_pages": [
+        270
+      ],
+      "original_printed_pages": [
+        248
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 9.4. smpl Table Report",
+      "other_candidates": [
+        {
+          "pdf_page": 269,
+          "score": 0.63,
+          "line": "data. Figure 9.4 shows the report produced for a table used to collect the"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "original_crop",
+          "path": "build/all-figures-review/originals/figure-9-4-p248.png",
+          "printed_page": 248,
+          "source_pdf_page": 270
+        }
+      ]
+    },
+    {
+      "id": "figure 9.5",
+      "kind": "figure",
+      "chapter": 9,
+      "number": 5,
+      "caption_tex": "Table Descriptor",
+      "source_tex": "docs/latex/chapters/09_chapter9.tex",
+      "line_start": 494,
+      "line_end": 498,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch9-fig05.png"
+      ],
+      "original_pdf_pages": [
+        271
+      ],
+      "original_printed_pages": [
+        249
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 9.5. Table Descriptor",
+      "other_candidates": [
+        {
+          "pdf_page": 271,
+          "score": 0.95,
+          "line": "Figure 9.5 shows the structure        of a table descriptor,      table      () calls"
+        }
+      ],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch9-fig05.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 9.6",
+      "kind": "figure",
+      "chapter": 9,
+      "number": 6,
+      "caption_tex": "Distribution Descriptor",
+      "source_tex": "docs/latex/chapters/09_chapter9.tex",
+      "line_start": 556,
+      "line_end": 560,
+      "representation": [
+        "image"
+      ],
+      "type": "schematic",
+      "assets": [
+        "figures/ch9-fig06.png"
+      ],
+      "original_pdf_pages": [
+        273
+      ],
+      "original_printed_pages": [
+        251
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure 9.6. Distribution         Descriptor",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch9-fig06.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ]
+    },
+    {
+      "id": "figure 9.7",
+      "kind": "figure",
+      "chapter": 9,
+      "number": 7,
+      "caption_tex": "mtr Initialization and Control Functions",
+      "source_tex": "docs/latex/chapters/09_chapter9.tex",
+      "line_start": 669,
+      "line_end": 673,
+      "representation": [
+        "image"
+      ],
+      "type": "flowchart",
+      "assets": [
+        "figures/ch9-fig07.png"
+      ],
+      "original_pdf_pages": [
+        276
+      ],
+      "original_printed_pages": [
+        254
+      ],
+      "match_confidence": 1.0,
+      "matched_ocr_line": "Figure   9.7.   mtr   Initialization   and   Control   Functions",
+      "other_candidates": [],
+      "continuation": false,
+      "comparison_sources": [
+        {
+          "kind": "existing_asset",
+          "path": "docs/latex/figures/ch9-fig07.png",
+          "verification": "Referenced by current TeX; visual fidelity and complete original panels not independently verified."
+        }
+      ],
+      "type_note": "Visually verified original asset is two flowcharts, not a function-summary table."
+    }
+  ],
+  "totals": {
+    "figures": 71,
+    "tables": 6,
+    "blocks": 79,
+    "referenced_pngs": 44,
+    "unreferenced_pngs": [],
+    "unmatched": 0,
+    "figures_without_existing_assets": 27,
+    "tables_without_existing_assets": 6,
+    "original_crop_files": 38
+  },
+  "limitations": [
+    "Existing raster assets are referenced by TeX; their fidelity and complete lettered-panel coverage were not independently verified.",
+    "Original crops were visually bounded from contact sheets, not individually checked at full resolution; edge clipping or incidental caption/body text remains possible.",
+    "Figure 7.2 is classified by its current table representation, while the original is a function-key schematic.",
+    "Figure and table captions in this inventory are exact current TeX, not an exact transcription of every original caption.",
+    "Panels not explicitly listed may exist; visual comparison against the source remains necessary."
+  ]
+}

@@ -1,0 +1,27 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+% Initialization: contiguous blocks, with omitted blocks indicated by dots.
+\foreach \y in {0,0.5,1,3,3.5} {
+  \draw[review line] (0,\y) rectangle (5,\y+0.5);
+  \foreach \x in {1,2,3,4} \draw[review line] (\x,\y)--(\x,\y+0.5);
+}
+\foreach \x in {0,1,2,3,4,5} \draw[review line,dotted] (\x,1)--(\x,3);
+\foreach \i/\t in {0/L5,1/L4,2/L3,3/L2,4/L1} \node at (\i+0.5,0.25) {\t};
+\node[review box,minimum width=1.4cm,minimum height=.5cm] (blk) at (4.3,-.9) {blk};
+\draw[review arrow] (blk.east) .. controls (6.3,-.85) and (6.3,.1) .. (5,.12);
+\node at (2.5,-1.8) {(a)\quad during initialization};
+% Execution: free blocks linked from avl toward the zero terminator.
+\foreach \y in {0,1.2,2.4,3.7} {
+ \draw[review line] (6.5,\y) rectangle (11.5,\y+.5);
+ \foreach \x in {7.5,8.5,9.5,10.5} \draw[review line] (\x,\y)--(\x,\y+.5);
+}
+\foreach \i/\t in {0/L5,1/L4,2/L3,3/L2,4/L1} \node at (7+\i,.25) {\t};
+\node at (11,3.95) {0};
+\node[review box,minimum width=1.4cm,minimum height=.5cm] (avl) at (10.8,-.9) {avl};
+\draw[review arrow] (avl.east) .. controls (12.8,-.85) and (12.8,.1) .. (11.5,.12);
+\draw[review arrow] (11.5,.36) .. controls (12.8,.4) and (12.8,1.3) .. (11.5,1.32);
+\draw[review arrow] (11.5,1.56) .. controls (12.8,1.6) and (12.8,2.5) .. (11.5,2.52);
+\draw[review line] (11.5,2.75) .. controls (12.2,2.8) and (12.5,3.05) .. (12.5,3.25);
+\draw[review arrow] (12.5,3.5) .. controls (12.5,3.7) and (12.2,3.9) .. (11.5,3.95);
+\draw[review line] (12.4,3.25)--(12.6,3.25) (12.4,3.5)--(12.6,3.5);
+\node at (9,-1.8) {(b)\quad during execution};
+\end{tikzpicture}

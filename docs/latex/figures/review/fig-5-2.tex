@@ -1,0 +1,17 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[review line] (0,0) rectangle (12,5.2);
+\node at (3.5,4.2) {execute};
+\node[align=center] at (7.8,4.35) {blocked\\request};
+\node[align=center] at (10.3,4.35) {accepted\\request};
+\draw[review line] (1,3.3) rectangle (6,3.65);
+\foreach \x in {2.25,3.5,4.75} \draw[review line] (\x,3.3)--(\x,3.65);
+\draw[densely dotted,line width=1.3pt] (6,3.475)--(9.7,3.475);
+\foreach \x in {7.23,8.46} \draw[review line] (\x,3.28)--(\x,3.67);
+\draw[review line,pattern=north east lines] (9.7,3.3) rectangle (11,3.65);
+\foreach \x in {1,6,9.7,11} \draw[review line] (\x,1.9)--(\x,2.25);
+\draw[review arrow,<->] (1,2.08)--(6,2.08) node[midway,fill=white] {$x$};
+\draw[review arrow,<->] (6,2.08)--(9.7,2.08) node[midway,fill=white] {$b$};
+\draw[review arrow,<->] (9.7,2.08)--(11,2.08) node[midway,fill=white] {$1$};
+\foreach \x in {1,11} \draw[review line] (\x,.65)--(\x,1);
+\draw[review arrow,<->] (1,.83)--(11,.83) node[midway,fill=white] {$T$};
+\end{tikzpicture}

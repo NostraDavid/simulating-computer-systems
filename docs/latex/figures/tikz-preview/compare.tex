@@ -1,0 +1,55 @@
+% Run from docs/latex after compiling the two standalone vector previews.
+\documentclass[letterpaper,landscape,11pt]{article}
+\usepackage[margin=0.45in]{geometry}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\setmainfont{TeX Gyre Heros}
+\definecolor{heading}{HTML}{19304B}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\begin{document}
+{\color{heading}\LARGE Diagrammen opnieuw gezet met TikZ}\par
+{\large Figuur 5.9: Major CPU Elements}\par
+Links de scan-uitsnede; rechts echte LaTeX-tekst en vectorlijnen.
+\vspace{10pt}
+
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  {\large\bfseries Origineel}\par
+  \vspace{20pt}
+  \includegraphics[width=\linewidth]{figures/ch5-cpu-elements.png}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  {\large\bfseries TikZ-herbouw}\par
+  \vspace{20pt}
+  \includegraphics[width=\linewidth]{../../build/tikz-preview/cpu-elements.pdf}
+\end{minipage}
+
+\vfill
+\small Proefversie: labels en gerichte verbindingen overgenomen; lettertype,
+lijnvoering en uitlijning opnieuw gezet. De figuur in het boek is nog niet vervangen.
+
+\newpage
+{\color{heading}\LARGE Diagrammen opnieuw gezet met TikZ}\par
+{\large Figuur 6.6: \textit{ether} Simulation Model Events}\par
+Zes eventblokken; elf gerichte verbindingen, inclusief de lus van event 1 naar zichzelf.
+\vspace{3pt}
+
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  {\large\bfseries Origineel}\par
+  \includegraphics[width=\linewidth,height=5.65in,keepaspectratio]{figures/ch6-model-events.png}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  {\large\bfseries TikZ-herbouw}\par
+  \includegraphics[width=\linewidth,height=5.65in,keepaspectratio]{../../build/tikz-preview/model-events.pdf}
+\end{minipage}
+
+\vfill
+\small Proefversie: tekst mag anders afbreken; de labels en verbindingen blijven
+leidend. De figuur in het boek is nog niet vervangen.
+\end{document}

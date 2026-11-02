@@ -1,387 +1,816 @@
-% OCR draft from PDF pages 259-279 (book chapter 9).
+% Transcription of PDF pages 259--279 (printed pages 237--257).
 \chapter{Extending \texttt{smpl}}
 \label{chap:extending-smpl}
 
 \section{Introduction}
-\label{sec:ext-smpl-intro}
 
-This chapter outlines practical extensions to the base \texttt{smpl}
-implementation from Chapter 8:
-\begin{itemize}
-\item queue-management variants and extra queue operations,
-\item alternative event-scheduling data structures,
-\item new constructs: storages, tables, and distributions,
-\item a run-time interface architecture (\texttt{mtr}) plus parameter handling.
-\end{itemize}
+This chapter discusses various modifications and extensions to the basic
+smpl simulation subsystem. These include queue management variants and
+some additional queue operations, alternative event scheduling mechanisms,
+and three new simulation constructs: storages, tables, and distributions. A
+storage is a static entity analogous to a facility, representing perhaps a
+computer memory or a communication buffer pool; storage operations include
+storage definition, space allocation (with implicit queueing if space is
+unavailable) and deallocation. Tables provide a means of collecting the
+distributions of simulation output variables such as response times or
+queueing times. Distributions separate distribution sampling and definition
+operations; this helps in constructing parametric models, aids debugging,
+and has some statistical advantages. We'll also look at the design of mtr,
+the SMPL interactive interface, and related SMPL parameter handling
+functions.
 
-The focus is design guidance rather than drop-in source code.
+Although source code is not provided for the extensions discussed in this
+chapter, the design (and, in some cases, data structure) descriptions
+presented should give you a starting point for your own implementation.
 
 \section{Queueing}
-\label{sec:ext-smpl-queueing}
 
-\texttt{smpl} uses implicit queueing for facility requests. That is compact and
-effective for many models, but several cases require explicit model-side
-control:
-\begin{enumerate}
-\item \textbf{simultaneous reservation} of multiple resources,
-\item \textbf{exit-time disciplines} (e.g., SSTF-like behavior),
-\item \textbf{unqueueing} arbitrary entries (not just head-of-queue).
-\end{enumerate}
+In most event-oriented simulation languages, queueing is explicit. The
+programmer must test the status of a facility before reserving it, and
+explicitly queue the request if the facility is busy. When a facility is released,
+the programmer must explicitly examine the facility queue and, if there
+are waiting requests, dequeue one and reserve the facility for it. In smpl,
+queueing is implicit: the simulation subsystem queues a request for a busy
+facility and dequeues it when the facility becomes free. Implicit queueing
+can substantially reduce the number of simulation operations which have to
+be coded in implementing a simulation model.
 
-The chapter illustrates this with a multi-path disk string where a transfer can
-start only when both control-unit and channel resources are available.
+This implicit queue management works well for many, but not all,
+modeling applications. Queueing situations in which different or added
+capabilities are needed include the following.
 
-\begin{figure}[ht]
+\begin{description}
+\item[simultaneous reservation.] Sometimes two or more facilities
+must be simultaneously available before an operation can be
+performed. In an IO subsystem, for example, transfer of data
+between a disk and memory requires that both the disk
+control unit and the channel be free before the transfer can be
+initiated. In modeling this subsystem, we can't simply code
+\begin{verbatim}
+request(controller, ...); request(channel, ...);
+\end{verbatim}
+since the request might be queued for one and not the other,
+and this can block transfers for other requests.
+
+\item[exit-time queueing disciplines.] smpl provides priority
+queueing, with first-in, first-out ordering within a priority
+class. Priorities can be used to synthesize a variety of queueing
+disciplines, such as last-in, first-out. Not all disciplines
+can be represented in this way: in particular, disciplines in
+which ordering is determined at queue exit time, rather than
+queue entry time, require another approach. An example of
+this type of queue discipline is the shortest seek time first
+(SSTF) ordering sometimes used in scheduling disk requests.
+
+\item[unqueueing.] It is sometimes necessary to remove an entry
+from a queue for reasons other than reserving a newly-
+released facility for the head-of-queue entry. For example,
+in representing swapping in a timesharing system model, it
+may be necessary to remove a token from the CPU queue and
+transfer it to the memory queue.
+\end{description}
+
+We may be motivated to implement an alternative queue structure in order to
+closely represent the queue structure of the system being modeled (for reasons
+discussed in Section 3.7). Also, it may be desired to provides queues without
+facilities, as in the case of the token ring model of Section 6.10 or in some
+software modeling situations.
+
+One way of dealing with the first two situations is to bypass smpl's
+implicit queueing and implement the required queueing structure and operations
+directly in the model. Consider, for example, an IO subsystem with
+several \emph{strings} of disk units. Each string comprises $n$ disk units connected to a
+control unit which in turn is connected to two data channels, as illustrated in
+Figure 9.1. The control unit has two independent ports and can support two
+simultaneous operations, so there are two paths between the CPU and each
+disk unit. To transfer data to or from a disk unit, a sequence of commands must
+be transmitted to the unit, requiring that a path be reserved between it and
+the CPU; if a path is not available when a command is issued, the command
+is queued. (Queueing of requests for a busy disk unit is done by the operating
+system; we won't worry about it here.) Transfer of data when the disk
+completes rotational positioning also requires that a path be available;
+otherwise, the disk waits a revolution and tries to obtain a path once again.
+
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[>=Latex]
-  \node[draw,minimum width=2.6cm,minimum height=0.9cm] (cpu) at (0,2.4) {CPU complex};
-  \node[draw,minimum width=2.0cm,minimum height=0.8cm] (ch1) at (-2.8,0.9) {Channel 1};
-  \node[draw,minimum width=2.0cm,minimum height=0.8cm] (ch2) at (0,0.9) {Channel 2};
-  \node[draw,minimum width=2.0cm,minimum height=0.8cm] (ch3) at (2.8,0.9) {Channel 3};
-  \node[draw,minimum width=2.2cm,minimum height=0.8cm] (cu1) at (-2.8,-0.8) {Control unit 1};
-  \node[draw,minimum width=2.2cm,minimum height=0.8cm] (cu2) at (2.8,-0.8) {Control unit 2};
-  \node[draw,minimum width=1.7cm,minimum height=0.8cm] (d1) at (-4.1,-2.4) {Disk A};
-  \node[draw,minimum width=1.7cm,minimum height=0.8cm] (d2) at (-1.5,-2.4) {Disk B};
-  \node[draw,minimum width=1.7cm,minimum height=0.8cm] (d3) at (1.5,-2.4) {Disk C};
-  \node[draw,minimum width=1.7cm,minimum height=0.8cm] (d4) at (4.1,-2.4) {Disk D};
-
-  \draw[line width=0.9pt] (cpu) -- (ch1);
-  \draw[line width=0.9pt] (cpu) -- (ch2);
-  \draw[line width=0.9pt] (cpu) -- (ch3);
-  \draw[line width=0.9pt] (ch1) -- (cu1);
-  \draw[line width=0.9pt] (ch2) -- (cu1);
-  \draw[line width=0.9pt] (ch2) -- (cu2);
-  \draw[line width=0.9pt] (ch3) -- (cu2);
-  \draw[line width=0.9pt] (cu1) -- (d1);
-  \draw[line width=0.9pt] (cu1) -- (d2);
-  \draw[line width=0.9pt] (cu2) -- (d3);
-  \draw[line width=0.9pt] (cu2) -- (d4);
-\end{tikzpicture}
+\includegraphics[width=\textwidth]{figures/ch9-fig01.png}
 \caption{Multi-Path Disk String}
-\label{fig:ext-smpl-disk-string}
 \end{figure}
 
-In this style, model code can:
-\begin{itemize}
-\item perform all-or-nothing reservation logic (\texttt{connect()}),
-\item maintain explicit queue descriptors in model arrays,
-\item dequeue/reschedule on release (\texttt{disconnect()}),
-\item implement custom retry behavior (e.g., rotational retry).
-\end{itemize}
+Let's look at some pieces of a model of this system, beginning with the
+\texttt{connect()} function which reserves a path for commands or data transfers.
 
-For repeated use, the chapter recommends adding explicit subsystem queues:
-\begin{itemize}
-\item \texttt{q = queue(name)},
-\item \texttt{enq(q,tkn,pri)},
-\item \texttt{tkn = deq(q)}.
-\end{itemize}
+% PDF 261: the printed code omits closing parentheses after both CHNL subscripts.
+\begin{verbatim}
+connect(req)
+  int req;
+  {
+    int i=0;
+    if (status(CTLR)!=busy) then
+      {
+        if (status(CHNL[1]!=busy) then i=1;
+        else if (status(CHNL[2]!=busy) then i=2;
+        if (i) then
+          {request(CTLR,req,0); request(CHNL[i],req,0);}
+      }
+    return(i);
+  }
+\end{verbatim}
 
-Two additional helper operations are suggested:
-\begin{itemize}
-\item \texttt{unqueue(f,tkn,\&te)}: remove arbitrary token and return remaining
-  event time,
-\item \texttt{gentry(f,n)}: return token at queue position $n$.
-\end{itemize}
+Assume that channels are defined as single-server facilities so that
+\texttt{CHNL[i]} is the facility specifier for channel i, and that the control unit is
+defined as a two-server facility whose facility specifier is \texttt{CTLR}. (We'll
+consider just a single string: extension to a multi-string system largely is a
+matter of dimensioning.) If both a control unit port and a channel are free,
+\texttt{connect()} reserves a port and a channel for the disk request (whose token
+number is \texttt{req}), and returns the channel number to its caller; otherwise, it
+returns 0. Note that the request statements are executed only if they are both
+certain to be successful: the requesting token never will be queued.
 
-For FIFO-heavy environments, queue-tail pointers and queue-type flags can
-eliminate per-entry search overhead.
+In initiating disk command processing, the model attempts to reserve a
+path and, if none is available, queues the request. The request will be
+dequeued by \texttt{disconnect()} when a path is released.
+% PDF 262: the source listing ends without a closing brace.
+\begin{verbatim}
+if ((path[req]=connect(req))!=0)
+  then schedule(xcmd,...,req);  /* execute command */
+  else
+    { /* queue request in string path queue */
+      link[req]=0;
+      if (tq==0) then hq=tq=req; else link[tq]=req;
+\end{verbatim}
+
+A request descriptor is assumed to take the form of a set of array elements,
+two of which are \texttt{path[]} and \texttt{link[]}. \texttt{req} is the index of the request
+currently being processed, \texttt{hq} and \texttt{tq} are, respectively, indexes of the request
+descriptors at the head and tail of the string path queue, which is a simple,
+singly-linked list of request descriptors.
+
+A ``reconnect'' event is scheduled at the end of rotational positioning.
+This event routine calls \texttt{connect()} to reserve a path for data transfer. If no
+path is available, the ``reconnect'' event is rescheduled after a delay of one
+revolution time.
+\begin{verbatim}
+/* event "reconnect" */
+if ((path[req]=connect(req))!=0)
+  then schedule(endxfer,txfr,req);
+  else {schedule(reconnect,tr,req); rps++;}
+\end{verbatim}
+
+\texttt{tr} is the disk revolution time, and \texttt{rps} counts the number of revolutions lost
+trying to reserve a path. Data transfer requests that find all paths busy are
+not queued, but rather are periodically reinitiated.
+
+When command processing or a transfer completes, the \texttt{disconnect()}
+function is called to release the path. If the string path queue is not empty,
+\texttt{disconnect()} dequeues the command at the head of the queue, reserves a
+path for it via a call to \texttt{connect()}, and schedules its next event.
+\begin{verbatim}
+disconnect(req,i)
+  int req,i;
+  {
+    release(CTLR,req); release(CHNL[i],req);
+    if (hq) then
+      { /* dequeue request from string path queue */
+        req=hq; hq=link(hq); if (hq==0) then tq=0;
+        path[req]=connect(req); schedule(xcmd,...,req);
+      }
+  }
+\end{verbatim}
+
+These brief sketches illustrate several points: simultaneous reservation
+of facilities (the port and channel comprising a path), explicit queueing
+implemented in the simulation model (the string path queue), and a queueing
+situation not representable by a conventional data structure (path reservation
+on completion of rotational positioning). Note that, while smpl provides
+facility utilizations for the channels and control units, code would
+have to be added to the model to obtain the mean queue length for the string
+path queue. The \texttt{rps} count can be used to compute the mean delay time of
+path requests for data transfers.
+
+The level of detail of your models and the type of models you build
+determine how often you'll have to bypass smpl's queueing and implement
+queues in the model itself. The need tends to increase with increasing level
+of detail; also, software models often need queues which are not directly
+tied to facilities. If this need arises frequently in your environment, you may
+want to add a \emph{queue} construct, with \emph{enq} and \emph{deq} operations, to smpl.
+
+\textbf{Explicit smpl queues.} These can be implemented with relative ease by
+adapting the facility descriptor data structure of Figure 8.3; the server
+elements are not needed, and some of the header fields are unused. A queue is
+defined by a call to the \texttt{queue(s)} function. This function saves string \texttt{s} as
+the queue name, calls \texttt{get\_blk()} to get a two-element block for the queue
+header, initializes header fields, links the header to a queue chain, and
+returns the index of the header as the queue specifier \texttt{q}. The model calls
+\texttt{enq(q,j,pri)} to enter token \texttt{j} in queue \texttt{q}; \texttt{pri} is \texttt{j}'s priority. \texttt{enq()} calls
+smpl's \texttt{enqueue()} function to build a queue entry, update queue measurement
+data, and link the entry into the queue. The \texttt{deq(q)} function returns the
+entry at the head of the queue, and is constructed using three or four lines of
+code from \texttt{release()}. \texttt{report()} will have to be expanded; the \texttt{Lq()} and
+\texttt{inq()} functions can be used with explicit queues as well as facility queues.
+
+It is hard to devise a general mechanism for queues with exit-time
+ordering: each instance of this type of queue usually requires a unique
+approach. Some care in designing data structures for these queues can help
+reduce search times. However, before spending much time worrying about
+structures and algorithms, try to estimate an upper bound on the mean queue
+length, and then decide if anything more than a simple search is needed.
+
+\textbf{An ``unqueue'' function.} A model may need the ability to remove an
+arbitrary entry from a queue, as in the task swapping situation mentioned
+earlier. Implementation of an \texttt{unqueue(f,tkn,@te)} function is straightforward.
+This function unlinks and deallocates \texttt{tkn}'s queue entry, updates
+queue measurement accumulators, and returns its remaining event time \texttt{te};
+the unlinking code is much the same as the event list entry unlinking code in
+\texttt{cancel()}. Also of occasional use is a \texttt{qentry(f,n)} function, which returns
+the token number of the $n$th entry in the queue for facility \texttt{f}.
+
+\textbf{Data structures for queues.} For generality, all queues are assumed by
+smpl to be priority-ordered, which requires a queue search on each entry.
+The most common queue discipline, however, is FIFO (first-in, first-out), in
+which a new entry always is placed at the end of the queue. By maintaining
+an index to the tail, as well as the head, of the queue, searching can be eliminated.
+We can---potentially---improve simulation run times by adding a
+queue type parameter to \texttt{facility()} calls, adding a queue type indicator
+and a queue tail index to facility descriptors, and selecting queue entry code
+according to the queue type. Alternative and potentially more efficient data
+structures also can be considered for priority queues. The extent to which we
+actually realize improved performance from these changes depends on the
+average lengths of queues in our individual modeling environments.
+
+\textbf{Constructive power.} Many of our modeling difficulties would be eliminated
+if we had more powerful simulation constructs. For example, the disk
+subsystem model sketched earlier would be much simpler if we could define a
+facility ``path'' as a composite of the control unit and channel facilities,
+with its state derived from their states. In the process-oriented simulation
+language SIML/I (MacDougall [1979]), the states of static entities such as
+facilities are defined as \emph{basic signals}; \emph{compound signals} can be defined as
+logical combinations of other signals, and processes can queue on either basic
+or compound signals. Most simulation languages, however, provide only
+simple constructs for representation of static entities; while there is
+considerable room for innovation in this area, research into simulation
+constructs has centered primarily on event scheduling mechanisms.
 
 \section{Event Scheduling}
-\label{sec:ext-smpl-events}
 
-The baseline \texttt{smpl} event list is a time-ordered linked list with average
-insert/remove cost proportional to $n$ (mean future-event count). Heap-like
-structures reduce that to $\log n$ asymptotically.
+The performance of event scheduling mechanisms has been the subject of
+many studies and occasionally heated debate. Many simulation languages,
+including smpl, use simple time-ordered linked lists for event scheduling.
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.82\textwidth,height=0.34\textwidth,
-  xmin=0,xmax=120,ymin=0,ymax=55,
-  axis lines=left,
-  xlabel={future-event count},
-  ylabel={mean operation time (\textmu s)},
-  xtick={0,20,40,60,80,100,120},
-  ytick={0,10,20,30,40,50},
-  ticklabel style={font=\small},
-  label style={font=\small},
-  legend style={font=\small,at={(0.98,0.98)},anchor=north east},
-  grid=major,
-  major grid style={draw=black!12}
-]
-\addplot[line width=1.1pt,mark=*] coordinates {
-  (10,5) (20,9) (40,17) (60,25) (80,33) (100,41) (120,49)
-};
-\addlegendentry{linked list}
-\addplot[line width=1.1pt,mark=square*] coordinates {
-  (10,7) (20,9) (40,11) (60,13) (80,14) (100,16) (120,17)
-};
-\addlegendentry{implicit heap}
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=.85\textwidth]{figures/ch9-fig02.png}
 \caption{Mean Insert/Remove Times for Linked Lists and Implicit Heaps}
-\label{fig:ext-smpl-event-performance}
 \end{figure}
 
-However, replacing the list is not always a net win:
-\begin{itemize}
-\item same-time FIFO ordering may need secondary keys,
-\item event cancellation by event/token is naturally easy on lists,
-\item if future-event count is small, list overhead is often acceptable.
-\end{itemize}
+The average time to insert one entry in and remove one entry from an ordered
+linked list is proportional to $n$, where $n$ is the mean number of entries in the
+list---the mean number of future events.. Other data structures, such as
+\emph{implicit heaps},\footnote{For a brief, very readable, introduction to heaps, see Bentley [1985]. Also, see Section 5.2.3 in Knuth [1971].}
+provide an mean insert/remove time proportional to $\log n$,
+and so offer a potential improvement in simulation run time. Figure 9.2
+shows how insert/remove times for a linked list compare with those of a
+heap. This relative performance has resulted in the labeling of the use of
+linked lists as ``scandalous'' [Reeves 1984].\footnote{Reeves compares simple linked lists, adaptive lists, and heaps: see O'Keefe [1985] for comments on Reeves's paper.}
+However, before replacing smpl's
+event list, there are several points to consider.
 
-The chapter recommends measuring typical list size and considering model
-reformulation before changing core data structures.
+\textbf{FIFO ordering of same-time entries.} Many event-oriented simulation
+languages require that events with the same event occurrence time be ordered
+first-in, first-out. Since transfers between event routines are effected by
+scheduling events with an inter-event time of 0, events with the same occurrence
+time are not uncommon. Heap-based mechanisms cannot guarantee
+FIFO ordering of such events without the addition of secondary keys.
+
+\textbf{Event cancellation.} It sometimes is necessary to search the set of future
+events for a particular event or for a particular token and remove that event
+from the set. This is a simple task with an event list like smpl's, but can
+require additional pointers in other data structures.
+
+\textbf{Need.} The efficiency of smpl's event list is on a par with that of other
+data structures when the mean number of future events is small, say 20 or less.
+Alternative data structures certainly should be considered when the number
+of future events is large. First, however, ask if this number must necessarily
+be large. In many cases, it is possible to revise our modeling approach so as to
+reduce the potential number of future events, just as we did in the Ethernet
+model (Section 6.5). The same question should be asked if queue lengths tend
+to be very long.
+
+\textbf{Further reading.} Specific recommendations in this area are hard to
+make (for reasons not excluding some trepidation). There is a substantial
+body of literature on the analysis of event scheduling mechanisms; two
+papers provide a good starting point for a review of this literature.
+McCormack and Sargent [1981] analyze a dozen different mechanisms; their
+results include relative execution times for a number of actual simulation
+models. Jones [1986] presents insert/remove code size and execution times for
+a number of mechanisms using various argument (i.e., event time) distributions,
+and provides an annotated set of references to earlier work.
 
 \section{Storages}
-\label{sec:ext-smpl-storages}
 
-Storages model finite pools (memory, buffers, etc.) and are conceptually similar
-to facilities but capacity-based.
+Storages, like facilities, are static entities. Storages can be used to
+model such things as memory allocation in a multiprogramming computer
+system or message buffer allocation in a communication network node. While
+it is hard to devise a generally-applicable form for storages (because of the
+wide variety of allocation algorithms), they are useful in some types of
+models, and you may want to tailor some form of storage construct to meet the
+needs of your environment. This section sketches a simple implementation
+which you can use as a starting point.
 
-Suggested API:
-\begin{itemize}
-\item \texttt{s = storage(name, n)},
-\item \texttt{r = alloc(s, tkn, m)} (allocate $m$ units; queue if unavailable),
-\item \texttt{dealloc(s, k)} (free $k$ units),
-\item \texttt{m = avail(s)} (current free units).
-\end{itemize}
+Storages can be constructed as a variation on smpl's facility/queue structure.
+Operations on storages are analogous to facility operations, and include
+the following.
+\begin{verbatim}
+s = storage(p,n);
+\end{verbatim}
+\begin{verbatim}
+r = alloc(s,tkn,m);
+dealloc(s,k);
+m = avail(s);
+\end{verbatim}
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[>=Latex]
-  \draw[line width=1pt] (0,0) rectangle (6.0,3.7);
-  \draw[line width=0.8pt] (0,3.0) -- (6.0,3.0);
-  \draw[line width=0.8pt] (0,2.3) -- (6.0,2.3);
-  \draw[line width=0.8pt] (0,1.6) -- (6.0,1.6);
-  \draw[line width=0.8pt] (3.2,0) -- (3.2,3.7);
-  \node[font=\small] at (1.6,3.35) {name ptr};
-  \node[font=\small] at (4.6,3.35) {queue head};
-  \node[font=\small] at (1.6,2.65) {capacity};
-  \node[font=\small] at (4.6,2.65) {available};
-  \node[font=\small] at (1.6,1.95) {area stats};
-  \node[font=\small] at (4.6,1.95) {time mark};
-  \node[font=\small] at (1.6,1.25) {alloc count};
-  \node[font=\small] at (4.6,1.25) {wait count};
-  \node[font=\small] at (3.0,0.45) {storage descriptor};
-
-  \draw[line width=1pt] (7.2,0.6) rectangle (12.4,3.1);
-  \draw[line width=0.8pt] (7.2,2.4) -- (12.4,2.4);
-  \draw[line width=0.8pt] (7.2,1.7) -- (12.4,1.7);
-  \draw[line width=0.8pt] (9.8,0.6) -- (9.8,3.1);
-  \node[font=\small] at (8.5,2.75) {token};
-  \node[font=\small] at (11.1,2.75) {request $m$};
-  \node[font=\small] at (8.5,2.05) {priority};
-  \node[font=\small] at (11.1,2.05) {next/prev};
-  \node[font=\small] at (9.8,1.15) {wait queue entry};
-  \draw[->,line width=0.9pt] (6.1,2.8) -- (7.1,2.8);
-\end{tikzpicture}
+\includegraphics[width=\textwidth]{figures/ch9-fig03.png}
 \caption{Storage Descriptor and Queue Structure}
-\label{fig:ext-smpl-storage-structure}
 \end{figure}
 
-Key implementation points:
-\begin{itemize}
-\item descriptor can be built as a facility-structure variant,
-\item queue-length and storage-utilization accumulators mirror facility logic,
-\item deallocation may admit multiple waiting requests (discipline-dependent).
-\end{itemize}
+\texttt{storage()} builds a descriptor for a storage with a capacity of \texttt{n} units and
+returns the index of the first element of the descriptor for use in other storage
+operations; \texttt{p} is a pointer to the storage name. \texttt{alloc()} is called to allocate
+\texttt{m} units on storage \texttt{s} for token \texttt{tkn}. If space is available, it is allocated and 0
+returned to the caller; otherwise, the allocation request is queued and 1
+returned. \texttt{dealloc()} deallocates \texttt{k} units on storage \texttt{s}; if this frees sufficient
+space to satisfy the needs of a queued request, that request is dequeued and
+rescheduled. The \texttt{avail()} function returns the number of units currently
+available on storage \texttt{s}.
 
-The text discusses FIFO, priority, and best-fit queue variants and the need to
-extend reset/trace/report code paths accordingly.
+For simplicity, this implementation does not permit specification of a
+token's priority on an allocation request. Note that \texttt{dealloc()}, unlike
+\texttt{release()}, does not have a token number as a parameter. It is desirable to
+permit multiple allocation and deallocation requests to be made for a single
+token, and keeping track of the space allocated to a particular token would
+add unwarranted complexity. Also, a storage is not viewed as a multi-server
+entity in the way a facility is (although we could view a facility of $n$ servers
+as a storage of capacity $n$).
+
+The structure of a storage descriptor and its associated queue is shown in
+Figure 9.3; note the similarity between it and the facility descriptor structure
+of Figure 8.3. A \texttt{storage()} call is processed very much like a
+\texttt{facility()} call;
+\begin{itemize}
+\item \texttt{get\_blk()} is called to allocate a three-element block
+from the element pool for the descriptor header (\texttt{s} is the
+index of the first element of the block),
+\item the descriptor is linked to a storage descriptor chain via
+\texttt{L2[s+1]},
+\item the storage size is stored in \texttt{L1[s]} and \texttt{L2[s]},
+\item the storage name is stored in namespace and the namespace index saved in \texttt{L3[s+1]}, and
+\item \texttt{s} is returned to the caller.
+\end{itemize}
+Remember that \texttt{smpl()} clears the element pool, so that fields not
+specifically initialized by \texttt{storage()} will contain 0.
+
+The \texttt{L5[s]} and \texttt{L5[s+1]} fields are used to accumulate data for mean
+queue length computation in exactly the same way as the corresponding
+fields of a facility descriptor. The \texttt{L5[s+2]} and \texttt{L4[s+2]} fields are used in a
+very similar way to compute the utilization of the storage. Whenever space
+is allocated or deallocated, the amount of space allocated prior to the
+change is multiplied by the time elapsed since the last change, and this
+product added to the space--time product sum. The mean utilization of the
+storage at simulation time $t$ is computed by dividing this sum by $n\times t$, where
+$n$ is the total space defined for the storage. A count of \texttt{dealloc()} calls also
+is maintained for inclusion in the simulation report.
+
+The simulation program calls \texttt{alloc()} to request allocation of \texttt{n} units on
+storage \texttt{s}. \texttt{alloc()} execution is similar to that of \texttt{request()}. \texttt{n} is compared
+with the available storage space (in \texttt{L2[s]}); if the request can be
+satisfied, the available space is decremented by \texttt{n}, the space-time product
+sum and last storage change time fields are updated, and 0 returned to the
+caller. If the request cannot be satisfied, it is queued. Even in our simple
+implementation, there are several different ways of managing storage
+queues.
+
+Pure first-in, first-out queueing can be mechanized by assigning one of the
+unused storage descriptor fields (e.g., \texttt{L4[s+1]}) as a queue entry count. This
+count is initialized to a large value by \texttt{alloc()}. When a request is queued,
+the current value of this count is assigned as the request's priority and the
+count decremented. We also may want to do this for best-fit queueing (which
+requires a search at deallocation time) so that, if there are several comparable
+candidates for dequeueing, the earliest queued request will be selected.
+Alternatively, we may want to order the queue in ascending order of space
+requests; we can effect this by setting the request's priority equal to total
+storage space minus requested space: \texttt{L1[s]-n}. In any case, some modifications
+to \texttt{enlist()} and, consequently, its callers, are needed. A list type
+parameter (facility queue, storage queue, or event list) should be added to
+the \texttt{enlist()} call so that \texttt{enlist()} can distinguish between facility
+queues, in which a non-zero \texttt{L4} field indicates an entry for a preempted token
+and causes head-of-class queueing, and storage queues, in which \texttt{L4} simply is
+a requested space holder. \texttt{enqueue()}---with the addition of a queue type
+parameter---then can be used by \texttt{alloc()} to update queue measurement
+accumulators and allocate and build queue entries.
+
+\texttt{dealloc()} frees \texttt{k} storage units on storage \texttt{s}. It updates the space-time
+product sum and last storage change time fields, adds \texttt{k} to \texttt{L2[s]}, and, if the
+storage queue is empty, returns to the caller. If the queue is not empty,
+\texttt{dealloc()} determines if a request can now be dequeued; note that, depending
+on the amount of storage freed, it may be possible to dequeue more than
+one request. For a first-in, first-out or priority-ordered queue, \texttt{dealloc()}
+examines the entry at the head of the queue and, if the storage request of
+that entry can now be satisfied, dequeues it, updates queue measurement
+accumulators, and reschedules the event associated with the dequeued
+request. It then repeats this process for the new head-of-queue entry, and
+continues until the storage request at the head of the queue cannot be
+satisfied. Other storage queue disciplines, such as best-fit, may require a
+search of the queue.
+
+Some additional things need to be done to complete storage implementation;
+these include error checking (e.g., for an attempt to deallocate more
+than the available space), clearing of measurement accumulator fields on a
+\texttt{reset()} call, trace message generation, and report generation. Use the
+appropriate facility function as a model for coding these details.
 
 \section{Tables}
-\label{sec:ext-smpl-tables}
 
-Tables collect empirical distributions of output variables (response time,
-queueing delay, etc.).
+Tables provide a means of collecting and reporting distributions of simulation
+variables such as queueing times and response times; they also are
+useful in debugging random variate generators and in analyzing measurement
+data. Figure 9.4 shows the report produced for a table used to collect the
+distribution of CPU execution times in the queueing network simulation
+model of Section 2.7. This section outlines the design of the table facility
+used to collect and report this data; like the other smpl extensions we've
+examined, the table mechanism uses a block of elements from the element
+pool as the principal part of its data structure.
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\fbox{%
-\begin{minipage}{0.9\textwidth}
-\small\verbatimfont
-TABLE: response\_time \quad range [0, 40], bins=10\\
-count=5000 \quad mean=12.83 \quad stddev=4.27\\
-------------------------------------------------------------\\
-bin \quad from \quad to \quad freq \quad cum\_freq \quad prob\\
- 1 \quad 0.0 \quad 4.0 \quad 112 \quad 112 \quad 0.022\\
- 2 \quad 4.0 \quad 8.0 \quad 741 \quad 853 \quad 0.148\\
- 3 \quad 8.0 \quad 12.0 \quad 1415 \quad 2268 \quad 0.283\\
- 4 \quad 12.0 \quad 16.0 \quad 1328 \quad 3596 \quad 0.266\\
- 5 \quad 16.0 \quad 20.0 \quad 804 \quad 4400 \quad 0.161\\
- 6 \quad 20.0 \quad 24.0 \quad 363 \quad 4763 \quad 0.073\\
- 7 \quad 24.0 \quad 28.0 \quad 148 \quad 4911 \quad 0.030\\
- 8 \quad 28.0 \quad 32.0 \quad 66 \quad 4977 \quad 0.013\\
- 9 \quad 32.0 \quad 36.0 \quad 18 \quad 4995 \quad 0.004\\
-10 \quad 36.0 \quad 40.0 \quad 5 \quad 5000 \quad 0.001\\
-\end{minipage}}
-\caption{\texttt{smpl} Table Report}
-\label{fig:ext-smpl-table-report}
+\texttt{CPU execution times}\par\medskip
+\begin{tabular}{lr@{\qquad\qquad}lr}
+mean & 7.8657 & minimum & 0.0000 \\
+std. dev. & 8.5659 & maximum & 93.4733
+\end{tabular}\par\medskip
+\begin{tabular}{rrrr}
+interval upper limit & frequency & proportion & cumulative proportion \\
+5 & 4967 & 0.4964 & 0.4964 \\
+10 & 2363 & 0.2362 & 0.7326 \\
+15 & 1160 & 0.1159 & 0.8485 \\
+20 & 656 & 0.0656 & 0.9141 \\
+25 & 339 & 0.0339 & 0.9479 \\
+30 & 215 & 0.0215 & 0.9694 \\
+35 & 134 & 0.0134 & 0.9828 \\
+40 & 85 & 0.0085 & 0.9913 \\
+45 & 33 & 0.0033 & 0.9946 \\
+50 & 17 & 0.0017 & 0.9963 \\
+$>50$ & 37 & 0.0037 & 1.0000 \\
+total & 10006 & &
+\end{tabular}
+\caption{smpl Table Report}
 \end{figure}
 
-Definition and entry interface:
-\begin{itemize}
-\item \texttt{t = table(from, to, n, opt, name)},
-\item \texttt{enter(v, t)}.
-\end{itemize}
+A table is defined via the following function call:
+\begin{verbatim}
+t = table(from,to,n,opt,s);
+\end{verbatim}
+\texttt{from} and \texttt{to} specify the table range, \texttt{n} specifies the number of intervals into
+which this range is to be divided, \texttt{opt} specifies various reporting options
+(e.g., plot), and \texttt{s} is a pointer to the table name. \texttt{table()} creates a table
+descriptor and returns the index of the first element of the descriptor for use
+in data entry and reporting operations. \texttt{n} divides the table range into a set of
+intervals, each representing an increment $\Delta=(\mathtt{to}-\mathtt{from})/\mathtt{n}$.
+A table descriptor includes an array of \texttt{n} cells, representing the intervals
+$\mathtt{from}\to\mathtt{from}+\Delta$,
+$\mathtt{from}+\Delta\to\mathtt{from}+2\Delta$, \ldots,
+$\mathtt{from}+(\mathtt{n}-1)\Delta\to\mathtt{to}$. A value is entered in a table
+via the function call
+\begin{verbatim}
+enter(v,t);
+\end{verbatim}
+where \texttt{v} is the value to be entered and \texttt{t} is the table descriptor index. The
+\texttt{enter()} function determines into which interval the value \texttt{v} falls and
+increments the corresponding cell. When the table report is generated, the
+number of values in that cell divided by the total number of values entered in
+the table gives the proportion of values falling in that interval.
 
-Descriptor fields include lower bound, interval width, option flags, number of
-cells, entry count, sums for mean/variance, and underflow/overflow counters.
-
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}
-  \draw[line width=1pt] (0,0) rectangle (12,4.1);
-  \draw[line width=0.8pt] (0,3.4) -- (12,3.4);
-  \draw[line width=0.8pt] (0,2.7) -- (12,2.7);
-  \draw[line width=0.8pt] (0,2.0) -- (12,2.0);
-  \draw[line width=0.8pt] (0,1.3) -- (12,1.3);
-  \draw[line width=0.8pt] (4.0,0) -- (4.0,4.1);
-  \draw[line width=0.8pt] (8.0,0) -- (8.0,4.1);
-  \node[font=\small] at (2.0,3.75) {from};
-  \node[font=\small] at (6.0,3.75) {to};
-  \node[font=\small] at (10.0,3.75) {$n$ bins};
-  \node[font=\small] at (2.0,3.05) {bin width};
-  \node[font=\small] at (6.0,3.05) {option flags};
-  \node[font=\small] at (10.0,3.05) {name ptr};
-  \node[font=\small] at (2.0,2.35) {count};
-  \node[font=\small] at (6.0,2.35) {sum};
-  \node[font=\small] at (10.0,2.35) {sumsq};
-  \node[font=\small] at (2.0,1.65) {min};
-  \node[font=\small] at (6.0,1.65) {max};
-  \node[font=\small] at (10.0,1.65) {under/over};
-  \node[font=\small] at (6.0,0.65) {cell counts [1..n]};
-\end{tikzpicture}
+\includegraphics[width=\textwidth]{figures/ch9-fig05.png}
 \caption{Table Descriptor}
-\label{fig:ext-smpl-table-descriptor}
 \end{figure}
 
-On each \texttt{enter()}, the code updates:
-\begin{itemize}
-\item count, sum, sum-of-squares,
-\item min/max,
-\item underflow/overflow or selected cell count.
-\end{itemize}
+Figure 9.5 shows the structure of a table descriptor. \texttt{table()} calls
+\texttt{get\_blk()} to get a three-element block from the element pool for the
+header (\texttt{t} is the index of the first element in this block), sets \texttt{L5[t]} to \texttt{from},
+\texttt{L4[t]} to \texttt{(to-from)/n}, \texttt{L3[t]} to \texttt{opt}, and \texttt{L1[t]} to \texttt{n}. The table name is
+stored in namespace and its namespace index saved in \texttt{L3[t+1]}, and the
+descriptor is linked to a table descriptor chain similar to a facility (or
+storage) chain. A set of \texttt{n} contiguous integer cells is allocated and the header
+linked to the first cell of the set via \texttt{L1[t+1]}. The simplest way to define
+cell space for tables is to add the declaration \texttt{static int cell[nc]} to the
+declarations for the element pool and namespace at the start of \emph{smpl.c}, with
+\texttt{nc} defined large enough to accommodate the requirements for the
+anticipated number and sizes of tables, and allocate blocks of cells from this
+array in the same way namespace is allocated. (Alternatively, you can use
+the \texttt{malloc()} function available in most systems to allocate a cell set for a
+table.) After clearing the cell set to 0, \texttt{table()} returns \texttt{t} to its caller.
 
-The chapter notes that fixed ranges can be inconvenient when location/shape are
-unknown; adaptive histogram methods are possible alternatives.
+The \texttt{enter()} function is quite simple; it takes less space to list it than it
+does to describe it (only the function body is shown---\texttt{v} is the value being
+entered and \texttt{t} is the table descriptor index).
+\begin{verbatim}
+int i; real c;
+L1[t]++;                               /* no. of entries */
+L5[t+1]+=v; L4[t+1]+=v*v;       /* sum, sum of squares */
+if (v>L5[t+2]) then L5[t+2]=v;        /* new maximum */
+else if (v<L4[t+2]) then L4[t+2]=v;   /* new minimum */
+c=((v-L5[t])/L4[t])+0.00001;           /* cell index */
+if (c<0.0) then L2[t+2]++;             /* underflow */
+else if (c>=(real)L1[t]) then L3[t+2]++; /*overflow */
+else {i=L1[t+1]+(int)c; cell[i]++;}   /* increment cell */
+\end{verbatim}
+
+In translating \texttt{v} into a cell index, a small constant is added so that when
+\texttt{v-from} is an multiple of the cell interval, the higher cell is incremented.
+
+Most of the work in implementing tables is in coding the table report
+function; the code is straightforward, but formatting is tedious! In addition
+to the report function, you'll need a table clear function (to re-initialize
+tables on a \texttt{reset()} call), and you may want to implement a plot function to
+plot histograms like that of Figure 4.8.
+
+A similar mechanism can be constructed to tabulate queue length
+distributions. In this case, we need a set of real-valued cells in which the
+$i$th cell is used to accumulate the time during which there were \texttt{i} entries in
+the queue; dividing this accumulated time by the simulation interval gives
+the desired queue length probability.
+
+One disadvantage of our table mechanism is that we have to specify the
+table range in advance; if we don't have some idea of the location and shape
+of the distribution, we may end up making several simulation runs simply to
+determine the best range (and interval). Jain and Chlamtac [1985] describe
+an algorithm for collecting a histogram with equiprobable (rather than
+equal interval) cells which does not require storing observations (and doesn't
+require a range specification).
 
 \section{Distributions}
-\label{sec:ext-smpl-distributions}
 
-Distribution definition is separated from sampling:
-\begin{itemize}
-\item \texttt{d = distr(type, p1, p2)},
-\item \texttt{v = sample(d)}.
-\end{itemize}
-
-This decoupling improves parameterized model setup, debugging, and supports
-variance-reduction patterns.
-
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}
-  \draw[line width=1pt] (0,0) rectangle (10.5,3.6);
-  \draw[line width=0.8pt] (0,2.9) -- (10.5,2.9);
-  \draw[line width=0.8pt] (0,2.2) -- (10.5,2.2);
-  \draw[line width=0.8pt] (0,1.5) -- (10.5,1.5);
-  \draw[line width=0.8pt] (3.5,0) -- (3.5,3.6);
-  \draw[line width=0.8pt] (7.0,0) -- (7.0,3.6);
-  \node[font=\small] at (1.75,3.25) {type};
-  \node[font=\small] at (5.25,3.25) {$p_1$};
-  \node[font=\small] at (8.75,3.25) {$p_2$};
-  \node[font=\small] at (1.75,2.55) {stream id};
-  \node[font=\small] at (5.25,2.55) {seed};
-  \node[font=\small] at (8.75,2.55) {flags};
-  \node[font=\small] at (1.75,1.85) {sample count};
-  \node[font=\small] at (5.25,1.85) {sum};
-  \node[font=\small] at (8.75,1.85) {sumsq};
-  \node[font=\small] at (1.75,0.75) {cached state};
-  \node[font=\small] at (5.25,0.75) {helper vars};
-  \node[font=\small] at (8.75,0.75) {reserved};
-\end{tikzpicture}
+\includegraphics[width=.9\textwidth]{figures/ch9-fig06.png}
 \caption{Distribution Descriptor}
-\label{fig:ext-smpl-distribution-descriptor}
 \end{figure}
 
-Each distribution can maintain its own stream seed. That enables:
-\begin{itemize}
-\item common random numbers across alternatives,
-\item antithetic variants (via complemented seed handling).
-\end{itemize}
+The \emph{distribution} construct separates random variate generation into two
+parts: distribution definition and distribution sampling. A distribution is
+defined via a function call of the form
+\begin{verbatim}
+d=distr(type,p1,p2);
+\end{verbatim}
+where \texttt{p1} and \texttt{p2} are parameters of the distribution specified by \texttt{type}. For
+most distributions, \texttt{p1} and \texttt{p2} specify the mean and standard deviation; for
+the uniform distribution, \texttt{p1} and \texttt{p2} specify the lower and upper limits.
+\texttt{distr()} creates a simple data structure to hold the distribution type and
+parameters, and returns the structure's index \texttt{d} to its caller. A sample
+variate \texttt{v} then is generated by the function call
+\begin{verbatim}
+v=sample(d);
+\end{verbatim}
 
-An example type set is proposed:
-\texttt{constant}, \texttt{uniform}, \texttt{normal}, \texttt{expntl}
-(with Erlang/expntl/hyperexponential selection from mean/stddev relation).
+Separating the definition and sampling functions makes it easy to
+specify the distribution type as a model parameter, speeding both model
+debugging and experimentation. In addition, by providing each defined
+distribution with its own random number stream seed, it is easy to exploit
+two of the variance reduction techniques discussed in Section 4.8: common
+random numbers and antithetic variates. This section briefly sketches the
+design of a distribution definition and sampling mechanism using the
+continuous distribution random variate generation functions of \emph{rand.c}.
+
+If \texttt{int}s are 32-bit quantities in your environment, you can use an element
+from the element pool to construct a distribution descriptor, as shown in
+Figure 9.6. If \texttt{int}s are 16-bit quantities, then another data structure must be
+devised which will provide \texttt{long} storage for the 31-bit random number
+stream seed. We'll assume here that a standard smpl element can be used.
+When a distribution is defined, \texttt{distr()} calls \texttt{get\_blk()} to get a one-
+element block whose index is \texttt{d}, stores \texttt{p1} and \texttt{p2} in \texttt{L5[d]} and \texttt{L4[d]}, links
+the descriptor on a distribution chain, gets the seed for the current random
+number stream and stores it in \texttt{L2[d]}, stores a distribution type code in
+\texttt{L1[d]}, and returns \texttt{d} to the caller.
+
+The simplest way to provide an independent random number stream for
+each distribution is to use the \texttt{seed()} function in \emph{rand.c} to obtain the seed of
+the currently-selected stream when defining a distribution and again to set
+the seed when a sample value is to be generated from that distribution. To
+improve performance, you can have \texttt{sample()} set a pointer to the active
+seed for use by \texttt{ranf()}, thus avoiding a \texttt{seed()} call on each \texttt{sample()} call.
+Distribution descriptors are chained together so that, on a stream switch,
+descriptors can be accessed and their seeds changed; this requires that
+\texttt{stream()} be moved to \emph{smpl.c} and the appropriate changes made.
+
+The distribution type stored by \texttt{distr()} may be identical to the \texttt{type}
+value specified by its caller, or may be some encoding of that value, depending
+on how you choose to define types. One possibility is to define four
+distribution types by adding the following definitions to \emph{smpl.h}.
+\begin{verbatim}
+#define constant 1
+#define uniform  2
+#define normal   3
+#define expntl   4
+\end{verbatim}
+
+A \texttt{constant} distribution is handy in debugging; a sample variate from this
+distribution always is equal to \texttt{p1}. A sample variate from the \texttt{uniform}
+distribution is distributed uniformly in \texttt{[p1,p2]}. For \texttt{normal} distributions,
+\texttt{p1} and \texttt{p2} specify the mean and standard deviation.\footnote{The \texttt{normal()} function in \emph{rand.c} saves values between calls and will need to be modified if multiple normal distributions will be defined.}
+\texttt{p1} and \texttt{p2} also specify
+the mean and standard deviation for an \texttt{expntl} distribution. An \texttt{expntl}
+sample value is generated from the Erlang distribution if \texttt{p1<p2}, from the
+negative exponential distribution if \texttt{p1=p2}, and from the hyperexponential
+distribution if \texttt{p1>p2}. With this definition for distributions of this family,
+the distribution type doesn't have to be changed as the standard deviation
+changes. The \texttt{distr()} function encodes the distribution type to whatever
+form provides the fastest \texttt{sample()} call. In the case of a hyperexponential
+distribution (Section 8.9), it precomputes \texttt{p} and stage mean values.
+
+The provision of an independent random number stream for each distribution
+provides the basis for the common random number method of variance
+reduction. The antithetic variate method can be implemented by complementing
+the random number seed before establishing it as the active seed. A
+function can be provided to appropriately mark the descriptor for the distribution
+whose random numbers are to be complemented.
+
+The \texttt{sample()} function establishes the seed for distribution \texttt{d} as the
+active seed, calls the random variate generation function specified by \texttt{L1[d]}
+with parameters \texttt{L5[d]} and \texttt{L4[d]}, and passes along the value returned by
+that function to its caller. You can eliminate a function call by incorporating
+the variate generation code directly in \texttt{sample()}.
 
 \section{A Run-Time Interface}
-\label{sec:ext-smpl-runtime}
 
-The chapter emphasizes that a run-time interface is usually the highest-leverage
-extension. In SMPL/PC this role is handled by \texttt{mtr}.
+A run-time interface, such as SMPL/PC's mtr, is the most useful addition
+you can make to your simulation system; the time spent in its implementation
+will pay substantial dividends in reducing debugging and
+experiment setup times. The detailed design of this interface will largely
+depend on your hardware and software environment. This section gives a
+brief sketch of the mtr module of SMPL/PC and associated SMPL parameter
+handling functions, and is intended to provide a starting point for your own
+design. In SMPL/PC, interactions between the modeler and the model are
+controlled by function keys, and the operating system is required only to
+deliver key codes. In other systems, interactions may be controlled via pop-
+up or pop-down menus, and the system may provide facilities for creating,
+controlling, and obtaining input from these menus. The operations you should
+get in place first are trace control, report display, and parameter handling;
+other operations can be added as needed. A user's view of SMPL/PC was
+given in Chapter 7, and you may find it useful to review that chapter in
+considering run-time interface design.
 
-\begin{figure}[ht]
+smpl communicates with mtr via calls to two functions: the mtr initialization
+function \texttt{init\_mtr()}, and the main mtr control function, \texttt{mtr()}.
+Simplified flow charts of these functions are shown in Figure 9.7.
+
+\begin{figure}[p]
 \centering
-\begin{tikzpicture}[>=Latex,node distance=1.0cm and 1.5cm]
-  \node[draw,rounded corners,minimum width=3.6cm,minimum height=0.9cm] (start) {\texttt{smpl()} startup};
-  \node[draw,minimum width=3.8cm,minimum height=0.9cm,below=of start] (i1) {\texttt{init\_mtr()} phase 1};
-  \node[draw,minimum width=4.4cm,minimum height=0.9cm,below=of i1] (model) {model defines facilities/parameters};
-  \node[draw,minimum width=3.8cm,minimum height=0.9cm,below=of model] (i2) {\texttt{init\_mtr()} phase 2};
-  \node[draw,minimum width=3.4cm,minimum height=0.9cm,below=of i2] (loop) {\texttt{cause()} event loop};
-  \node[draw,diamond,aspect=1.7,below=of loop] (check) {pause/break/error?};
-  \node[draw,minimum width=3.2cm,minimum height=0.9cm,left=2.8cm of check] (mtr) {\texttt{mtr()} command handler};
-  \node[draw,minimum width=3.2cm,minimum height=0.9cm,below=of check] (run) {continue execution};
-
-  \draw[->,line width=0.9pt] (start) -- (i1);
-  \draw[->,line width=0.9pt] (i1) -- (model);
-  \draw[->,line width=0.9pt] (model) -- (i2);
-  \draw[->,line width=0.9pt] (i2) -- (loop);
-  \draw[->,line width=0.9pt] (loop) -- (check);
-  \draw[->,line width=0.9pt] (check) -- node[above,font=\small] {yes} (mtr);
-  \draw[->,line width=0.9pt] (mtr) |- (loop);
-  \draw[->,line width=0.9pt] (check) -- node[right,font=\small] {no} (run);
-  \draw[->,line width=0.9pt] (run) |- (loop);
-\end{tikzpicture}
-\caption{\texttt{mtr} Initialization and Control Functions}
-\label{fig:ext-smpl-mtr-flow}
+\includegraphics[width=.86\textwidth,height=.78\textheight,keepaspectratio]{figures/ch9-fig07.png}
+\caption{mtr Initialization and Control Functions}
 \end{figure}
 
-Integration points:
-\begin{itemize}
-\item \texttt{init\_mtr()} called twice from \texttt{smpl} init path
-  (before and after facility definition),
-\item \texttt{mtr()} called during execution (typically from \texttt{cause()}),
-\item optional pause/error hooks.
-\end{itemize}
+smpl makes two calls to \texttt{init\_mtr()}, first from \texttt{smpl()} with \texttt{mr=1}, and
+later from \texttt{get\_elm()} with \texttt{mr=2}. (smpl's calls to mtr functions are shown in
+the source code listing in the Appendix in the form of comments.) On the first
+call, \texttt{init\_mtr()} initializes mtr variables, clears the screen and generates
+the standard mtr display, displays initialization and pause messages, and
+waits for a function key to be pressed. The mtr display comprises a heading
+---model name, etc.---at the top of the screen, and left and right message
+lines at the bottom of the screen. The left message line is used for pause
+messages and certain input prompts; the right one is used for messages such
+as the initialization and facility definition messages, as well for the
+simulation time display. This first call, which is made before any facilities
+have been defined, provides an opportunity for the modeler to change the
+values of parameters which affect facility definitions, such as the number of
+servers for a facility. The second call, from \texttt{get\_elm()}, is made when the
+first event is scheduled (and after all facilities have been defined); it
+provides an opportunity for the user to set up displays involving facilities,
+such as queue length plotting. On either call, if no mtr display is to be
+invoked, the modeler presses function key F10 to continue, and \texttt{init\_mtr()}
+returns to \texttt{smpl()}; otherwise, \texttt{mtr()} is called to process the selected
+function.
 
-Suggested first features:
-\begin{itemize}
-\item trace control,
-\item report display/reset,
-\item parameter display and editing.
-\end{itemize}
+\texttt{mtr()} is the main mtr control function; it is called from \texttt{cause()},
+\texttt{pause()}, and \texttt{error()}. A \texttt{mtr()} call has two parameters: \texttt{tr}, a copy of
+smpl's trace mode flag, and \texttt{pause}, which is 1 if a monitor pause is requested
+and 0 otherwise.
 
-Parameter support (\texttt{parms} module) uses calls like:
-\begin{itemize}
-\item \texttt{pdef(num, ptr, name)},
-\item lookup helpers by number/pointer.
-\end{itemize}
+When tracing is active and trace mode 2 or 3 has been selected, smpl's
+trace message \texttt{end\_line()} function calls \texttt{mtr()}---via \texttt{pause()}---to pause
+execution after each full screen (trace mode 2) or after each trace message
+(trace mode 3). On returning to smpl, \texttt{mtr()} uses \texttt{tr} to determine if mtr screen
+display generation should be bypassed. \texttt{error()} calls \texttt{mtr()} to pause
+execution when an error occurs, giving the modeler the opportunity to invoke
+displays which may help determine the cause and location of the error.
 
-These parameters are then reused by breakpoints, table setup, analysis displays,
-and run-time experimentation.
+During normal execution, with tracing inactive, \texttt{mtr()} is called from
+\texttt{cause()} on every event. On each call, \texttt{mtr()} performs three tasks: it
+updates active ``on-call'' operations, checks the keyboard for mtr function
+invocation, and displays the current simulation time. ``On-call'' operations
+involve mtr functions which, in SMPL/PC, include breakpoints, mtr-defined
+tables, simulation output analysis, and time series display (see Chapter 7).
+Each of these has its own updating function; for some, the operation may
+terminate as the result of an update. For example, when breakpointing is
+active, \texttt{mtr()} compares the current simulation time or the current value of
+the SMPL parameter designated as the breakpoint parameter with the
+breakpoint value and, if the breakpoint condition is met, turns breakpointing
+off, displays a message and pauses.
+
+When a function key has been pressed, \texttt{mtr()} transfers to the corresponding
+function key processor. Many of these are very simple. For example,
+processors for F1--F3, the trace toggles, simply call smpl's trace function with
+the appropriate parameter, the F4 processor calls \texttt{report()}, and the sF4
+processor calls \texttt{reset()}. Processors for F7 and sF7 use the left message area
+of the mtr display to request entry of a breakpoint value or stream number.
+Some function key processors, such as the SMPL parameter display, involve
+full screen displays with display editing capability.
+
+Simulation time is displayed in the lower right message area. Since
+generating this message involves floating point to character conversion, mtr
+overhead can be reduced by generating this message only on every $n$th mtr
+call, where $n$ is on the order of 50.
+
+\textbf{Parameters.} An important adjunct to mtr is the SMPL parameter mechanism,
+which provides a very simple but effective means of communication
+between the simulation program, mtr, and the modeler. This mechanism
+comprises a few simple function and data structures packaged in the parms
+module. The simulation program defines a variable as a parameter via a
+call to parms' \texttt{pdef()} function; \texttt{pdef()} parameters are the parameter
+number, a pointer to the variable being defined as a parameter, and a pointer
+to a character string to be used as the parameter name in mtr displays. The
+character string is stored in a parameter namespace array; a pointer to the
+string and a pointer to the variable are stored in a parms data structure. The
+size of this data structure, and hence the number of parameters which can be
+defined, \texttt{np}, is fixed at compile time; 8--12 parameters are sufficient for most
+models.\footnote{SMPL system parameters, such as the sizes of data structures, are defined in a configuration file. Modules requiring access to this information (mtr and parms in this case) \texttt{\#include} this configuration file.}
+Other parms functions return the name or the variable pointer of a
+parameter, given its number, and the parameter number, given its variable
+pointer.
+
+mtr provides a display, invoked by function key F8, which lists the
+names and values of all defined parameters and permits their values to be
+changed. This display processor loops through the set of \texttt{np} possible
+parameters, calling parms functions to get the name and variable pointer of
+each defined parameter; it then loops through the set of defined parameters,
+permitting their values to be changed, and assigns any changed
+values to the parameter variable using its pointer. In addition to these
+facilities for displaying and modifying parameter values, mtr uses
+parameter numbers as input parameters for various displays, and a breakpoint
+can be set on a parameter value. In these applications (described in
+Chapter 7), mtr reads the specified parameter number, calls parms functions
+to verify that the parameter has been defined and to get its variable
+pointer, and uses the pointer for subsequent data access.
 
 \section{In Conclusion}
-\label{sec:ext-smpl-conclusion}
 
-The chapter closes with two practical recommendations:
-\begin{enumerate}
-\item build a usable run-time interface early, then grow extensions around it;
-\item use \texttt{smpl} for small-to-medium models and as a compact simulation
-  kernel for specialized tooling.
-\end{enumerate}
+In this chapter, we've looked at a variety of possible extensions to the
+basic smpl simulation subsystem described in Chapter 8. You may want to
+implement some of these, and you'll probably develop others to fit the needs
+of your modeling environment. First, though, develop a run-time interface
+along the lines of that described in Section 9.7; other extensions then can be
+developed to be compatible with this interface.
 
-For large, highly detailed models, process-oriented languages are generally more
-natural. Regardless of language, begin with small/high-leverage models early in
-design and scale detail incrementally.
+smpl is a useful tool for building small- to medium-scale simulation
+models. For large-scale models, a process-oriented simulation language is
+strongly recommended.\footnote{Schwetman [1986] has developed a process-oriented simulation language which is an extension of C.}
+This is not to say that process-oriented languages
+aren't useful for small models; they are. At any scale, the process view
+offers more descriptive power than the event view; for large models, this
+power, and the way it impacts model design, can be crucial. However, the
+implementation of a process-oriented simulation language is---relative to an
+event-oriented ``language'' like smpl---complex, and usually involves
+machine-dependent functions which limit portability.
+
+Regardless of language, the development of a high-detail, large-scale
+simulation model in support of a system design effort is a high-risk task. It
+is very easy to under-estimate the effort required to develop a large model
+and keep it current. The effort required to get an initial version of a large
+model running may keep the modeler from contributing to the analysis of
+early design decisions; in any case, the nature of the model is such that much
+of the design has to be in place before the model can be built. Consequently,
+the main use of such a model---even if it is successfully constructed---may be
+the analysis of relatively low-level design decisions. Perhaps this is
+important enough to justify model development costs; in the early stages of
+design, though, small-scale models frequently are the most useful tools. Such
+models can be small-scale in the sense of either providing a very high level
+representation of the overall system design or providing a detailed
+representation of a small part of the system. In the ideal case, the high-
+level model developed in the early stages of a design would be extended in
+hierarchical fashion through increasing levels of detail as the design
+evolves. (This is easier said than done, partly because designing usually is
+done both ``top down'' and ``bottom up'', and both approaches raise issues
+requiring analysis.) A process-oriented simulation language provides the
+most natural vehicle for hierarchical model development.
+
+Because of its compactness, smpl lends itself to use as the simulation
+``kernel'' of specialized modeling packages. Such packages can take the form
+of models tailored for specific applications, such as a communication network
+simulator, or may provide a specialized user interface. The latter is exemplified
+by the Research Queueing (RESQ) package in which models are
+described as queueing networks. (See MacNair and Sauer [1985] for examples
+and references.) Developments in visual programming may result in new
+ways to build simulation models and examine simulation results; see
+Melamed and Morris [1985] for an example.

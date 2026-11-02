@@ -411,25 +411,7 @@ model) represents the compute and disk activities of active jobs.
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}[font=\small, line width=0.4pt]
-  \node[draw, rectangle, minimum width=6.0cm, minimum height=3.2cm, align=left] (sim) at (-3.7,0)
-  {\textbf{SIMULATION MODEL}\\[0.3em]
-   event 1:\\
-   \quad process job arrival\\
-   \quad admit job?\\
-   \quad schedule next arrival\\[0.4em]
-   event 2:\\
-   \quad job completion\\
-   \quad admit job?};
-
-  \node[draw, rectangle, minimum width=4.6cm, minimum height=3.2cm, align=center] (ana) at (3.7,0)
-  {\textbf{ANALYTIC MODEL}\\[0.4em]
-   central server\\
-   queueing model};
-
-  \draw[->] (sim.east) -- node[above] {mpl} (ana.west);
-  \draw[->] (ana.west) -- node[below] {tour time $T_r$} (sim.east);
-\end{tikzpicture}
+\includegraphics[width=0.9\textwidth]{figures/ch3-figure-3-2.png}
 \caption{Simulation and Analytic Components of the Hybrid Model}
 \end{figure}
 
@@ -1196,48 +1178,8 @@ point on is $N D_{\max} - Z$. In the worst case, each request has to wait a
 
 \begin{figure}[ht]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.45\textwidth,
-  height=0.32\textwidth,
-  xlabel={$N$},
-  ylabel={$X$},
-  title={(a)},
-  axis lines=left,
-  xmin=0,
-  ymin=0,
-  xmax=10,
-  ymax=1,
-  ticks=none
-]
-  \addplot[thick] coordinates {(0,0) (3,0.6) (10,0.6)};
-  \addplot[thick,dashed] coordinates {(0,0) (10,0.3)};
-  \node[anchor=west] at (axis cs:3,0.62) {$1/D_{\max}$};
-  \node[anchor=west] at (axis cs:6,0.32) {$N/(ND+Z)$};
-\end{axis}
-\begin{axis}[
-  at={(0.55\textwidth,0)},
-  anchor=origin,
-  width=0.45\textwidth,
-  height=0.32\textwidth,
-  xlabel={$N$},
-  ylabel={$R$},
-  title={(b)},
-  axis lines=left,
-  xmin=0,
-  ymin=0,
-  xmax=10,
-  ymax=10,
-  ticks=none
-]
-  \addplot[thick] coordinates {(0,2) (5,2) (10,8)};
-  \addplot[thick,dashed] coordinates {(0,2) (10,9)};
-  \node[anchor=west] at (axis cs:5.2,2.2) {$D$};
-  \node[anchor=west] at (axis cs:6.2,8.2) {$ND_{\max}-Z$};
-  \node[anchor=west] at (axis cs:7,9.2) {$ND$};
-\end{axis}
-\end{tikzpicture}
-\caption{Asymptotic Bounds for a Timesharing System (schematic)}
+\includegraphics[width=0.84\textwidth]{figures/ch3-figure-3-4.png}
+\caption{Asymptotic Bounds for a Timesharing System}
 \end{figure}
 
 Plot the throughput and response time bounds for the timesharing model of
@@ -1299,7 +1241,7 @@ mva()
     for (k = 1; k <= K; k++) Q[k] = 0.0;
     for (n = 1; n <= N; n++) {
         for (k = 1; k <= K; k++) R[k] = D[k] * (1.0 + Q[k]);
-        s = 0; for (k = 1; k <= K; k++) s += R[k];
+        s = Z; for (k = 1; k <= K; k++) s += R[k];
         X = (real)n / s;
         for (k = 1; k <= K; k++) Q[k] = X * R[k];
     }

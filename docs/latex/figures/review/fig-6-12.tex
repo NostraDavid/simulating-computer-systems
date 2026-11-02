@@ -1,0 +1,17 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \i/\label in {0/SD,1/AC,2/ED} {
+    \node[review box,minimum width=2cm,minimum height=.85cm,inner sep=0pt] at (\i*2+1,0) {\label};
+    \node[above=4pt] at (\i*2+1,.425) {1 byte};
+  }
+  \draw[review arrow] (3,-.65) -- (3,-1.25);
+  \foreach \i/\label in {0/P,1/P,2/P,3/T,4/M,5/R,6/R,7/R}
+    \node[review box,minimum width=.7cm,minimum height=.8cm,inner sep=0pt] at (.55+\i*.7,-1.9) {\label};
+  \draw[review line] (1.25,-2.3) -- (1.25,-2.85) -- (.1,-2.85);
+  \node[left] at (.1,-2.85) {priority bits};
+  \draw[review line] (2.65,-2.3) -- (2.65,-3.45) -- (1.4,-3.45);
+  \node[left] at (1.4,-3.45) {token status bit};
+  \draw[review line] (3.35,-2.3) -- (3.35,-3.45) -- (4.7,-3.45);
+  \node[right] at (4.7,-3.45) {monitor bit};
+  \draw[review line] (4.75,-2.3) -- (4.75,-2.85) -- (6,-2.85);
+  \node[right] at (6,-2.85) {reservation bits};
+\end{tikzpicture}

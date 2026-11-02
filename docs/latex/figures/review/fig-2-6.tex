@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+\def\queue#1#2{\draw[review line] (#1,#2+.45)--(#1+.95,#2+.45)--(#1+.95,#2-.45)--(#1,#2-.45); \foreach \dx in {.3,.5,.7} \draw[review line] (#1+\dx,#2-.32)--(#1+\dx,#2+.32);}
+\draw[densely dotted,line width=1.2pt] (3.2,-2.3) rectangle (11.2,2.5);
+\node[review heading] at (1.5,2.75) {terminals};
+\draw[review line] (1.25,2.3) .. controls (.9,2.3) and (.9,2) .. (.9,1.7) -- (.9,.45) .. controls (.9,.1) and (.75,0) .. (.55,0) .. controls (.75,0) and (.9,-.1) .. (.9,-.45) -- (.9,-1.7) .. controls (.9,-2) and (.9,-2.3) .. (1.25,-2.3);
+\draw[review line] (1.9,2.3) .. controls (2.25,2.3) and (2.25,2) .. (2.25,1.7) -- (2.25,.45) .. controls (2.25,.1) and (2.4,0) .. (2.6,0) .. controls (2.4,0) and (2.25,-.1) .. (2.25,-.45) -- (2.25,-1.7) .. controls (2.25,-2) and (2.25,-2.3) .. (1.9,-2.3);
+\foreach \y/\n in {1.8/1,.65/2,-1.8/n}{\draw[review line] (1.55,\y) circle (.37); \node at (1.55,\y) {\n};} \node at (1.55,-.25) {$\bullet$}; \node at (1.55,-.85) {$\bullet$};
+\draw[review arrow] (2.6,0)--(4.6,0); \fill (3.8,0) circle (.09); \queue{4.6}{0} \draw[review line] (5.55,0)--(5.7,0); \draw[review line] (6.15,0) circle (.45); \node at (5.6,.95) {CPU};
+\draw[review line] (6.6,0)--(7,0)--(7,-1.6); \node at (8.5,.95) {disks};
+\foreach \y/\n in {0/1,-1.6/2}{\draw[review arrow] (7,\y)--(7.5,\y); \queue{7.5}{\y} \draw[review line] (8.45,\y)--(8.6,\y); \draw[review line] (9.05,\y) circle (.45); \node at (9.05,\y) {\n}; \draw[review arrow] (9.5,\y)--(10.35,\y);}
+\draw[review line] (10.35,-1.6)--(10.35,1.7)--(3.8,1.7); \draw[review arrow] (3.8,1.7)--(3.8,0); \fill (10.35,0) circle (.09);
+\draw[review arrow] (10.35,0)--(11.2,0); \draw[review arrow] (11.2,0)--(12,0)--(12,3.7)--(.15,3.7)--(.15,0)--(.55,0);
+\node[review heading] at (5.2,-1.95) {computer system};
+\end{tikzpicture}

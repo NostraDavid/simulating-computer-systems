@@ -1,0 +1,30 @@
+% Editable proof of the original printed pages 1--292, without archive wrappers.
+% Each source-page boundary is explicit and checked by \OriginalPage.
+\documentclass[10pt,twoside,openany]{book}
+\input{page-aligned/preamble}
+\newcommand{\AlignedChapter}[1]{%
+  \setcounter{figure}{0}\setcounter{table}{0}%
+  \setcounter{equation}{0}\setcounter{footnote}{0}%
+  \input{page-aligned/chapters/#1}%
+}
+\begin{document}
+\pagenumbering{arabic}
+\fontsize{10}{12.2}\selectfont
+\AlignedChapter{01_chapter1}
+\AlignedChapter{02_chapter2}
+\AlignedChapter{03_chapter3}
+\AlignedChapter{04_chapter4}
+\AlignedChapter{05_chapter5}
+\AlignedChapter{06_chapter6}
+\AlignedChapter{07_chapter7}
+\AlignedChapter{08_chapter8}
+\AlignedChapter{09_chapter9}
+\AlignedChapter{10_appendix}
+\AlignedChapter{11_references}
+\AlignedChapter{12_indexes}
+\clearpage
+\ifnum\value{page}=293\relax\else
+  \PackageError{page-aligned}{Expected 292 completed printed pages}%
+    {The final source page overflowed or the page sequence is incomplete.}%
+\fi
+\end{document}

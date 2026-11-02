@@ -12,6 +12,8 @@
 \pgfplotsset{compat=1.18}
 \usepackage{booktabs}
 \usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{multicol}
 \usepackage{hyperref}
 \usepackage{xcolor}
 
@@ -20,10 +22,12 @@
 % Prefer spacing stretch over hyphenation for justification.
 \hyphenpenalty=5000
 \exhyphenpenalty=5000
-\emergencystretch=1em
+\emergencystretch=3em
 
 % Font setup (XeLaTeX/LuaLaTeX).
-\defaultfontfeatures{Ligatures=TeX}
+% TeX quote substitutions belong in prose, not in copyable C source.
+\defaultfontfeatures{}
+\defaultfontfeatures[\rmfamily,\sffamily]{Ligatures=TeX}
 \IfFontExistsTF{Source Serif 4}
   {\setmainfont{Source Serif 4}}
   {\IfFontExistsTF{Source Serif Pro}
@@ -57,11 +61,19 @@
 % Footnote rule thickness and paragraph indentation.
 \renewcommand{\footnoterule}{\kern -3pt \hrule height 2pt \kern 2.6pt}
 \setlength{\parindent}{1.5em}
-\setlength{\parskip}{0.6\baselineskip}
+\setlength{\parskip}{0pt}
 \setlength{\footnotemargin}{0pt}
 
-% Override class font size to 16pt (with 19pt baseline).
-\AtBeginDocument{\fontsize{15}{18}\selectfont}
+% Keep text and listings as text rather than rasterized page images.
+\lstset{
+  language=C,
+  basicstyle=\ttfamily\footnotesize,
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2
+}
 
 \hypersetup{
   colorlinks=true,

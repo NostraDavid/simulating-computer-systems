@@ -1,0 +1,16 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % The dashed upper arc indicates the omitted stations in the ring.
+  \draw[review line] (0,0) arc[start angle=180,end angle=360,x radius=5cm,y radius=1.45cm];
+  \draw[review line,dashed] (0,0) arc[start angle=180,end angle=0,x radius=5cm,y radius=1.45cm];
+  \draw[review arrow] (1.85,-.78) .. controls (.25,-.45) and (.25,.35) .. (1.85,.75);
+  \node[review box,minimum width=.65cm,minimum height=.27cm,inner sep=0pt] at (.65,.05) {};
+  \node[right] at (1.05,.05) {token};
+  \foreach \x/\y/\sx/\name in {1.15/-.9257/-1.3/3,2.9/-1.32/1.8/2,5/-1.45/5/1,7.1/-1.32/8.2/N,8.85/-.9257/11.3/N-1} {
+    \draw[review line] (\x,\y) -- (\sx,-2.45);
+    \node[review box,minimum width=1.55cm,minimum height=.92cm] (s\name) at (\sx,-2.93) {};
+    \draw[review line,rounded corners=5pt] (\sx-.62,-3.25) rectangle (\sx+.62,-2.62);
+    \draw[review line] (\sx-.65,-3.39) -- (\sx-.8,-3.68) -- (\sx+.8,-3.68) -- (\sx+.65,-3.39);
+    \node[review heading,below=2pt] at (\sx,-3.68) {station \name};
+  }
+  \foreach \x/\y in {-1.9/1.55,-1.1/.35,11.1/1.55,12/.35} \fill (\x,\y) circle (2pt);
+\end{tikzpicture}

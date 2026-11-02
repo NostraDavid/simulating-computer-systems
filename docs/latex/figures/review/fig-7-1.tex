@@ -1,0 +1,24 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % Terminal, display output and function-key input.
+  \node[review box,minimum width=2.8cm,minimum height=1.1cm] at (1.5,4.9) {};
+  \draw[review line,rounded corners=6pt] (.25,4.55) rectangle (1.75,5.25);
+  \draw[review line] (2,4.45) -- (2,5.35) (2.25,4.55) -- (2.25,5.25) (2.5,4.55) -- (2.5,5.25);
+  \draw[review line] (.2,4.2) -- (2.25,4.2) -- (3,3.75) -- (.85,3.75) -- cycle;
+  \foreach \x in {.45,.7,.95,1.2,1.45,1.7,1.95} \draw[review line] (\x,4.06) -- ++(.12,0);
+  \draw[review arrow] (5,5.05) -- (3.35,5.05) node[midway,above=4pt] {DISPLAYS};
+  \draw[review arrow] (3.35,3.95) -- (5,3.95) node[midway,below=4pt,align=center] {FUNCTION\\KEYS};
+  \node[review box,minimum width=.8cm,minimum height=8cm] (mtr) at (5.65,4.5) {m\\t\\r};
+  \node[review box,minimum width=1.8cm,minimum height=.75cm] (dump) at (9.55,8.05) {dump};
+  \node[review box,minimum width=1.8cm,minimum height=.75cm] (table) at (9.25,7.2) {table};
+  \node[review box,minimum width=1.8cm,minimum height=.75cm] (smpl) at (8.95,6.35) {smpl};
+  \node[review box,fill=black!10,minimum width=1.8cm,minimum height=.75cm] (model) at (8.95,5.05) {model};
+  \node[review box,minimum width=1.8cm,minimum height=.75cm] (bma) at (8.95,3.75) {bma};
+  \node[review box,minimum width=1.8cm,minimum height=.75cm] (parms) at (8.95,2.45) {parms};
+  \node[review box,minimum width=1.8cm,minimum height=.75cm] (dis) at (8.95,1.05) {dis};
+  \foreach \n in {dump,table,smpl,model,bma,parms,dis}
+    \draw[review arrow,{Triangle[round,length=4mm,width=3.5mm]}-{Triangle[round,length=4mm,width=3.5mm]}] (mtr.east |- \n.west) -- (\n.west);
+  \foreach \a/\b in {smpl/model,model/bma,bma/parms,parms/dis}
+    \draw[review arrow,{Triangle[round,length=2mm,width=1.75mm]}-{Triangle[round,length=2mm,width=1.75mm]}] (\a.south) -- (\b.north);
+  \draw[review arrow,{Triangle[round,length=4mm,width=3.5mm]}-{Triangle[round,length=4mm,width=3.5mm]}] (model.west |- 0,4.8) -- (7.55,4.8) -- (7.55,2.7) -- (parms.west |- 0,2.7);
+  \draw[review line] (-.25,.3) rectangle (10.7,8.8);
+\end{tikzpicture}

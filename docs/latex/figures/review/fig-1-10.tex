@@ -1,0 +1,11 @@
+\begin{tikzpicture}[box/.style={review box,minimum width=1.25cm,minimum height=.8cm},decision/.style={draw,diamond,aspect=1.5,line width=1.2pt,minimum width=1.3cm,minimum height=.85cm,inner sep=0pt}]
+\draw[review line] (-.65,9.8)--(.65,9.8)--(0,9.3)--cycle; \draw[review line] (0,9.3)--(0,8.9);
+\node[box] (a) at (0,8.5) {1}; \node[decision] (b) at (0,7.15) {2}; \node[box] (c) at (-3.2,7.15) {3}; \node[decision] (d) at (-3.2,5.8) {4}; \node[decision] (e) at (0,5.8) {5}; \node[box] (f) at (3.2,5.8) {6}; \node[box] (g) at (0,4) {7}; \node[decision] (h) at (0,2.65) {8};
+\draw[review line] (a)--(b); \draw[review arrow] (b)--node[below] {.20} (c); \draw[review line] (b)--node[right] {.80} (e);
+\draw[review line] (c)--(d); \draw[review arrow] (d.west)--(-4.8,5.8)--(-4.8,7.15)--(c.west); \node at (-4.25,5.5) {.25};
+\draw[review arrow] (d.south)--(-3.2,4.9)--(-.13,4.9); \node at (-2.95,5.15) {.75};
+\draw[review arrow] (e.east)--node[below] {.45} (f.west); \draw[review line] (e.south)--(0,5.07); \node at (-.4,5.25) {.55};
+\draw[review arrow] (f.south)--(3.2,4.9)--(.13,4.9); \draw[review box,fill=white] (0,4.9) circle (.16); \draw[review line] (0,4.74)--(g.north); \draw[review line] (g)--(h);
+\draw[review arrow] (h.east)--(5.1,2.65)--(5.1,8.5)--(a.east); \node at (.95,2.35) {.30};
+\draw[review line] (h.south)--(0,1.7)--(-.65,1.2)--(.65,1.2)--(0,1.7); \node at (-.4,1.95) {.70};
+\end{tikzpicture}

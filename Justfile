@@ -4,6 +4,7 @@ set dotenv-load := false
 pdf := "simulatingcomput00myro_1-1.pdf"
 latex_dir := "docs/latex"
 build_dir := "build"
+output_name := "simulating-computer-systems"
 figures_dir := "docs/latex/figures"
 
 default:
@@ -13,17 +14,19 @@ dev:
     devenv shell
 
 build-latex:
-    mkdir -p {{build_dir}}
     mkdir -p {{build_dir}}/chapters
-    cd {{latex_dir}} && latexmk -xelatex -interaction=nonstopmode -file-line-error -outdir=../../{{build_dir}} -g main.tex
+    cd {{latex_dir}} && latexmk -xelatex -interaction=nonstopmode -file-line-error -jobname={{output_name}} -outdir=../../{{build_dir}} -g main.tex
+    @test -s {{build_dir}}/{{output_name}}.fls
+    @! grep -F -e '{{pdf}}' -e 'source-normalized.pdf' {{build_dir}}/{{output_name}}.fls
 
 build-tectonic:
-    mkdir -p {{build_dir}}
+    mkdir -p {{build_dir}}/chapters
     cd {{latex_dir}} && tectonic -X compile main.tex --outdir ../../{{build_dir}}
+    mv {{build_dir}}/main.pdf {{build_dir}}/{{output_name}}.pdf
 
 watch-latex:
-    mkdir -p {{build_dir}} {{build_dir}}/chapters
-    cd {{latex_dir}} && latexmk -xelatex -interaction=nonstopmode -file-line-error -outdir=../../{{build_dir}} -pvc -g main.tex
+    mkdir -p {{build_dir}}/chapters
+    cd {{latex_dir}} && latexmk -xelatex -interaction=nonstopmode -file-line-error -jobname={{output_name}} -outdir=../../{{build_dir}} -pvc -g main.tex
 
 clean-latex:
     rm -rf {{build_dir}} {{latex_dir}}/.latexmk

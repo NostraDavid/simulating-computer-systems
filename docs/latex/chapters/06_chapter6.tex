@@ -1,693 +1,600 @@
-% OCR draft from PDF pages 160-162 (book pages 182-184 in scan).
+% Editable reconstruction of source PDF pages 182--219 (printed 160--197).
 \chapter{An Ethernet Model}
 \label{chap:ethernet-model}
 
 \section{Introduction}
-\label{sec:ether-introduction}
 
-This chapter presents a macroscopic simulation model of an Ethernet local area
-network. The model (called \texttt{ether}) is used to study how load
-characteristics, such as message rates and message-length distributions, affect
-performance, and to experiment with protocol and load-adaptive algorithms.
-
-Analytic and measurement results from the literature are used to verify and
-validate \texttt{ether}. The Ethernet model introduces new timing and
-coordination issues relative to the synchronous multiprocessor model of the
-preceding chapter. In particular, occurrence of an event may be recognized at
-different instants at different stations because of propagation delay. Other
-topics include efficient representation of many request sources and variate
-generation from truncated distributions.
+This chapter presents a macroscopic simulation model of an Ethernet\footnote{``Ethernet'' is a trademark of the Xerox Corporation} local area network. This model, which we'll call \emph{ether}, can be used to see how network load characteristics, such as message rates and message length distributions, affect performance, and to experiment with protocols and load-adaptive algorithms. We'll use analytic and measurement results from the literature to verify and validate \emph{ether}. An Ethernet simulation presents some new modeling problems. In the synchronous multiprocessor simulation model of the preceding chapter, the key problem was to order events that occurred at the same instant in time. This contrasts with \emph{ether}'s problem: occurrence of an event is recognized at different instants in different parts of the network because of propagation delays. Other problems we'll examine include efficient representation of a large number of request sources and generation of variates from a truncated distribution.
 
 \section{The Ethernet Network}
-\label{sec:ether-network}
 
-The modeled network comprises $N$ stations connected by a coaxial channel.
-Stations attach through cable taps and transceivers, with transceiver cables to
-station controllers.
+The network modeled by \emph{ether} comprises $N$ stations connected by a coaxial cable called the \emph{channel} (Figure 1). A station connects at the cable with a cable tap and transceiver, which in turn are connected via a transceiver cable to the station's controller. Ethernet communication functions are implemented by a combination of controller hardware (and microcode) and station software; the division of function between the two depends on the details of a particular implementation. In the general case, stations may be a combination of various types of computers, workstations, file servers, printers, and other devices (in our case, stations are assumed to be identical). Ethernet can support a maximum of 1024 stations with a total cable length of 2.5 kilometers (connected in a non-rooted tree configuration); cable segments greater than 500 meters are connected by signal repeaters. Data transmission is bit-serial at a rate of 10 Mbps (million bits per second). A detailed specification of Ethernet is given in [DEC et al 1982]; an overview of the Ethernet specification is given by Shoch et al [1982]. The ANSI/IEEE local area network standard 802.3 [IEEE 1985a] is very close to the Ethernet specification.
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[x=0.8cm,y=0.8cm]
-  \draw[line width=1.1pt] (0,2.5) -- (12,2.5);
-  \foreach \x/\n in {1/1,3/2,5/3,7/4,9/5,11/N} {
-    \draw[line width=0.9pt] (\x,2.5) -- (\x,3.6);
-    \draw[line width=0.9pt] (\x-0.5,3.6) rectangle (\x+0.5,4.4);
-    \node at (\x,4.0) {\small \n};
-  }
-  \node at (6,2.1) {\small shared Ethernet channel};
-\end{tikzpicture}
+\includegraphics[width=0.9\textwidth]{figures/ch6-ethernet-network.png}
 \caption{A Simple Ethernet Network}
 \label{fig:ether-simple-network}
 \end{figure}
 
-Ethernet communication behavior is implemented by controller hardware (and
-microcode) together with station software; exact partitioning depends on the
-implementation. In general deployments, stations may be computers,
-workstations, file servers, printers, and other devices. For this model,
-stations are assumed identical.
+\noindent\textbf{Data format.} In Ethernet, data is transmitted in packages called \emph{frames} (Figure 6.2). A frame comprises header, data, and CRC fields. The data field must be at least 46 bytes in length (for reasons which we'll see later on); if a message of less than this minimum length is to be transmitted, the data field must be padded to meet the minimum length requirement.\footnote{\emph{bytes} here describes 8-bit elements without regard to the type of data represented: the Ethernet specification emphasizes this by referring to these elements as \emph{octets}.} The maximum length of the data field is 1500 bytes; this limit helps to provide timely channel access to all stations, and also reflects practical buffer length considerations. The header contains the address of the destination station(s), the address of the sending station, and the data length (excluding pad bytes). The data field is followed by a CRC (cyclic redundancy check) code. This code is generated by the transmitting station and used by the receiving station to check for transmission errors. When a station is ready to transmit a frame, it first transmits a preamble of 64 bits: this is a predetermined bit pattern which receiving stations use for synchronization. Depending on the architectural layer at which the system is examined, the preamble may be viewed as part of the frame; except as noted, we'll take this view in the rest of this chapter.
 
-Ethernet supports up to 1024 stations and a total cable length of 2.5 km in a
-non-rooted tree interconnection, with repeaters for long segments. Data is
-transmitted serially at 10 Mbps. Ethernet is specified in detail in
-[DEC et al 1982], with a close ANSI/IEEE counterpart in 802.3.
-
-\subsection*{Data format}
-
-Data is transmitted in frames containing preamble, header, data, and CRC.
-
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[x=0.12cm,y=0.7cm]
-  \draw[line width=1pt] (0,0) rectangle (64,1.2);
-  \draw (8,0) -- (8,1.2); \draw (20,0) -- (20,1.2);
-  \draw (32,0) -- (32,1.2); \draw (56,0) -- (56,1.2);
-  \node at (4,0.6) {\tiny preamble};
-  \node at (14,0.6) {\tiny destination};
-  \node at (26,0.6) {\tiny source};
-  \node at (44,0.6) {\tiny data};
-  \node at (60,0.6) {\tiny CRC};
-\end{tikzpicture}
+\includegraphics[width=.75\textwidth]{figures/ch6-frame-format.png}
 \caption{Ethernet Frame Format}
-\label{fig:ether-frame-format}
 \end{figure}
 
-The data field length is 46--1500 bytes. Shorter messages are padded to the
-minimum. Header fields carry destination/source addresses and data length
-(excluding padding). The CRC supports error checking at the receiver.
-
-Before frame data, a station sends a 64-bit synchronization preamble. With
-$L$ as data-field length in bytes, nominal frame transmission time is:
-
+The preamble, header, and CRC code total 26 bytes, or 208 bits. If $L$ is the length of the data field in bytes, then the nominal frame transmission time $t_f$ is
 \begin{equation}
-t_f = 20.8 + 0.8L \quad \text{microseconds}
-\label{eq:ether-tf}
+t_f = 20.8 + 0.8L\ \text{microseconds}
 \end{equation}
+Note that the minimum frame transmission time (for $L=46$) is 57.6 microseconds.
 
-Hence the minimum frame time (at $L=46$) is 57.6 microseconds.
+\noindent\textbf{Channel access protocol.} Ethernet uses a distributed access protocol called \emph{Carrier Sense Multiple Access with Collision Detection}, or CSMA/CD. A station with a message to transmit listens to the channel (senses to see if a carrier is present) and, if the channel is free, initiates its transmission. There is a delay between the time at which a station recognizes that the channel is free and the time at which it initiates transmission: this \emph{inter-frame gap} delay insures that a receiving station has time to prepare for a new transmission. This delay, denoted here as $T_{if}$, is specified to be 9.6 microseconds. During transmission, the station continues to listen to the channel; if another station initiates transmission while the first station is transmitting, a collision occurs. When a station recognizes that a collision has occurred, it immediately abandons its transmission of data, transmits a \emph{jam} message to insure that all other stations will recognize the collision (whose duration could be as small as one bit time), and schedules its retransmission attempt after a random delay called a \emph{backoff} delay.
 
-\subsection*{Channel access protocol}
-
-Ethernet uses Carrier Sense Multiple Access with Collision Detection
-(CSMA/CD). A station with data to send senses the channel; if idle, it starts
-transmission. There is an inter-frame gap between sensing idle and transmission
-start to ensure receiving stations complete end-of-frame processing before a
-new transmission begins.
-
-During transmission, the sender continues sensing the channel. If another
-station starts in the collision window, a collision occurs. A station that
-detects collision aborts frame data transmission, sends a jam sequence so all
-stations recognize the collision, and schedules a retransmission after a random
-backoff delay.
-
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[x=0.9cm,y=0.9cm]
-  \draw[->,line width=0.9pt] (0,0) -- (11,0) node[right]{\small time};
-  \draw (0,1.2) node[left]{\small station A} -- (10,1.2);
-  \draw (0,2.2) node[left]{\small station B} -- (10,2.2);
-  \draw[line width=1pt] (0.8,1.2) -- (4.8,1.2);
-  \draw[line width=1pt] (2.0,2.2) -- (5.5,2.2);
-  \draw[densely dashed] (4.8,1.2) -- (5.5,2.2);
-  \node at (5.2,2.8) {\small collision};
-  \draw[line width=0.9pt] (5.5,2.2) -- (8.0,2.2);
-  \draw[line width=0.9pt] (4.8,1.2) -- (7.2,1.2);
-\end{tikzpicture}
+\includegraphics[width=.9\textwidth]{figures/ch6-collision.png}
+\begin{tabbing}
+t1\quad\= station 1 initiates transmission\\
+t2\> station $n$ initiates transmission\\
+t3\> station $n$ detects collision \& initiates jam\\
+t4\> station $n$ ends jam \& begins backoff\\
+t5\> station 1 detects collision \& initiates jam\\
+t6\> station 1 ends jam \& begins backoff\\
+t7\> all stations recognize channel free
+\end{tabbing}
 \caption{Colliding Transmissions in Ethernet}
-\label{fig:ether-collision-timing}
 \end{figure}
 
-Let $\tau$ be end-to-end propagation delay and $T_{\text{jam}}$ jam time. In the
-worst case, colliding stations each transmit for approximately
-$2\tau + T_{\text{jam}}$ before backing off. A station that has transmitted for
-$2\tau$ without collision has effectively acquired the channel for successful
-completion.
+A collision can occur only when one station initiates transmission in a very short interval after another; this interval sometimes is called the \emph{collision window}. Figure 6.3 shows the events involved in a collision. In this figure, the X axis represents time and the Y axis represents the physical separation between stations 1 and $n$. Suppose the channel initially is free and, at time t1, station 1 initiates transmission. Because of propagation delay, this transmission will not reach station $n$ until time t3; meanwhile, station $n$ has initiated its transmission at time t2. When the carrier signal from station 1 reaches station $n$, station $n$ recognizes that a collision has occurred, initiates transmission of a jam message, and, at time t4, begins its backoff delay. Station $n$'s transmission reaches station 1 at t5: station 1 then recognizes occurrence of a collision, sends its jam message, and begins its backoff.\footnote{Collision recognition time is very small, and is ignored here.} The end of the jam message from station 1 reaches station $n$ at time t7, at which time all stations recognize that the channel is free.
 
-With Ethernet's maximum round-trip propagation of 45 bit-times,
-$\tau_{\max}=22.5\,\mu s$. With maximum jam length 48 bit-times,
-$T_{\text{jam}}=4.8\,\mu s$. Thus a collision fragment can be up to 498 bit-times
-($49.8\,\mu s$), which motivates the minimum valid frame size (excluding
-preamble) of 64 bytes.
+The transmissions of stations 1 and $n$ will collide only if the interval t2 -- t1 is less than the propagation time between the two stations: otherwise, station $n$ will recognize that the channel is busy and defer its transmission. Define $\tau$ as the end-to-end propagation delay of the channel and $T_{jam}$ as the jam message transmission time. The worst-case collision situation arises when station 1 is at one end of the cable, station $n$ is at the other end, and station $n$ initiates its transmission just before the carrier signal from station 1 arrives: i.e., the interval between transmission initiations is (almost) $\tau$. (This would be equivalent to t2 and t3 coinciding in the timing diagram of Figure 6.3.) In this case, both of the stations involved in the collision transmit for a period of $2\tau+T_{jam}$ before ending their transmission and initiating their backoff delay. Note that station $n$ will sense channel busy for a time $2\tau$ after it ends its jam. Also, note that if station 1 transmits for a period $2\tau$ without detecting a collision, it has ``acquired'' the channel: it is assured of successfully completing its transmission.
 
-\paragraph{Slot time.}
-The slot time $T_{\text{slot}}$ is specified as 512 bit-times ($51.2\,\mu s$).
-It is the backoff rescheduling quantum. It must exceed both acquisition and
-collision-fragment timing requirements while remaining small enough to avoid
-unnecessary latency inflation.
+Regardless of the positions of the stations involved in a collision, all stations will not recognize channel free until the frame fragment resulting from the collision has propagated through and disappeared from the network. Ethernet specifies a maximum round-trip propagation time of 450 bit times or 45 microseconds, so the maximum value of $\tau$ is 22.5 microseconds. The jam is specified to be from 32 to 48 bit times in length: assuming the maximum, $T_{jam}=4.8$ microseconds. The frame fragment created by a collision, then, may be up to 498 bits in length, corresponding to a transmission time of 49.8 microseconds. The minimum length of a valid frame (excluding the preamble) is 64 bytes or 512 bit times. Thus, a receiving station, after synchronizing on the preamble, can determine from the length of the received data whether it represents a collision fragment or a valid frame.
 
-\paragraph{Backoff algorithm.}
-Ethernet uses truncated binary exponential backoff:
+\noindent\textbf{Slot time.} An important parameter in collision recovery is the \emph{slot time}, $T_{slot}$, which is specified to be 512 bit times, or 51.2 microseconds. The slot time is the rescheduling quantum used by stations in backing off after a collision. The choice of the slot time value reflects several considerations. To avoid unnecessary collisions, it should be larger than the time required for channel acquisition and also larger than the maximum frame fragment created by a collision; once these requirements are met, it should be small to minimize network response times.
+
+\noindent\textbf{Backoff algorithm.} To reduce the chances of repeatedly colliding, the stations involved in a collision randomly delay their retransmission attempts. The algorithm used in determining this delay is called \emph{truncated binary exponential backoff}. It computes a backoff delay as follows.
 \begin{enumerate}
-\item increment retransmission attempt count $n$;
-\item if $n>16$, report transmission error;
-\item set $k=\min(n,10)$;
-\item draw random integer $r \in [0,2^k-1]$;
-\item backoff delay is $r$ slot-times.
+\item increment retransmission attempt counter $n$.
+\item if $n>16$, report transmission error
+\item compute $k=\operatorname{minimum}(n,10)$
+\item generate random integer $r$ in the range $[0,2^k-1]$
+\item set backoff delay = $r$ slot times
 \end{enumerate}
-So attempt 1 backs off 0--1 slots; attempt 2, 0--3; \ldots; attempts 10--16,
-0--1023 slots.
+Thus, the first retransmission attempt is initiated after a backoff delay of 0 or 1 slot times, the second after a delay of from 0 to 3 slot times, up to a delay of from 0 to 1023 slot times for attempts 10--16. After 16 unsuccessful attempts, an error is reported to the user.
+
+The backoff algorithm stabilizes the channel if it tends to become overloaded. As the load on the channel increases, collisions --- and stations' retransmission attempts --- increase: this increases the average backoff delay, reducing the load on the channel. Extreme delays are avoided by limiting the maximum backoff delay to 1023 slot times.
 
 \section{Performance Parameters and Measures}
-\label{sec:ether-metrics}
 
-The model focuses on throughput and mean frame delay as functions of offered
-load, station count, inter-transmission intervals, and mean frame length.
+Our Ethernet analysis will focus on estimating network throughput and mean frame delay as a function of network load, with the load characterized in terms of the number of stations on the network, the inter-transmission intervals of these stations, and the mean frame length of transmissions.
 
-Let $S$ denote network throughput in the common utilization-based form (fraction
-of channel use carrying successful frame data). Let $T_d$ be mean frame delay
-from first transmission attempt to successful completion, including queueing,
-collision recovery, backoff, and transfer time.
+Throughput may be described in terms of frames per unit time or bytes or bits per unit time; also, the technical literature frequently defines throughput as that part of the channel utilization used for successful data transmission. (Part of the overall channel utilization represents transmissions abandoned because of collisions.) This last definition requires some dimensional imagination to be viewed as a true throughput measure; however, because of its widespread use in the literature, we'll use it here: $S$ is defined as the part of channel utilization used for successful data transmission, and is referred to as the \emph{network throughput}. When other measures of throughput are used, explicit dimensions will be given. While this definition of throughput is common in the literature, careful reading is required: successful data transmission sometimes is based on the total frame length, sometimes on the total frame length excluding preamble, and sometimes only on data field length. We'll use the total frame length except where noted.
 
-With $T_f$ as mean no-contention frame transmission time, normalized delay is:
+The mean frame delay time $T_d$ is measured from the time at which a station first attempts to transmit a frame to the time at which transmission of the frame is successfully completed, and so includes channel waiting time, collision recovery time, backoff time, and frame transmission time. It usually is reported in terms of the \emph{normalized mean delay}, $D$. Let $T_f$ be the mean transmission time of a frame in the absence of contention: $T_f$ is the product of the frame length in bits and the channel transfer rate of 10 Mbps. The normalized mean delay then is defined as
+\begin{equation} D=T_d/T_f \end{equation}
 
-\begin{equation}
-D = T_d / T_f
-\label{eq:ether-D}
-\end{equation}
+The load on the network commonly is described in terms of the \emph{offered load}, $G$ --- the load excluding contention effects. Define $T_i$ as the mean interval between the time at which a station completes transmission of one frame and the time at which it initiates transmission of its next frame. The $N$ stations in the network are assumed to be identical. If the network is viewed as a closed system, the offered load is defined as
+\begin{equation} G=\frac{NT_f}{T_i+T_f} \end{equation}
+If the network is viewed as an open system, the offered load is defined as
+\begin{equation} G=\lambda T_f \end{equation}
+where $\lambda$ is the arrival rate of new requests at the channel. (6.4) derives from (6.3) by defining $\lambda=N/T_i$ and keeping the ratio $N/T_i$ constant as $N\to\infty$.
 
-For closed-system interpretation with $N$ identical stations and mean
-inter-transmission interval $T_i$ (post-completion to next attempt):
+A key parameter in portraying the performance of Ethernet and other CSMA/CD networks is $\alpha$, the ratio of the end-to-end propagation time of the channel to the mean frame transmission time:
+\begin{equation} \alpha=\tau/T_f \end{equation}
+Since the minimum frame transmission time is 57.6 microseconds (see equation 6.1) and the maximum propagation time is 22.5 microseconds, the maximum value of $\alpha$ is 0.39.
 
-\begin{equation}
-G = \frac{N T_f}{T_i + T_f}
-\label{eq:ether-G-closed}
-\end{equation}
-
-For open-system interpretation with external arrival rate $\lambda$:
-
-\begin{equation}
-G = \lambda T_f
-\label{eq:ether-G-open}
-\end{equation}
-
-A key Ethernet parameter is
-
-\begin{equation}
-\alpha = \tau/T_f
-\label{eq:ether-alpha}
-\end{equation}
-
-For fixed offered load, larger $\alpha$ (shorter frames relative to
-propagation) implies more collision overhead and lower throughput.
+A collision can occur only if one station attempts to transmit within $\tau$ microseconds after another; if a station transmits for $\tau$ microseconds without a collision, it is guaranteed to complete successfully. For a given offered load, then, a network with short frame transmission times (large $\alpha$) will spend more time in collision recovery, and so have lower throughput, than a network with long frame transmission times (small $\alpha$). As we'll see shortly, throughput bounds for CSMA/CD networks can be expressed in terms of $\alpha$.
 
 \section{Lam's Model}
-\label{sec:ether-lam}
 
-Lam [1980] gives an analytic upper bound on CSMA/CD throughput:
+Lam [1980] developed an analytic model of CSMA/CD networks which provides a simple upper bound on channel throughput and a not-so-simple closed-form expression for the mean frame delay time $T_d$. We won't discuss the details of Lam's analysis here: the main results are presented for use in verifying the output of \emph{ether}.
 
-\begin{equation}
-S_{\max} = \left[1 + \alpha(1 + 2e)\right]^{-1}
-\label{eq:ether-smax}
-\end{equation}
+Lam's bound on throughput can be expressed as
+\begin{equation} S_{max}=[1+\alpha(1+2e)]^{-1} \end{equation}
+where $S_{max}$ is the maximum throughput for a propagation time/mean frame transmission time ratio of $\alpha$.
 
-\begin{figure}[ht]
+Figure 6.4 plots $S_{max}$ versus $\alpha$; note how maximum throughput falls off rapidly as mean frame transmission time decreases. It may be easier to view this in terms of mean frame length: the maximum Ethernet propagation time is 22.5 us. or 225 bit times, so $\alpha$ values of .001, .01, and .1 correspond to mean frame lengths of approximately 28000, 2800, and 280 bytes, respectively.
+
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.78\textwidth,height=0.32\textwidth,
-  xmin=0,xmax=1,ymin=0,ymax=1,
-  xlabel={$\alpha$},ylabel={$S_{\max}$},
-  axis line style={line width=0.9pt},tick style={line width=0.8pt},
-  ticklabel style={font=\small},grid=major,major grid style={draw=black!12}
-]
-\addplot[line width=1.1pt] table[row sep=\\]{
-0.00 0.98\\ 0.05 0.93\\ 0.10 0.88\\ 0.20 0.80\\ 0.30 0.72\\
-0.40 0.65\\ 0.50 0.59\\ 0.60 0.54\\ 0.70 0.49\\ 0.80 0.45\\ 0.90 0.41\\ 1.00 0.38\\
-};
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=.8\textwidth]{figures/ch6-throughput.png}
 \caption{Maximum Network Throughput as a Function of $\alpha$}
-\label{fig:ether-smax}
 \end{figure}
 
-Lam also provides a closed-form expression for $T_d$ in terms of
-$\tau,\lambda,T_f$, moments of frame-time distribution, and Laplace transform
-$B^*(\cdot)$. For constant frame lengths:
+Lam's formula for the mean frame delay time can be expressed as
 \begin{equation}
-T_{f2}=T_f^2
-\label{eq:ether-tf2-const}
+\begin{aligned}
+T_d={}&T_f+\tau(4e+1)/2\\
+&+\frac{\lambda\{T_{f2}+\tau T_f(4e+2)+\tau^2[5+4e(2e-1)]\}}{2\{1-\lambda[T_f+\tau(2e+1)]\}}\\
+&-\frac{(1-e^{-2\lambda\tau})(e+\lambda\tau-3\lambda\tau e)}{\lambda e[B^*(\lambda)e^{-(1+\lambda\tau)}+e^{-2\lambda\tau}-1]}
+\end{aligned}
 \end{equation}
-\begin{equation}
-B^*(\lambda)=e^{-\lambda T_f}
-\label{eq:ether-bstar-const}
-\end{equation}
-For exponentially distributed frame lengths:
-\begin{equation}
-T_{f2}=2T_f^2
-\label{eq:ether-tf2-exp}
-\end{equation}
-\begin{equation}
-B^*(\lambda)=\frac{1}{1+\lambda T_f}
-\label{eq:ether-bstar-exp}
-\end{equation}
+where $\tau$ is the end-to-end propagation delay, $\lambda$ is the mean arrival rate, and $T_f$, $T_{f2}$, and $B^*(\ )$ are, respectively, the first and second moments and Laplace transform of the frame transmission time distribution. For constant frame lengths,
+\begin{equation} T_{f2}=T_f^2 \tag{6.8a} \end{equation}
+\begin{equation} B^*(\lambda)=e^{-\lambda T_f} \tag{6.8b} \end{equation}
+For exponentially-distributed frame lengths,
+\begin{equation} T_{f2}=2T_f^2 \tag{6.9a} \end{equation}
+\begin{equation} B^*(\lambda)=1/(1+\lambda T_f) \tag{6.9b} \end{equation}
+\setcounter{equation}{9}% The next numbered equation is 6.10.
+We can use (6.7) to compute the normalized mean delay $D$ as a function of $S$ and $\alpha$ by setting (arbitrarily) $\tau=1$, $T_f=\tau/\alpha$, $\lambda=S/T_f$, obtaining $T_d$ from (6.7), and computing $D=T_d/T_f$. (For an open system, $S=G$ for $S<S_{max}$.)
 
-The chapter includes C code for computing Lam delay (Figure 6.5).
+Lam's analysis assumes an infinite number of stations whose frame transmission requests collectively form a Poisson process (so inter-request times are exponentially distributed), and assumes a ``slotted'' channel in which stations can begin transmissions only at the start of a time slot of length $2\tau$. As a consequence of the latter assumption, the mean delay approaches $T_f+\tau$ as the offered load approaches zero. Bux [1981] suggests that Lam's original formula be modified by reducing the mean delay by $\tau$, and this modification is incorporated in (6.7).
 
-\begin{figure}[ht]
-\centering
-\begin{minipage}{0.86\textwidth}
+\begin{figure}[htbp]
 \begin{verbatim}
-real lam_delay(real alpha, real rho)
-{
-  /* Lam approximation for non-persistent CSMA/CD */
-  real a2 = alpha * alpha;
-  real num = 1.0 + alpha * (1.0 + 4.5*alpha);
-  real den = 2.0 * (1.0 - rho);
-  real coll = rho * (1.0 + 2.0*alpha + a2) / (1.0 - rho);
-  return num/den + coll;
-}
-\end{verbatim}
-\end{minipage}
-\caption{Function to Compute Lam's Mean Frame Delay}
-\label{fig:ether-lam-c}
-\end{figure}
-
-\section{The \texttt{ether} Simulation Model}
-\label{sec:ether-model}
-
-In \texttt{ether}, the network is represented as a closed system with one shared
-server (channel) and a station pool as request sources. Channel state is tracked
-by simple variables; stations are modeled as tokens generating requests at
-random (exponentially distributed inter-request intervals), contending for
-channel access, and scheduling the next request after successful completion.
-
-A central modeling issue is propagation delay. For a macroscopic model with
-indistinguishable stations, timing is represented probabilistically rather than
-by exact geometric station coordinates.
-
-Assume $N$ stations equally spaced; let $d=|i-j|$ be unit distance between the
-most recent channel owner $i$ and requesting station $j$. Then:
-
-\begin{equation}
-\Pr[x=d]=\frac{2(N-d)}{N(N-1)}, \quad 1\le d \le N-1
-\label{eq:ether-dist-pmf}
-\end{equation}
-
-\begin{equation}
-\Pr[x \le d]=\sum_{k=1}^{d}\frac{2(N-k)}{N(N-1)}
-\label{eq:ether-dist-cdf-sum}
-\end{equation}
-
-\begin{equation}
-\Pr[x \le d]=\frac{2Nd-d(d+1)}{N(N-1)}
-\label{eq:ether-dist-cdf}
-\end{equation}
-
-For large $N$ this is approximated by:
-\begin{equation}
-\Pr[x \le d] \approx 1-\left(1-\frac{d}{N}\right)^2
-\label{eq:ether-dist-cdf-approx}
-\end{equation}
-
-For convenience, the inter-station distance distribution is treated as
-continuous, giving the random-distance generator
-
-\begin{equation}
-d = N\left[1-r^{1/2}\right]
-\label{eq:ether-rand-distance}
-\end{equation}
-
-where $r$ is uniform on $[0,1]$. Since propagation delay per unit distance is
-approximately $\tau/N$ for large $N$, a sample propagation delay between the
-requesting station and the station last reserving/releasing the channel is
-
-\begin{equation}
-d_t = \tau\left[1-r^{1/2}\right]
-\label{eq:ether-rand-delay}
-\end{equation}
-
-\subsection*{Modeling request arrivals}
-
-With identical stations and exponential inactive intervals, request arrivals can
-be modeled with a single next-arrival event instead of one outstanding event per
-station.
-
-At a given instant, let $n$ be the number of inactive stations and $T_i$ the
-mean inactive interval per station. For one station, remaining inactive time
-$y$ has
-
-\begin{equation}
-\Pr[y<t] = 1-e^{-t/T_i}
-\label{eq:ether-y-cdf}
-\end{equation}
-
-If $x=\min(y_1,\ldots,y_n)$, then
-
-\begin{equation}
-\Pr[x<t] = 1-\{1-\Pr[y<t]\}^{n}
-\label{eq:ether-min-cdf}
-\end{equation}
-
-which simplifies to
-
-\begin{equation}
-\Pr[x<t] = 1-e^{-nt/T_i}
-\label{eq:ether-next-arrival-cdf}
-\end{equation}
-
-So the time to next request from the inactive pool is exponential with mean
-$T_i/n$. This supports an efficient algorithm with exactly one queued
-arrival event regardless of $N$.
-
-\subsection*{Event routines}
-
-The model uses six events (Figure~6.6): transmission arrival, deference check,
-transmission start, transmission end, backoff initialization, and channel
-deassert/release.
-
-\begin{figure}[ht]
-\centering
-\begin{tikzpicture}[x=1cm,y=0.8cm]
-  \draw[->,line width=0.9pt] (0,0) -- (10.5,0) node[right]{\small time};
-  \node[left] at (0,1) {\small \texttt{tx-start}};
-  \node[left] at (0,2) {\small \texttt{sense}};
-  \node[left] at (0,3) {\small \texttt{collision}};
-  \node[left] at (0,4) {\small \texttt{backoff}};
-  \node[left] at (0,5) {\small \texttt{retry}};
-  \node[left] at (0,6) {\small \texttt{tx-done}};
-  \foreach \y in {1,2,3,4,5,6} {\draw[black!25] (0,\y) -- (10,\y);}
-  \draw[line width=0.9pt] (0.7,1) -- (2.5,2) -- (3.7,3) -- (4.6,4) -- (6.0,5) -- (8.2,6);
-  \draw[line width=0.9pt] (8.2,6) -- (9.5,1);
-\end{tikzpicture}
-\caption{\texttt{ether} Simulation Model Events}
-\label{fig:ether-events}
-\end{figure}
-
-\textbf{TransmitFrame:} initializes attempt/backoff counters, records request
-arrival time for delay measurement, schedules deference processing, decrements
-inactive-station count, and schedules the next arrival using the single-event
-arrival process.
-
-\textbf{Defer:} evaluates whether a requester senses channel busy or idle,
-accounting for propagation delay and inter-frame gap timing. Channel state is
-tracked by status variable plus timestamps for last busy/idle transitions.
-
-\begin{figure}[ht]
-\centering
-\begin{tikzpicture}[x=0.8cm,y=0.8cm]
-  \draw[->,line width=0.9pt] (0,0) -- (12,0) node[right]{\small time};
-  \draw (0,1.3) node[left]{\small channel} -- (11,1.3);
-  \draw[line width=0.9pt] (0.8,1.3) -- (3.5,1.3);
-  \draw[densely dotted] (3.5,1.3) -- (6.0,1.3);
-  \draw[line width=0.9pt] (6.0,1.3) -- (9.2,1.3);
-  \node at (2.0,1.8) {\small busy};
-  \node at (4.8,1.8) {\small sense delay};
-  \node at (7.7,1.8) {\small idle};
-\end{tikzpicture}
-\caption{Channel State Sensing Timing}
-\label{fig:ether-sensing-timing}
-\end{figure}
-
-If busy is sensed, request is placed on defer-wait list. If idle is sensed,
-remaining deference time is computed and StartTransmit is scheduled.
-
-\begin{figure}[ht]
-\centering
-\begin{tikzpicture}[x=0.8cm,y=0.8cm]
-  \draw[->,line width=0.9pt] (0,0) -- (11,0) node[right]{\small time};
-  \draw[line width=0.9pt] (0.8,1.2) -- (4.6,1.2);
-  \draw[densely dashed,line width=0.8pt] (4.6,1.2) -- (6.2,1.2);
-  \draw[line width=0.9pt] (6.2,1.2) -- (8.8,1.2);
-  \node at (2.6,1.7) {\small deference budget};
-  \node at (5.4,1.7) {\small interruption};
-  \node at (7.6,1.7) {\small remaining};
-  \draw[<->] (6.2,0.6) -- (8.8,0.6);
-  \node at (7.5,0.25) {\small residual time};
-\end{tikzpicture}
-\caption{Remaining Deference Time Computation}
-\label{fig:ether-defer-time}
-\end{figure}
-
-\textbf{StartTransmit:} if channel is idle, reserves channel and schedules
-successful completion candidate. If busy, collision is inferred: colliders are
-scheduled into backoff processing and current successful-completion event may be
-canceled for first detected collision in the window.
-
-\textbf{EndTransmit:} accumulates delay statistics for successful frame,
-schedules channel deassert/release, increments inactive count, and reschedules
-single next-arrival event.
-
-\textbf{InitBackoff:} applies truncated binary exponential backoff. Requests
-with attempts $>16$ are dropped and source is returned to inactive pool;
-otherwise requester either re-enters deference immediately (0 slots) or is
-scheduled after nonzero backoff.
-
-\textbf{Deassert:} transitions channel to idle and reactivates deferred
-requests by scheduling StartTransmit after propagation plus inter-frame gap.
-
-\section{The \texttt{ether} Simulation Program}
-\label{sec:ether-program}
-
-Figure~6.9 contains a smpl implementation of \texttt{ether}. Parameters are
-defined via macros and globals (e.g., propagation delay, inter-frame gap, slot
-time, jam time, station count, offered load, and $\alpha$), and event routines
-directly implement the six-event logic above.
-
-\begin{figure}[ht]
-\centering
-\begin{minipage}{0.86\textwidth}
-\begin{verbatim}
-/* ether: simplified event-driven CSMA/CD model */
-main() {
-  init_model();
-  while (time() < TMAX) {
-    cause(&ev, &src);
-    switch(ev) {
-      case GEN:   gen_frame(src); break;
-      case SENSE: sense_channel(src); break;
-      case START: start_tx(src); break;
-      case COLL:  collision(src); break;
-      case END:   end_tx(src); break;
-      case RETRY: retry_tx(src); break;
+real delay(t,r,Tf,dis)
+  real t,r,Tf; int dis;
+    {
+      real Tf2,B,f1,f2,f3,f4,f5,e=exp(1.0);
+      if (dis==1)
+        then {Tf2=Tf*Tf;     B=exp(-r*Tf);}
+        else {Tf2=2.0*Tf*Tf; B=1.0/(1.0+r*Tf);}
+      f1=Tf+t*(4.0*e+1.0)/2.0;
+      f2=Tf2+t*Tf*(4.0*e+2.0)+t*t*(5.0+4.0*e*(2.0*e-1.0));
+      f2*=r;
+      f3=2.0*(1.0-r*(Tf+t*(2.0*e+1.0)));
+      f4=(1.0-exp(-2.0*r*t))*(e+r*t-3.0*r*t*e);
+      f5=r*e*(B*exp(-(1.0+r*t))+exp(-2.0*r*t)-1.0);
+      return(f1+f2/f3-f4/f5);
     }
-  }
-  report_stats();
-}
 \end{verbatim}
-\end{minipage}
-\caption{The \texttt{ether} Simulation Program}
-\label{fig:ether-program}
+\caption{Function to Compute Lam's Mean Frame Delay}
 \end{figure}
 
-The program estimates throughput $S$ and normalized delay $D$ as functions of
-$\alpha$ and $G$. During initialization, mean frame transmission time $T_f$ and
-mean inactive time $T_i$ are computed from
-(\ref{eq:ether-G-closed}) and (\ref{eq:ether-alpha}). Requests are represented
-with descriptor records linked through available/defer lists.
+A C function to compute $T_d$ is shown in Figure 6.5; its arguments are \texttt{t}, the propagation delay, \texttt{r}, the mean arrival rate, \texttt{Tf}, the mean frame transmission time, and \texttt{dis}, the frame length distribution type. \texttt{dis} is 1 for constant frame lengths or 2 for exponentially-distributed frame lengths. (This function is intended to be part of a program which includes \texttt{math.h} and defines \texttt{real} and \texttt{then}.)
 
-\section{\texttt{ether} Verification and Validation}
-\label{sec:ether-verify-validate}
+\section{The \emph{ether} Simulation Model}
 
-The model is checked by comparison to both Lam-model results and measured
-Ethernet data.
+In \emph{ether}, the network is viewed as a closed system with a single server (the channel) and a pool of request sources (stations). A simple variable is used to represent the state of the channel, and stations are represented by tokens. Stations, at random intervals, generate frame transmission requests, compete for the channel, and, on acquiring the channel, transmit a frame. When frame transmission is complete, another request is scheduled: inter-request intervals are exponentially distributed. The simulation event routines involved in transmission request processing are shown in Figure 6.6. Before we discuss the individual event routines, we'll look at the problems of representing the propagation delay effect and of efficiently modeling the request arrival process.
 
-\paragraph{Comparison with Lam-model results.}
-Runs were made across $\alpha$ values (roughly 0.01--0.25) and offered loads
-$G$ increasing toward saturation. For each fixed $\alpha$, throughput and delay
-curves were generated and $S_{\max}$ estimated near the high-delay knee.
+\noindent\textbf{Representing propagation delay.} The main problem in developing a simulation model of Ethernet is determining how to represent propagation delay. This isn't too difficult in a detailed model which distinguishes individual stations and knows their locations on the channel; in this case, timings can be computed deterministically using inter-station distances. In a macroscopic simulation model such as \emph{ether}, stations are indistinguishable and timings are computed probabilistically.
 
-For smaller $\alpha$ values, simulated $S_{\max}$ tracks Lam's bound closely.
-At larger $\alpha$, differences grow, largely due to model-assumption mismatch
-(collision interval treatment and open-vs-closed modeling effects near
-saturation).
+\emph{ether} assumes that the network has $N$ identical stations distributed equidistantly along the channel. Suppose station $i$ is the station last reserving or releasing the channel, and station $j$ is the requesting station: what can we say about the distance between $i$ and $j$? Since station inter-request times and frame transmission times are independently and identically distributed random variables, $i$ and $j$ can be considered to be random integers equiprobably selected from the set $[1,2,\ldots,N]$. Let $d$ be the unit distance between stations $i$ and $j$ (i.e., $d=|i-j|$). Stations $i$ and $j$ are a pair $(i,j)$ chosen from $N(N-1)$ possible pairs; the number of pairs with a distance $d$ between them is $2(N-d)$. The factor 2 reflects the symmetry of the pairs: for example, a distance of $N-1$ occurs (only) for the pairs $(1,N)$ and $(N,1)$. Thus, the probability of a distance $d$ between the two stations is
+\begin{equation} \Pr[x=d]=2(N-d)/[N(N-1)],\qquad 1\le d\le N-1 \end{equation}
+and the probability of a distance equal to or less than $d$ is
+\begin{equation} \Pr[x\le d]=\sum_{k=1}^{d}2(N-k)/[N(N-1)] \end{equation}
+\begin{equation} =\frac{2Nd-d(d+1)}{N(N-1)} \end{equation}
+For large $N$, we can substitute $N^2$ for $N(N-1)$ and $d^2$ for $d(d+1)$ with small error ($1/N$ or less), and rewrite (6.12) as
+\begin{equation} \Pr[x\le d]=1-[1-d/N]^2 \end{equation}
+We can use the inverse of the distribution function of (6.13) to generate random inter-station distances, as discussed in Section 1.2. Also, for convenience, we'll treat the inter-station distance distribution as continuous, rather than discrete. The random distance generation function then becomes
+\begin{equation} d=N[1-r^{1/2}] \end{equation}
+where $r$ is a random variate uniformly distributed in $[0,1]$. Stations are equidistantly located on the channel; if $d$ is the distance between two randomly-selected stations, the propagation delay $dt$ between those two stations is $\tau d/(N-1)$ or, for large $N$, approximately $\tau d/N$. Substituting in (6.14) gives us a function for generating a sample propagation delay between the requesting station and the station last reserving or releasing the channel:
+\begin{equation} dt=\tau[1-r^{1/2}] \end{equation}
+where $r$, as before, is a uniform random variate.
 
-\begin{figure}[ht]
+\noindent\textbf{Modeling the request arrival process.} The easiest way to handle request arrivals is to schedule a first request for each of the $N$ stations during model initialization, and then schedule a station's next request whenever it completes its current request. This, however, causes simulation run time to increase with increasing $N$ because of the increased number of request arrival events in the event list. Given identical stations with exponential inter-arrival times, we can devise a more efficient scheme.
+
+Suppose at a given instant there are $n$ inactive stations.\footnote{from the channel's viewpoint.} Let $T_i$ be the average inactive interval of any one station: this is the time between the station's completion of one request and its initiation of the next. However, because of the memoryless property of the exponential distribution, the distribution of the time remaining until initiation of the next request doesn't depend on when the previous request completed; at any instant, the distribution of the remaining inactive time $y$ for any one station is defined by
+\begin{equation} \Pr[y\le t]=1-e^{-t/T_i} \end{equation}
+The remaining inactive times $y1,y2,\ldots,yn$ of the $n$ inactive stations are identically distributed random variables with distribution function $\Pr[y\le t]$. The remaining time until a request is next initiated by some one of the $n$ stations is $x=\min[y1,y2,\ldots,yn]$. The distribution function of $x$ can be shown to be (see, for example, Chapter 3 in Trivedi [1982])
+\begin{equation} \Pr[x\le t]=1-\{1-\Pr[y\le t]\}^n \end{equation}
+Substituting (6.16) in (6.17) and simplifying gives
+\begin{equation} \Pr[x\le t]=1-e^{-t/(T_i/n)} \end{equation}
+as the distribution function for the time remaining until the next request. Thus, at any instant, the time until the next request is initiated by one of a set of $n$ stations is exponentially distributed with a mean equal to the mean inactive time per station divided by the number of inactive stations. (6.18), coupled with memoryless property of the exponential distribution, suggests the following algorithm for modeling request arrivals.
+
+\noindent\underline{model initialization}
+\begin{itemize}
+\item \texttt{n = N, Ti =} mean inactive time per station
+\item schedule first request arrival
+\end{itemize}
+\noindent\underline{request arrival}
+\begin{itemize}
+\item schedule initiation of processing for arrival
+\item \texttt{n = n-1}
+\item schedule next arrival at \texttt{time()+expntl(Ti/n)}
+\end{itemize}
+\noindent\underline{request completion}
+\begin{itemize}
+\item cancel currently-scheduled next request arrival
+\item \texttt{n = n+1}
+\item schedule next arrival at \texttt{time()+expntl(Ti/n)}
+\end{itemize}
+With this algorithm, only one arrival event is in the event list at any time, regardless of the value of $N$. There are a variety of other situations in which we may be able to use this approach, such as in modeling terminals in an interactive system simulation model.
+
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.78\textwidth,height=0.32\textwidth,
-  xmin=0,xmax=1,ymin=1,ymax=8,
-  xlabel={throughput},ylabel={normalized delay},
-  axis line style={line width=0.9pt},tick style={line width=0.8pt},
-  ticklabel style={font=\small},grid=major,major grid style={draw=black!12}
-]
-\addplot[line width=1.1pt] table[row sep=\\]{
-0.05 1.1\\ 0.10 1.2\\ 0.20 1.35\\ 0.30 1.55\\ 0.40 1.85\\
-0.50 2.3\\ 0.60 3.0\\ 0.70 4.1\\ 0.80 5.7\\ 0.90 7.5\\
-};
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=.82\textwidth,height=.8\textheight,keepaspectratio]{figures/ch6-model-events.png}
+\caption{\emph{ether} Simulation Model Events}
+\end{figure}
+
+\noindent\textbf{Event routines.} The \emph{ether} simulation model comprises the six event routines shown in Figure 6.6. (We'll look at the simulation program itself in the next section.) As part of model initialization, the first transmission request is scheduled for event 1, TransmitFrame.
+
+\noindent\textbf{TransmitFrame.} This event represents the arrival of a frame transmission request. The transmission attempt and backoff delay counts for the request are set to zero, the request's arrival time is recorded for use in computing the delay time when the transfer completes, and event 2, Defer, is scheduled for the request. The inactive station count is decremented and the next arrival scheduled.
+
+\noindent\textbf{Defer.} This event routine determines a randomly-arriving request's view of the current state of the channel, and corresponds to the Deference process of the Ethernet system (see the Ethernet specification or the IEEE 802.3 standard). The channel is represented by a simple variable whose value is busy or idle, depending on whether the most recent operation was transmission initiation or transmission completion. \emph{ether} maintains two variables, \texttt{tbs} and \texttt{tis}, which record the time at which the facility last became busy and last became idle. These are used in conjunction with a sample propagation delay to determine if the channel's latest change of state has propagated to the requesting station.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.9\textwidth]{figures/ch6-sensing.png}
+\caption{Channel State Sensing Timing}
+\end{figure}
+
+The state of the channel is represented by the variable \texttt{chnl}, which is set to \texttt{busy} when a transmission is initiated and to \texttt{idle} when a transmission completes. To determine if the requesting station senses channel busy, Defer generates a variate \texttt{dt}, using (6.15), which represents the propagation delay between the requesting station and the station last reserving or releasing the channel. If \texttt{chnl = busy}, Defer determines if this state is sensed by the requesting station. The timing involved in this determination is illustrated in Figure 6.7. Station i is the station which initiated a transmission at time \texttt{tbs}, and station j is the requesting station. The transmission from station i reaches station j at time \texttt{tbs+dt}. A station continuously listens to the channel; when the channel goes from busy to idle (carrierSense signal is deasserted), the inter-frame gap delay is initiated. The station defers transmission until the end of this delay, and then starts transmitting without further checking of the state of the channel. In the extreme case, the transmission from station i reaches station j just as station j initiates its inter-frame gap delay and so station j does not sense channel busy. Thus, Defer assumes that the requesting station will sense channel busy if the time of its arrival is greater than \texttt{tbs+dt+Tif} (where \texttt{Tif} is the inter-frame gap delay), and will sense channel idle otherwise.
+
+If the channel is sensed busy, Defer places the request on the \emph{defer wait list}. Processing of requests on this list is reinitiated when the channel is released (by the Deassert event routine). If the channel is sensed idle, Defer computes the station's remaining deference time --- the time until the end of the inter-frame gap delay --- and schedules event 3, StartTransmit, to occur at the end of that time.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.9\textwidth]{figures/ch6-deference.png}
+\caption{Remaining Deference Time Computation}
+\end{figure}
+
+Figure 6.8 shows the times involved in computation of the remaining deference time. Station i is the station which completed transmission at time \texttt{tis} and station j is the requesting station; \texttt{t} is the arrival time of the request. The end of i's transmission is recognized by station j at time \texttt{tis+dt}, and j can begin transmitting at time \texttt{tis+dt+Tif}. The remaining deference time, then, is \texttt{(tis+dt+Tif)} -- \texttt{t}.
+
+\noindent\textbf{StartTransmit.} This event represents the start of a successful or unsuccessful transmission. StartTransmit first checks the state of the channel: if \texttt{chnl = idle}, then no other station has started a transmission, and it is not known whether or not a collision will occur. In this case, StartTransmit reserves the channel by setting \texttt{chnl = busy}, sets \texttt{tbs} to the current time, and schedules event 4, EndTransmit, to occur at the end of the frame transmission time. If the channel is busy, then some other station already has initiated a transmission (although this transmission has not yet propagated to the requesting station) and a collision will occur at some time in the future. Several stations may be involved in a collision: we'll consider first the initial collision in a collision interval.
+
+Figure 6.3 helps envision the timing involved in a collision. Assume station 1 is the station originally reserving the channel, station $n$ is the station initiating the current request, and \texttt{dt} is the propagation delay between these two stations (determined by StartTransmit using (6.15)). t1 corresponds to the busy period start \texttt{tbs}, and t2 corresponds to the transmission start time of the current request (and to the current simulation time). This request will recognize a collision at time t3, after it has transmitted for an interval of $\Delta t=\text{t3}-\text{t2}$. Since t2 is the current simulation time and t3 = \texttt{tbs+dt}, $\Delta t$ is the larger of 0 and \texttt{tbs+dt-time()}. The latter expression may be less than 0 because \texttt{dt} is a random variate. StartTransmit schedules event 5, Initbackoff, for this request after a delay of $\Delta t+$\texttt{Tjam}.
+
+The transmission initiated by station $n$ reaches station 1 at time t5 after a delay of \texttt{dt}. When the first collision in a collision interval occurs, StartTransmit cancels the EndTransmit event for this station's request, schedules Initbackoff for it after a delay of \texttt{dt+Tjam}, and schedules event 6, Deassert, also after a delay of \texttt{dt+Tjam}. However, this latter delay is elongated if necessary to make the busy period length at least equal to the propagation time. This keeps the channel state variable \texttt{chnl}, \texttt{tis}, and \texttt{tbs} from changing until all non-deferring stations have had a chance to transmit --- and collide --- in the current collision window.
+
+For each colliding request arriving after the initial collision, StartTransmit computes a \texttt{dt} value and schedules backoff delay initiation after a delay of \texttt{Tjam}+$\Delta t$, where $\Delta t$ is determined as described above. This is not an accurate representation, since these later arrivals potentially can collide with any one of several requests and \texttt{dt} over-estimates the propagation delay between the requesting station and the nearest (in time) collider; however, the effect on delay times is small.
+
+\noindent\textbf{EndTransmit.} The EndTransmit event represents the successful completion of a transmission. The frame delay time is computed and accumulated and event 6, Deassert, is scheduled to release the channel. The next request arrival is rescheduled as described earlier; the currently-scheduled next request arrival event is cancelled, the count of inactive stations is incremented, and a new next request arrival event is scheduled.
+
+\noindent\textbf{InitBackoff.} This event marks the end of jam transmission and the computation and initiation of a station's backoff delay. If the number of retransmission attempts for the current request is greater than 16, the request is abandoned and the next request arrival event is rescheduled exactly as done at the end of a successful transmission. If the number of attempts is 16 or fewer, the backoff delay is computed using the algorithm described in Section 6.2. If the backoff delay is 0, the request is placed on the defer wait list for reactivation when the channel is released; otherwise, the request is scheduled for event 2, Defer, at the end of its backoff delay.
+
+\noindent\textbf{Deassert.} This event routine releases the channel after a successful or unsuccessful transmission by setting \texttt{chnl = idle} and setting \texttt{tis} to the current simulation time (these operations correspond to the deassertion of the carrierSense signal in the actual network). All requests on the defer wait list are removed and scheduled for event 3, StartTransmit, after a delay of \texttt{dt+Tif}. \texttt{dt} (computed separately for each request) represents the time required for transmission end to propagate through the network, and \texttt{Tif} is the inter-frame gap delay. Requests removed from the defer wait list are scheduled for StartTransmit, rather than Defer, since it is certain that they will sense channel idle following the end of transmission and so initiate their transmissions. Defer processes requests for which the state of the channel is uncertain (on arrival and after a non-zero backoff delay), and probabilistically determines the channel state sensed by these requests.
+
+\section{The \emph{ether} Simulation Program}
+
+Figure 6.9 lists a smpl implementation of \emph{ether}. To save space, model parameter values are specified in \texttt{\#define} directives and in variable declarations. Event routine operations should be clear from the discussion of the preceding section; this section briefly examines some of the implementation details.
+
+This program is designed to obtain estimates of the throughput $S$ and mean normalized delay $D$ as a function of the propagation time/mean transmission time ratio $\alpha$, and the offered load $G$. (You may want to add some input statements to read values of $\alpha$ and $G$.) Network timing parameters --- propagation time, inter-frame gap time, etc. --- are specified by \texttt{\#define} directives. Note that all times are in milliseconds. During model initialization, the mean inter-request time per station $T_i$, and the mean frame transmission time $T_f$, are computed using the relationships defined by (6.3) and (6.5), respectively. Inter-request (inactive) times are assumed to be exponentially distributed, and frame transmission times are assumed to be constant.
+
+Transmission requests are represented by elements of the \texttt{request} structure array. These are linked into an available element list during model initialization, allocated by \texttt{TransmitFrame()} as requests arrive, and deallocated by \texttt{EndRequest()} as requests complete. If \texttt{TransmitFrame()} finds this list empty, it simply ignores the current arrival and schedules the next arrival. This is a rare occurrence, even with a large number of stations operating near channel saturation, and has no practical effect on results.
+
+% Figure 6.9 spans four source pages; verbatim is deliberately breakable.
+% PDF page 201: the opening parenthesis after return in dly() is unclear in
+% the scan; the transcription uses the parenthesis implied by the expression.
+\refstepcounter{figure}
+\begin{center}\textbf{Figure \thefigure.} The \emph{ether} Simulation Program\end{center}
+\begin{verbatim}
+#include <smpl.h>
+
+#define busy  1
+#define idle  0
+#define Na    200        /* max. no. of active stations */
+#define Tp    0.0225     /* propagation delay (ms.)    */
+#define Tif   0.0096     /* interframe delay (ms.)      */
+#define Tslot 0.0512     /* slot time (ms.)             */
+#define Tjam  0.0032     /* jam time (ms.)              */
+
+struct request           /* trans. request descriptor   */
+  {
+    int attempt;         /* no. retransmission attempts */
+    int bkf;             /* current backoff count        */
+    int lnk;             /* avail/defer wait list link  */
+    real tin;            /* request initiation time     */
+    real txf;            /* request's transmission time */
+  } desc[Na+1];
+
+int
+  N=200,                 /* no. of stations in network  */
+  chnl=idle,             /* channel status (busy/idle)  */
+  avl=1,                 /* avail. descriptor list head */
+  dfr=0,                 /* defer wait list head        */
+  end=0;                 /* run termination flag        */
+
+real
+  a=0.05,        /* propagation/transfer time ratio */
+  G=0.50,        /* offered load:  G=N*Tf/(Ti+Tf)   */
+  Tf,            /* mean frame transmission time    */
+  Ti,            /* mean inter-request time/station */
+  tbs=0.0,       /* channel busy start times        */
+  tis=0.0,       /* channel idle start times        */
+  tfsum=0.0;     /* frame transmission time sum     */
+
+main()
+  {
+    int event,stn,nb; real hw,Td;
+    Tf=Tp/a; Ti=Tf*((real)N/G-1.0);
+    smpl(0,"Ethernet Local Area Network");
+    for (stn=1; stn<=Na; stn++) desc[stn].lnk=stn+1;
+    desc[Na].lnk=0;
+    init_bm(2000,2000); schedule(1,Tp,0);
+    while (!end)
+      { /* run until 10% Td accuracy achieved */
+        cause(&event,&stn);
+        switch (event)
+          {
+            case 1: TransmitFrame();    break;
+            case 2: Defer(stn);         break;
+            case 3: StartTransmit(stn); break;
+            case 4: EndTransmit(stn);   break;
+            case 5: InitBackoff(stn);   break;
+            case 6: Deassert();         break;
+          }
+      }
+    civals(&Td,&hw,&nb);
+    printf("S = %.3f\n",tfsum/time());
+    printf("D = %.3f +/- %.3f\n",Td/Tf,hw/Tf);
+  }
+
+real dly()  {return(Tp*(1.0-sqrt(ranf())));}
+
+real maxm(x,y)  real x,y;  {return(x>y? x:y);}
+
+TransmitFrame()
+  {
+    int stn; struct request *p;
+    if (avl) then
+      { /* allocate & build request descriptor */
+        stn=avl; p=&desc[stn]; avl=p->lnk;
+        p->attempt=p->bkf=0; p->tin=time(); p->txf=Tf;
+        schedule(2,0.0,stn); N--;
+      }
+    if (N) then schedule(1,expntl(Ti/N),0);
+  }
+
+Defer(stn)
+  int stn;
+    {
+      real dt=dly(); struct request *p=&desc[stn];
+      if (chnl==busy && time()>(tbs+dt+Tif))
+        then {p->lnk=dfr; dfr=stn;}
+        else schedule(3,maxm(tis+dt+Tif-time(),0.0),stn);
+    }
+
+StartTransmit(stn)
+  int stn;
+    {
+      real tc,t=time(),dt; static int ncls;
+      struct request *p=&desc[stn];
+      if (chnl==idle)
+        then
+          { /* reserve channel & schedule EndTransmit */
+            chnl=busy; tbs=t; ncls=0;
+            schedule(4,p->txf,stn);
+          }
+        else
+          { /* collision will occur in tc ms. */
+            dt=dly(); tc=maxm(tbs+dt-t,0.0);
+            if (++ncls==1) then
+              { /* cancel EndTransmit event */
+                schedule(5,Tjam+dt,cancel(4));
+                schedule(6,maxm(Tjam+dt,tbs+Tp-t),0);
+              }
+            schedule(5,Tjam+tc,stn);
+          }
+    }
+
+EndTransmit(stn)
+  int stn;
+    { /* end successful frame transmission */
+      struct request *p=&desc[stn];
+      tfsum+=p->txf; EndRequest(stn);
+      schedule(6,0.0,0);
+    }
+
+InitBackoff(stn)
+  int stn;
+    {
+      int k; struct request *p=&desc[stn];
+      if (++p->attempt>16)
+        then EndRequest(stn);  /* abandon request */
+        else
+          { /* compute and schedule backoff delay */
+            if (p->attempt==1)
+              then p->bkf=2;
+              else if (p->bkf<1024) then p->bkf*=2;
+            if ((k=random(0,p->bkf-1))==0)
+              then {p->lnk=dfr; dfr=stn;}
+              else schedule(2,Tslot*k,stn);
+          }
+    }
+
+Deassert()
+  {
+    chnl=idle; tis=time();
+    while (dfr)
+      { /* activate requests on defer wait list */
+        schedule(3,dly()+Tif,dfr); dfr=desc[dfr].lnk;
+      }
+  }
+
+EndRequest(stn)
+  int stn;
+    { /* deallocate descriptor, reschedule next arrival */
+      struct request *p=&desc[stn];
+      end=obs(time()-p->tin);
+      p->lnk=avl; avl=stn;
+      N++; cancel(1);
+      schedule(1,expntl(Ti/N),0);
+    }
+\end{verbatim}
+
+The batch means analysis module of Section 4.7 is used to terminate the simulation run when $T_d$, the mean delay time estimate, has been obtained with 10 percent accuracy at a 95 percent confidence level. In this particular implementation, frame transmission times are constant, so this confidence interval also applies to the normalized mean delay $D=T_d/T_f$ (this does not hold for variable transmission times). Note that delay time sample values are passed to the batch means analysis module via the \texttt{obs()} call in the \texttt{EndRequest()} function, and so include delays for transmissions abandoned because of too many transmission attempts as well as successful transmissions. Note also the relatively large initial deletion amount of 2000 observations. Initial transient effects become substantial as the network nears saturation; you may want to make the deletion amount a function of the offered load.
+
+\section{\emph{ether} Verification and Validation}
+
+We'll now look at how the results produced by \emph{ether} compare with those of Lam's model and with Ethernet measurement data reported by Gonsalves [1985]. Comparison of \emph{ether} simulation results with results from Lam's analytic model provides a way of verifying the simulation model. Gonsalves' data lets us validate simulation model results against actual system measurements.
+
+\noindent\textbf{Comparison with Lam's results.} \emph{ether} simulations were carried out for a range of $\alpha$ and $G$ values. Other model parameters (timings, number of stations) had the values shown in the \emph{ether} program listing of Figure 6.9. Each simulation run produced estimates of $S$ and $D$. $\alpha$ was varied from 0.01 to 0.25. (Note that the maximum Ethernet frame length is 1526 bytes: this corresponds to $\alpha=0.147$ at $\tau=22.5$ microseconds, so a $\alpha$ value of 0.01 is slightly outside the actual operating range of a network with these timing parameters.) For each of the chosen values of $\alpha$, a set of simulation runs was made with $G$ varied from 0.05 up to a value for which $D$ became very large (on the order of 20). The value of $S$ at that point was taken as $S_{max}$.
+
+For small values of $\alpha$, ($<0.075$), the values of $S_{max}$ produced by \emph{ether} compare closely to Lam's bound (equation 6.6). For large values of $\alpha$, \emph{ether} estimates greater throughput than does (6.6): the difference is on the order of 20 percent at $\alpha=0.25$. This chiefly results from the assumption in Lam's analysis that a collision interval is equal to twice the propagation delay. (This assumption is needed for analytic tractability.) While the maximum collision interval in an actual network may be as large as $2\tau$, the average is something less. For the parameters used here, $2\tau$ is 45 microseconds; the mean frame transmission time is only twice that at $\alpha=0.25$. At large $\alpha$ and high throughput rates with many collisions, this assumption results in over-estimating the channel time spent resolving collisions and consequently under-estimating throughput. For small $\alpha$, $2\tau$ is small relative to the frame transmission time, and the effect of this assumption diminishes.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.8\textwidth]{figures/ch6-delay-comparison.png}
 \caption{Normalized Delay versus Throughput at $\alpha=0.05$}
-\label{fig:ether-delay-vs-throughput}
 \end{figure}
 
-\paragraph{Comparison with measurement data.}
-To align with reported measurements (Gonsalves), simulation settings are
-adjusted (notably smaller $N$, different $\tau$, constant frame lengths, and
-uniform inactive intervals). Throughput definitions are also aligned: measured
-throughput may be based on data bytes only, while simulation throughput is often
-based on total frame time.
+To compare normalized mean delay times, the mean arrival rate of requests in the network was computed from the throughput of a simulation run ($\lambda=S/T_f$), the C function of Figure 6.5 used to compute the delay estimated by Lam's model, and that delay then compared with the delay estimate obtained from the simulation run. For other than large values of $\alpha$ and for throughputs not overly close to $S_{max}$, delay estimates produced by the two model agree very closely. Figure 6.10 compares delays from Lam's model and from \emph{ether} for $\alpha=0.05$. Differences in $D$ for large $\alpha$ can be attributed to the effect on $S$ of the collision interval length assumption discussed earlier. Differences arising as $S$ approaches $S_{max}$ largely result from the different model types: Lam's model is an open model, \emph{ether} is a closed model. (To examine the effect of the different model types, make some runs near saturation with $N=200$, 500, and 1000, and see how $D$ increases with $N$)
 
-If $\alpha'$ is based on frame length excluding preamble and $\alpha$ includes
-preamble, the relationship used is
+\noindent\textbf{Comparison with Gonsalves' measurements.} Gonsalves [1985] reports measurements of 3 Mbps and 10 Mbps Ethernet networks collected during execution of a controlled synthetic workload. Measurement data is presented in both graphical and numeric forms. The numeric throughput results for the 10 Mbps network given in Gonsalves' Table 4.6 are the most useful for our needs.
 
-\begin{equation}
-\alpha = \alpha' \left(1 + \frac{8}{L'}\right)
-\label{eq:ether-alpha-prime}
-\end{equation}
+To compare \emph{ether} simulation results with the data provided by Gonsalves, the simulation program of Figure 6.9 must be modified to reflect Gonsalves' measurement environment. Key parameters of this environment are
+\begin{enumerate}
+\item end-to-end propagation delay $\tau=15$ microseconds (the network length was 1500 meters with 2 repeaters),
+\item number of station $N=32$,
+\item constant frame lengths, and
+\item uniformly distributed inactive (inter-request) times.
+\end{enumerate}
+Because of (4), we can't use the request scheduling algorithm devised for exponentially distributed inactive times, but instead have to schedule requests independently for each station. The impact of this change on simulation run times is not severe, since there are only 32 stations.
 
-Representative throughput comparison:
+Gonsalves' Table 4.6 reports measured throughput as a function of the propagation time/mean frame transmission time ratio for various frame lengths. Throughput is computed using data bytes only, and mean frame transmission time is computed excluding the preamble. We'll use $S'$ to denote throughput based on data bytes only, $L'$ to denote the frame length in bytes exclusive of preamble, and $\alpha'$ to denote the propagation time/mean frame transmission time ratio for a frame length of $L'$. Note that
+\begin{equation} \alpha'=\alpha(1+8/L') \end{equation}
+where $\alpha$ is the propagation time/mean frame transmission time ratio computed using the entire frame length including preamble.
 
-\begin{table}[ht]
+Table 6.1 compares Gonsalves' throughput measurements with throughput estimates from \emph{ether} simulations, with the \emph{ether} simulation program modified to represent Gonsalves' environment. The simulation runs were made with $G=1$. Measurement and simulation results are close: the largest difference is on the order of ten percent.
+
+\begin{table}[htbp]
 \centering
-\begin{tabular}{lccc}
-\toprule
-Frame bytes & $\alpha'$ & Gonsalves $S'$ & \texttt{ether} $S'$ \\
-\midrule
-64   & .280 & .26 & .28 \\
-200  & .092 & .60 & .57 \\
-512  & .026 & .72 & .72 \\
+\begin{tabular}{cccc}
+$L'$ & $\alpha'$ & Gonsalves $S'$ & \emph{ether} $S'$ \\
+\hline
+64 & .280 & .26 & .28 \\
+200 & .092 & .60 & .57 \\
+512 & .026 & .72 & .72 \\
 1500 & .012 & .85 & .83 \\
-\bottomrule
 \end{tabular}
 \caption{Measurement and Simulation Throughput Results}
-\label{tab:ether-measurement-compare}
 \end{table}
 
+Gonsalves also provides a plot of normalized mean delay versus throughput which compares the normalized mean delay obtained from measurements with that estimated from Lam's model. You might like to try comparing \emph{ether} delay estimates with delays obtained from this plot. Gonsalves concludes that Lam's model does not provide consistent accuracy because of differences between measurement and model results. These probably are due partly to the slotted channel and open model assumptions of Lam's analysis, discussed earlier in this section, and partly to measurement limitations: delays of a fraction of a millisecond could not be measured. Since the mean frame transmission time is less than 0.2 milliseconds at $\alpha=0.1$, small delays were subject to considerable measurement error.
+
 \section{Applications and Extensions}
-\label{sec:ether-extensions}
 
-\texttt{ether} supports experimentation with protocol and collision-recovery
-variants. Common extensions include:
-\begin{itemize}
-\item alternate backoff schemes,
-\item load-adaptive access controls,
-\item priority-aware or mixed-traffic policies,
-\item variable frame-length distributions.
-\end{itemize}
+\emph{ether} provides a tool for estimating Ethernet performance under various loads and for evaluating network protocol and collision resolution variants. The literature abounds with proposals for enhancements to Ethernet and other CSMA/CD networks: a brief sampling of these follows.
 
-Variable frame lengths are important for realism (short control frames mixed
-with long data frames). One practical variant is a truncated exponential frame
-time model honoring Ethernet minimum/maximum frame constraints.
+Molloy [1984] briefly reviews several proposed mechanisms for collision resolution and presents a new method which can be integrated into CSMA/CD networks which follow the IEEE 802.3 standard. Wang and McGurrin [1985] suggest a fair share algorithm to protect the network from overload and describe a Markovian model for network analysis. Jackman and Medeiros [1984] propose a new backoff algorithm, describe the simulation model used in its evaluation, and compare the performance of their algorithm with the standard backoff algorithm. Chen and Li [1985] suggest varying the retransmission attempt limit to improve throughput and develop a probabilistic model of network operation for evaluating their scheme. Chlamtac and Eisenger [1983] discuss voice transmission in Ethernet and describe how voice performance can be improved by adjustment of the backoff algorithm. Many of these proposed extensions can be easily incorporated into \emph{ether}.
 
-\subsection*{Generating variates from a truncated exponential}
+For compactness, the simulation program of Figure 6.9 provides only constant frame transmission times. Actual networks have variable frame lengths, with a high frequency of short frames corresponding to request and acknowledge messages and a lower frequency of long frames representing data transmissions. Shoch and Hupp [1980] present measurements of several aspects of an Ethernet workload (measured on the original Ethernet), including request inter-arrival time and frame length distributions. They point out that frame lengths may be constrained by the environment in which the network operates. Variable frame transmission times can be incorporated into \emph{ether} by modifying the \texttt{TransmitFrame()} event routine to generate a random frame transmission time from the appropriate distribution.
 
-For exponential variable $t$ with parameter $u$:
+It is useful to extend \emph{ether} to provide exponentially distributed frame transmission times, both to represent actual system variability and to provide a basis for comparison with certain analytic models. Depending on the application, you may want to truncate this distribution at the low end and possibly at the high end so that minimum and maximum transmission times correspond to Ethernet's minimum and maximum frame lengths. This may require adjusting the mean of the exponential distribution used to generate transmission times in order to obtained the desired mean time after truncation. To illustrate this, let's look at how to adjust the mean when sample times are truncated to a given minimum time (a similar approach can be used to limit sample times to a given maximum value).
 
-\begin{equation}
-E[t] = \int_0^\infty t\,u e^{-ut}\,dt
-\label{eq:ether-trunc-mean}
-\end{equation}
+\noindent\textbf{Generating variates from a truncated exponential distribution.} Suppose frame transmission times are assumed to be exponentially distributed except that the minimum transmission time is $t_{min}$, rather than 0, because of the minimum frame length requirement. The mean frame transmission time is $T_f$. To generate a sample frame transmission time in the simulation model, we generate a variate $t$ from an exponential distribution and, if $t$ is less than $t_{min}$, set $t$ equal to $t_{min}$. (The distribution of $t$ is called a \emph{mixed} distribution, because it is part exponential and part constant.) The problem in generating $t$ is determining the mean $T_x$ of the exponential distribution which will result in a mean of $T_f$ for the truncated variate.
 
-Splitting at $t_{\min}$:
+For a random variable $t$ distributed according to an exponential distribution with parameter $u$, the expected value of $t$ is
+\begin{equation} E[t]=\int_0^\infty tu e^{-ut}\,dt \end{equation}
+If we integrate (6.20) over the indicated integration period, we obtain $E[t]=1/u$. Suppose, however, we divide the integration period into $[0,t_{min}]$ and $[t_{min},\infty]$:
+\begin{equation} E[t]=\int_0^{t_{min}}tu e^{-ut}\,dt+\int_{t_{min}}^\infty tu e^{-ut}\,dt \end{equation}
+The left integral represents the contribution to the mean of values less than $t_{min}$, and the right integral represents the contribution of values greater than $t_{min}$. In generating sample frame transmission times, we essentially replace the contribution of the left integral by a quantity $w$
+\begin{equation} w=t_{min}\Pr[t<t_{min}]=t_{min}(1-e^{-ut_{min}}) \end{equation}
+i.e., variates with values less than $t_{min}$, whose relative frequency is $\Pr[t<t_{min}]$, are replaced by variates with value $t_{min}$. $w$ is the contribution of these variates to the mean $T_f$ of the truncated variate, which is
+\begin{equation} T_f=t_{min}(1-e^{-ut_{min}})+\int_{t_{min}}^\infty tu e^{-ut}\,dt \end{equation}
+Evaluating the integral and simplifying gives
+\begin{equation} T_f=t_{min}+u^{-1}e^{-ut_{min}} \end{equation}
+$T_f$ and $t_{min}$ are given (as model parameters), and we can determine from (6.23) the mean value $T_x=1/u$ to use in generating the initial (not truncated) exponential variate. Unfortunately, we can't do this directly but have to use an iterative approach.
 
-\begin{equation}
-E[t] = \int_0^{t_{\min}} t\,u e^{-ut}\,dt + \int_{t_{\min}}^\infty t\,u e^{-ut}\,dt
-\label{eq:ether-trunc-split}
-\end{equation}
-
-Replacing samples below $t_{\min}$ by $t_{\min}$ contributes
-
-\begin{equation}
-w = t_{\min}\Pr[t < t_{\min}] = t_{\min}\left(1-e^{-u t_{\min}}\right)
-\label{eq:ether-trunc-w}
-\end{equation}
-
-and yields a target mean form
-
-\begin{equation}
-T_f = t_{\min}\left(1-e^{-u t_{\min}}\right) + \int_{t_{\min}}^\infty t\,u e^{-ut}\,dt
-\label{eq:ether-trunc-tf}
-\end{equation}
-
-which simplifies to
-
-\begin{equation}
-T_f = t_{\min} + u^{-1}e^{-u t_{\min}}
-\label{eq:ether-trunc-simplified}
-\end{equation}
-
-Since $u$ is implicit, Newton iteration is used in practice (book Eq.\ 6.25).
+One possible approach is to use Newton's method (see, for example, Rice [1983]): write the equation in the form $f(x)=0$, find the first derivative $f'(x)$, guess at an initial value $x0$, and compute an improved value $x1=x0-f(x0)/f'(x0)$. Repeat until the difference between successive values of $x$ is less than some predetermined value. Applying Newton's method to (6.24) gives the following iterative relationship
+\begin{equation} u1=u0-\frac{T_f-t_{min}-u0^{-1}e^{-u0t_{min}}}{u0^{-1}e^{-u0t_{min}}(u0^{-1}+t_{min})} \end{equation}
+A reasonable starting point is $u0=1/T_f$. For typical \emph{ether} model parameters, 4-digit accuracy typically is achieved with three or four iterations.
 
 \section{Summary}
-\label{sec:ether-summary}
 
-This chapter develops a compact macroscopic Ethernet model using analytic
-submodels to reduce detail while preserving key contention behavior. It is not
-a full hybrid model in the strict sense, but it demonstrates how probabilistic
-substructure can simplify event simulation and still support verification and
-validation against analytic bounds and measured data.
+We have examined the construction of a macroscopic simulation model of Ethernet; this model employs analytic submodels to reduce the level of detail, and the resulting simulation program requires only 150 or lines of code. This model is not a hybrid model in the usual sense, but does illustrate how simple probabilistic analyses can be used to simplify a simulation model. O'Reilly and Hammond [1984] combine probabilistic and simulation analysis is a different way. Their approach partitions the network into a small number of priority stations and a large number of background stations: priority station operations are simulated, while the network load of background stations is probabilistically represented.
+
+CSMA/CD networks, exemplified by Ethernet, represent one of the three local area network access methods for which IEEE standards have been developed: the other two methods are the token bus and token ring networks. Bux [1984] discusses and compares the performance of these three methods, and provides extensive references to performance analysis methods; Bux's references are a good starting point for exploring the literature on local area networks. A number of papers on simulation of token bus networks appear in the proceedings of a workshop on token bus modeling sponsored by the National Bureau of Standards [NBS 1985]. Token ring networks are the subject of this chapter's modeling project.
 
 \section{A Token Ring Modeling Project}
-\label{sec:token-ring-project}
 
-The project asks for a token-ring simulation model to study effects of ring
-configuration and workload parameters.
+The objective of this project is the development of a simulation model of a token ring local area network which can be used to determine how network configuration parameters (number of stations, station overhead, and ring length) and network load parameters (message lengths and rates) affect performance. Several different types of ring networks have been built or proposed, including token, slotted, and insertion rings, and there are several different protocols for token rings. This project is concerned with token ring networks of the type described in the ANSI/IEEE local area network standard 802.5 [IEEE 1985b]. Compared to CSMA/CD networks, token ring networks are less sensitive to workload characteristics, such as message length, and provide controlled delay under heavy load; CSMA/CD network delays are much more sensitive to load [Stuck 1983].
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[x=1cm,y=1cm]
-  \draw[line width=1pt] (0,0) circle (2.4);
-  \foreach \a/\n in {90/1,18/2,-54/3,-126/4,162/N} {
-    \node[draw,rectangle,minimum width=0.9cm,minimum height=0.6cm] at (\a:2.4) {\small \n};
-  }
-  \draw[-{Stealth[length=3mm]},line width=0.9pt] (30:2.4) arc[start angle=30,end angle=-20,radius=2.4];
-  \node at (0,-3.0) {\small token circulates in ring direction};
-\end{tikzpicture}
+\includegraphics[width=.9\textwidth]{figures/ch6-token-ring.png}
 \caption{A Token Ring Network}
-\label{fig:token-ring-network}
 \end{figure}
 
-Token and frame formats:
+We'll begin our discussion of this project with a review of token ring operation. Next, we'll look at a simple analytic model of token ring performance which can be used to help verify the simulation model, and then discuss modeling assumptions and various aspects of simulation model construction.
 
-\begin{figure}[ht]
+\noindent\textbf{Ring operation.} A token ring network comprises a set of stations connected by a transmission medium such as twisted-pair cable. Information is transmitted in bit-serial fashion from one station to the next, circulating around the ring; each station reads, regenerates, and retransmits each bit. Data and control information is transmitted between stations in units called \emph{frames}. Access to the ring is controlled by a \emph{token}; a token is a specified bit pattern, one bit of which indicates whether the ring is free or busy. When the ring is free, the token continuously circulates from station to station. When a station has a frame to transmit, it waits until it the free token is received, changes the token status bit to mark the token busy, and transmits the frame; the token becomes part of the frame header. The bits of the frame circulate around the ring, are copied by the receiving station (or stations) as they pass, and are removed from the ring by the transmitting station.
+
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[x=0.18cm,y=0.7cm]
-  \draw[line width=1pt] (0,0) rectangle (40,1.2);
-  \draw (4,0)--(4,1.2); \draw (8,0)--(8,1.2); \draw (24,0)--(24,1.2);
-  \node at (2,0.6) {\tiny SD};
-  \node at (6,0.6) {\tiny AC};
-  \node at (16,0.6) {\tiny FC + addr};
-  \node at (32,0.6) {\tiny control bits};
-\end{tikzpicture}
+\includegraphics[width=.8\textwidth]{figures/ch6-token-format.png}
 \caption{Token Format}
-\label{fig:token-format}
 \end{figure}
 
-\begin{figure}[ht]
+A token comprises Starting Delimiter (SD), Access Control (AC), and Ending Delimiter (ED) bytes (Figure 6.12). Bits of the SD and ED bytes are transmitted in a way which insures that they can be distinguished from data and from other control fields. The Access Control (AC) byte contains priority, reservation, token status, and monitor bit fields. The priority and reservation fields are used to implement a network priority scheme; we won't be concerned with priorities in this project. The monitor bit is used in network error checking. When the ring is free, the token status bit is 0; on obtaining access to the ring, the sending station sets this bit to 1 and transmits the SD and AC fields as the first two bytes of a frame.
+
+Token ring frame fields and field lengths (in bytes) are shown in Figure 6.13. The Frame Control (FC) byte distinguishes between data frames and network control message frames. Depending on the implementation, destination (receiving station) and source (sending station) address fields may be either 2 bytes or 6 bytes in length. The maximum frame length, and consequently the maximum length of the information field, $n$, also depends on the implementation. The Frame-Check Sequence (FCS) field contains a cyclic redundancy check code similar to Ethernet's CRC code. Bits of the Frame Status (FS) byte are used to indicate that a receiving station has recognized its address and copied the frame from the ring.
+
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[x=0.12cm,y=0.7cm]
-  \draw[line width=1pt] (0,0) rectangle (72,1.2);
-  \foreach \x in {4,8,20,32,60,68} {\draw (\x,0)--(\x,1.2);} 
-  \node at (2,0.6) {\tiny SD};
-  \node at (6,0.6) {\tiny AC};
-  \node at (14,0.6) {\tiny FC+DA};
-  \node at (26,0.6) {\tiny SA};
-  \node at (46,0.6) {\tiny DATA};
-  \node at (64,0.6) {\tiny FCS};
-  \node at (70,0.6) {\tiny ED/FS};
-\end{tikzpicture}
+\includegraphics[width=.95\textwidth]{figures/ch6-ring-frame.png}
 \caption{Token Ring Frame Format}
-\label{fig:token-frame-format}
 \end{figure}
 
-Core network parameters:
-\begin{equation}
-\tau = 5K + \frac{BN}{R}
-\label{eq:token-latency}
-\end{equation}
-\begin{equation}
-T_f = \frac{L}{R}
-\label{eq:token-tf}
-\end{equation}
-\begin{equation}
-\alpha = \frac{\tau}{T_f}
-\label{eq:token-alpha}
-\end{equation}
-\begin{equation}
-S = N\lambda T_f
-\label{eq:token-throughput}
-\end{equation}
+When it finishes transmitting data, the sending station checks to see if it has received the frame header and, if it has, generates a new free token. If the frame header has not yet circulated back to the station, the station waits until the header is received before generating the free token. This insures that there is only one token on the ring at any given time, which helps in achieving reliable network operation. Whether or not the sending station receives the token back before completing transmission depends on the relative values of frame transmission and network propagation times.
 
-The chapter also provides a closed-form mean-delay expression (Eq.\ 6.31) for a
-symmetric token-ring case under simplifying assumptions (Poisson arrivals,
-constant frame length, uniform station spacing, and $\alpha<1$), and then asks
-for simulation-based verification and exploration.
+Application programs at a station generate messages and pass them to a network control program for transmission; the network program formats messages into frames and queues them until the station can obtain access to the ring. Messages longer than the maximum frame length are broken down into multiple frames. The maximum time a station may use the ring on gaining access is determined by a Token Holding Timer (THT), which has a default timeout value of 10 milliseconds. When a station gains access to the ring, it transmits as many frames from its queue as it can in this interval.
 
-Project tasks include:
-\begin{enumerate}
-\item verify model behavior against Eq.\ 6.31 for baseline parameters;
-\item study ring-latency impact by changing cable length and station overhead;
-\item study asymmetric-arrival effects (small high-load subset of stations);
-\item extend to a file-server ring workload and estimate read response-time
-  components (network vs disk).
-\end{enumerate}
+The 802.5 token ring standard encompasses transmission rates of 1 and 4 Mbps, and specifies a ring capacity of at least 250 stations or repeaters. A repeater may be required for signal regeneration purposes when the distance between stations is very long. For ease of connection and maintenance, the physical form of a ring may resemble a star network, with inter-station connections made at a central point; this results in longer wire lengths than would be needed for point-to-point wiring. Rings can be interconnected via bridges, so very large networks can be constructed. Our analysis will assume a single ring and a transmission rate of 4 Mbps, which is equivalent to 4 bits per microsecond (us.).
+
+\noindent\textbf{Performance parameters and measures.} The parameters of interest in token ring performance analysis are similar to those used in our Ethernet analysis. Network parameters are defined as follows.
+\begin{description}
+\item[$N$] number of stations in network
+\item[$K$] wire length in kilometers (km.)
+\item[$B$] station latency in bit times (discussed below)
+\item[$R$] transmission rate (4 bits/us.)
+\item[$L$] mean frame length in bits
+\end{description}
+
+The station latency $B$ is the number of bit times required for a station to read, regenerate, and retransmit data on the ring. $B$ can be as small as one bit time. The ring latency $\tau$ is the time (in us.) required for a signal to propagate around the ring; $\tau$ is equal to the propagation delay through the ring transmission medium plus the sum of the station latencies. Assuming a propagation delay of 5 us. per kilometer,
+\begin{equation} \tau=5K+BN/R \end{equation}
+A minimum ring latency of 24 bit times (6 us. at a transmission rate of 4 Mbps) is provided by the network to insure that the first part of a token doesn't recirculate to a station while that station is still processing the last part.
+
+The mean frame transfer time $T_f$ is obtained by divided the mean frame length by the network transmission rate:
+\begin{equation} T_f=L/R \end{equation}
+Analogous to (6.5) for Ethernet, the ratio of the ring latency time to the mean frame transmission time is
+\begin{equation} \alpha=\tau/T_f \end{equation}
+For Ethernet, $\alpha$ was required to be less than 1. For the token ring network, $\alpha$ is less than 1 if the frame transmission time is greater than the ring latency, and greater than 1 if the frame transmission time is less than the ring latency.
+
+In modeling the token ring network, we'll view it as an open system in which $\lambda_i$ is the arrival rate of frame transmission requests at station $i$. For the present, we'll assume stations are identical and have the same arrival rate: $\lambda=\lambda_1=\lambda_2=\ldots=\lambda_N$. The \emph{network throughput} is
+\begin{equation} S=N\lambda T_f \end{equation}
+See the comments on this definition of throughput in Section 6.3. The throughput in frames per unit time is $N\lambda$.
+
+Define $T_d$ as the mean frame delay time, measured from the time at which a frame transmission request is generated to the time at which the receiving station copies the last bit of the frame. The normalized mean delay $D$ then is defined as
+\begin{equation} D=T_d/T_f \end{equation}
+For finite values of $T_d$ and $D$, $S$ must be less than 1.
+
+\noindent\textbf{An analytic model.} The following analytic model is based on equation (1) in Bux [1981]. It employs the following assumptions.
+\begin{itemize}
+\item Each station has the same mean request arrival rate of $\lambda$ frames per unit time; the request arrival process is Poisson (so inter-arrival times have a negative exponential distribution).
+\item The average distance between sending and receiving stations is one-half the ring length.
+\item Stations are located uniformly around the ring so that the propagation delay between adjacent stations is $\tau/N$.
+\item Frame lengths are constant and equal to $L$ bits for all requests.
+\item The mean frame transmission time $T_f$ is greater than the ring latency $\tau$, so that $\alpha<1$.
+\end{itemize}
+Under these assumptions, the mean frame delay time is
+\begin{equation} T_d=T_f+\frac{\tau}{2}+\frac{\tau(1-S/N)+ST_f}{2(1-S)} \end{equation}
+
+(6.31) provides a simple model for use in simulation model verification. Additional results can be found in the literature. Chapter 8 of Hammond and O'Reilly [1986] gives equations for $T_d$ in networks with both constant and exponential service times and with $\alpha>1$. Bux [1984] provides references to a number of token ring queueing models. Networks in which all stations have identical arrival rates sometimes are called \emph{symmetric} networks, while networks in which stations have differing arrival rates are called \emph{non-symmetric} or \emph{asymmetric} networks. Berry and Chandy [1983] present a simple iterative algorithm for computing $T_d$ for an asymmetric network in which all stations have the same frame length distribution. Everitt [1986] provides a relatively simple approximation for $T_d$ in asymmetric networks in which stations can have different frame length distributions.
+
+\noindent\textbf{Building the simulation model.} The first version of your token ring simulation model should be based on the same assumptions as (6.31). However, to make extensions easier, plan for different arrival rates to different stations and for general frame length distributions; the latter requires proper representation of ring operation for frames whose transmission time is less than the ring latency time. Assume that messages correspond to frames regardless of length, so that message segmentation is not required, and that the timeout imposed by the Token Holding Timer can be ignored. The model should accept values of $N,K,B,L$, and $\lambda$ as input parameters ($R$ can be a compile-time parameter), and produce estimates of $S$, $T_d$, and $D$. Assume that the frame length $L$ includes overhead such as the frame header, and that $S$ is computed using this total frame length. Since this is an open model, the estimated value of $S$ should be very close to $N\lambda L/R$. Use the batch means analysis module of Figure 4.7 to compute $T_d$ with an accuracy of ten percent or better, and have the model report the confidence interval half-width for $T_d$.
+
+A smpl facility can be used to represent the token; the utilization of this facility will be equal to $S$ (as long as frame transmission times are greater than the ring latency). The state of the ring can be defined as the state of the token: non-busy when there is a free token on the ring, busy when there is not. It is possible to represent stations as smpl facilities, which may require increasing the size of the element pool (see Chapter 8). However, stations simply can be represented by an array of two-variable descriptors; each descriptor comprises a station state flag (idle or busy) and a pointer or index to the queue of requests for the station. A station is busy while it is transmitting frames and while it is removing its frame from the ring after completing transmission. For frames with transmission times greater than $\tau$, then, the station remains busy for a time $\tau$ after completing its transmission and freeing the token.
+
+Requests can be handled in the same way as the Ethernet model. During model initialization, a list of free request descriptors is constructed. As requests arrive in and depart from the system, request descriptors are allocated from and returned to this list. The request descriptor includes arrival time stamp, frame length (or frame transmission time), and link fields; the link field is used to link request descriptors on station queues or the free descriptor list.
+
+Since station arrival processes are Poisson, the individual station arrival processes can be combined into a ring arrival process which also is Poisson and which, for a symmetric network, has mean rate $N\lambda$. The request arrival process, then, can be modeled by scheduling the next arriving request for the set of stations on the ring; inter-arrival times will have a negative exponential distribution with mean $1/N\lambda$. When a request ``arrives'', it is randomly assigned to one of the $N$ stations; because a process created by random decomposition of a Poisson stream also is Poisson, the arrival process at each station will be Poisson. Generating request arrivals in this way means that, regardless of the number of stations in the ring, only one next arrival event is in the event list at any given time. For an asymmetric network, arrival processes for groups of stations with the same arrival rates can be combined, so that the number of next arrival events scheduled equals the number of different arrival rates.
+
+The key problem in simulating the token ring network is determining how to compute (1) the delay between the time at which a request arrives in an idle ring and the time at which the token reaches the requesting station, and (2) the delay between the time at which a station places a free token on the ring and the time at which the token arrives at the closest station with an outstanding request. One way of approaching this problem is as follows.
+
+Let $t$ represent the current simulation time, and assume that, at time 0, the token has just left station $N$ on its way to station 1. At time $t$, the token will have completed a fraction $f$ of its current revolution, where $f$ is the fractional part of $t/\tau$. Assuming stations are equidistantly spaced around the ring, the position of station $i$ corresponds to a fraction of a revolution $f_i=i/N$. From $f$ and $f_i$, it is possible to compute the time $t_i$ at which the token will arrive at station $i$. When a request arrives at station $i$ in an idle ring, the time at which the token will arrive at that station can be computed and a Start Transmit event scheduled for that time, provided no Start Transmit event is scheduled for a station nearer the current token position. If a request arrives at station $i$ and a Start Transmit event is scheduled for a station farther away from the token than station $i$, the Start Transmit event for that station is cancelled before scheduling that event for station $i$. Only one Start Transmit event, at most, is scheduled at a time, and the model keeps track of the number of the station for which that event is scheduled. An arriving request which finds a Start Transmit event scheduled for a station closer to the token, or which finds the ring busy, simply queues at its station.
+
+When a transmission completes and a free token is placed on the ring, the model finds the closest station with a queued request, computes the time at which the token will arrive at that station, and schedules a Start Transmit event for that time. The simplest way to find the closest station is to search the station descriptor array, beginning with the next station, for a station with a queued request. This isn't as inefficient as it might seem; note that, as the network load increases, the average number of station descriptors examined decreases.
+
+In this initial version of the model, it isn't necessary to represent the receiving station. Instrument the model to compute $T_d'$, where $T_d'$ is defined as the mean frame delay time measured from the time at which a request arrives at a station until the time at which its transmission is completed and the station either frees the token or dequeues and starts transmission of another frame. The mean frame delay time given by (6.31) is the sum of three terms: $T_f$, $\tau/2$, and a delay term. The $\tau/2$ term represents the average delay between sender and receiver, assuming that, on the average, the receiver is half way around the ring from the sender (i.e., the receiver is, equiprobably, any one of the other stations). With this assumption, $T_d=T_d'+\tau/2$. (If a confidence interval half-width of $H$ is obtained for $T_d'$, what is the confidence interval half-width for $T_d$?)
+
+\noindent\textbf{(a)} Assume a network with 40 stations, a cable length of 1 kilometer, and a station latency of 1 bit time. For a constant frame size of 4000 bits, make a set of simulation runs with $\lambda=2.5,5.0,\ldots,20$ frames per second per station. Plot $T_d+H$ and $T_d-H$, where $T_d$ is the mean frame delay time estimated from simulation and $H$ is its confidence interval half-width versus $S$. For the same parameter values and set of $\lambda$ values, compute $T_d$ from (6.31) and plot these values. What conclusion do you draw from this comparison? Do you consider your simulation model verified, at least in part?
+
+Note that you can check model operation for short transfers ($T_f<\tau$) by making runs with a frame transmission time less than $\tau$ and with a frame transmission time equal to $\tau$ (or slightly larger, if necessary to assure proper event sequencing), using the same $\lambda$ in both cases. Since a station does not free the token until it reads the frame header of its transmission, these two runs should produce comparable estimates for $T_d$.
+
+\noindent\textbf{(b)} Suppose a network of 40 stations has a cable length of 4 kilometers and a station latency of 4 bit times. For a constant frame size of 4000 bits, make a set of simulation runs with $\lambda=2.5$, 12.5, and 20 frames per second per station. Compare the value of $T_d$ with those obtained in (a); how does the increased ring latency affect delays?
+
+\noindent\textbf{(c)} Investigate the effect of asymmetric operation on mean frame delay times in a network of 40 stations with $K=1$ km., $B=1$ bit time, and a fixed frame length of 4000 bits. Assume that stations in this network divide into two groups: a group of 36 stations with low arrival rates, and a group of 4 stations with high arrival rates. Set the relative arrival rates to stations in these groups as you deem appropriate. Compare your results with those obtained in (a).
+
+\noindent\textbf{(d) A file server network.} A token ring local area network is composed of 50 diskless workstations and two file server stations, each with a single disk.\footnote{See Lazowska et al [1986] for a discussion of performance issues in a network of diskless workstations.} The network transmission rate is 4 Mbps, the network length is 1.5 km., and the station latency of each station is 4 bit times. A workstation performs a file read or write operation by sending a message to a file server; file information is transferred in fixed-size units of 4096 bytes called \emph{file blocks}. To read from a file, a workstation sends a read request message to the appropriate server; the server reads the file block from its disk and transmits it to the workstation. To write to a file, the workstation constructs a write request which includes the file block and transmits it to a server, which writes it to the disk. Message traffic in the network divides into two types: read requests, which have a total frame length of 48 bytes, and file block read/write transfers, which have a total frame length of 4144 bytes. Reads are three times more frequent than writes. (Message traffic among workstations is small enough to be ignored.) Stations generate messages at a rate of 1 message per second per station; inter-message times are exponentially distributed.
+
+Messages can be assumed to be directed randomly and equiprobably to the two file servers. On receipt of a message, the file server initiates a disk operation if its disk is free and otherwise queues the disk request; disk queues are first-in, first-out. Disk service times are distributed uniformly between 20 and 40 ms. Whenever the file server completes a disk read operation, it constructs a frame containing the file block and queues the frame for transmission. Because of the length of file block frames, a file server transmits only one file block each time it obtains access to the ring.
+
+Extend the token ring simulation model to represent this file server network. You can position the file servers anywhere in the network (does it matter?). Instrument the model to obtain the mean response time $T_r$ for workstation reads, measured from the time at which the workstation generates the read request to the time at which it receives the file block, and the mean network and disk queueing time components of this response time. Devise an approach to verifying the model. When verification is complete, use the model to estimate $T_r$ for this system.
+
+Determine how many workstations can be added to this network with an increase of no more than 30 percent in $T_r$. Next, suppose the file block size is doubled, increasing the file block transfer frame length to 8240 bytes, increasing the disk service time by 5 ms. and halving the station message rate. (Assume the token holding time limit is increased to permit transmission of frames of this length.) Determine how many stations can be supported in this modified network if a read response time equivalent to the original network (adjusted for file block size differences) is to be provided.

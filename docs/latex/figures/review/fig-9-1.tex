@@ -1,0 +1,24 @@
+\begin{tikzpicture}
+\node[review box,minimum width=1.2cm,minimum height=5.5cm] (cpu) at (0,0) {\rotatebox{90}{CPU}};
+\node[review heading] at (3,2.4) {channels};
+\node[review box,minimum width=1.8cm,minimum height=.8cm] (c1) at (3,1.6) {1};
+\node[review box,minimum width=1.8cm,minimum height=.8cm] (c2) at (3,-1.5) {2};
+\node[review heading,align=center] at (7,2.65) {control\\unit 1};
+\node[review box,minimum width=1.9cm,minimum height=2.3cm] (cu) at (7,1.15) {};
+\node at (7,1.7) {port 1}; \node at (7,.55) {port 2};
+\draw[review line,dotted] (6.1,1.15) -- (7.9,1.15);
+\draw[review arrow,Triangle-Triangle] (cpu.east |- c1) -- (c1.west);
+\draw[review arrow,Triangle-Triangle] (cpu.east |- c2) -- (c2.west);
+\draw[review arrow,Triangle-Triangle] (c1.east) -- (cu.west |- c1);
+\draw[review arrow,Triangle-Triangle] (c2.east) -- (5.4,-1.5) -- (5.4,.55) -- (cu.west |- 0,.55);
+\draw[review arrow,Triangle-Triangle] (c1.east) ++(0,-.25) -- (4.6,1.35) -- (4.6,-.9) -- (5.24,-.9) arc[start angle=180,end angle=0,radius=.16] -- (6,-.9);
+\draw[review arrow,Triangle-Triangle] (c2.east) ++(0,-.25) -- (6,-1.75);
+\node[review heading,align=center] at (7,-1.35) {control\\unit 2};
+\node[review heading] at (11,2.45) {disks};
+\draw[review line] (7.95,1.9) -- (9.5,1.9) (7.95,.4) -- (9.5,.4);
+\draw[review line,dotted] (9.5,1.9) -- (12.2,1.9) (9.5,.4) -- (12.2,.4);
+\draw[review line] (12.2,1.9) -- (12.5,1.9) -- (12.5,.4) -- (12.2,.4) (9.5,1.9) -- (9.5,.4);
+\draw[review line,fill=white] (9.5,1.15) ellipse (.75cm and .33cm) (12.5,1.15) ellipse (.75cm and .33cm);
+\node at (9.5,1.15) {1}; \node at (12.5,1.15) {n};
+\node at (11,1.15) {$\cdots$};
+\end{tikzpicture}

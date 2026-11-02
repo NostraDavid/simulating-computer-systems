@@ -1,0 +1,71 @@
+% Page-aligned transcription: source PDF 280--298, printed pages 258--276.
+\OriginalPage{258}{}
+\thispagestyle{empty}
+\vspace*{0.8in}
+\noindent{\LARGE\bfseries Appendix\par}
+\vspace{0.25in}
+\label{chap:appendix-source}
+
+The following pages contains C source code listings for four files:\footnote{These
+files, together with source code files for the other programs in this book, are
+available on diskette; see note in Preface.}
+\begin{description}
+\item[\textit{smpl.c} ---] the \textbf{smpl} simulation subsystem except for random variate generation functions,
+\item[\textit{rand.c} ---] random variate generation functions,
+\item[\textit{smpl.h} ---] \textbf{smpl} external name declarations and various user-level directives (for inclusion in simulation programs), and
+\item[\textit{stat.c} ---] normal and $t$ distribution quantile computation functions \texttt{Z()} and \texttt{T()} (used by the batch means analysis module of Section 4.7).
+\end{description}
+
+An executable instance of a \textbf{smpl} simulation model is formed by
+\begin{enumerate}
+\item compiling \textit{smpl.c} and \textit{rand.c} (and, if desired, creating a library module from their object modules),
+\item compiling the simulation program, which contains \texttt{main()} (and which \texttt{\#includes} \textit{smpl.h}), and
+\item linking the simulation program's object module to the \textit{smpl} and \textit{rand} object modules (or their library module) to form an executable file.
+\end{enumerate}
+Note that there are two versions of \texttt{ranf()} in \textit{rand.c}; the version compiled is determined by the value \texttt{\#defined} for \texttt{CPU} (8086 or 68000). You may want to compile the batch means analysis module of Section 4.7 (which \texttt{\#includes} \textit{stat.c}) and add its object module to your library.
+
+% Marker lines are excluded; each listing range is one printed source page.
+\begingroup
+\lstset{basicstyle=\ttfamily\scriptsize,breaklines=false,columns=fixed}
+\OriginalPage{259}{smpl.c}
+\label{appendix-smpl}
+\lstinputlisting[firstline=2,lastline=53]{listings/smpl.c}
+\OriginalPage{260}{Appendix}
+\lstinputlisting[firstline=55,lastline=112]{listings/smpl.c}
+\OriginalPage{261}{smpl.c}
+\lstinputlisting[firstline=114,lastline=166]{listings/smpl.c}
+\OriginalPage{262}{Appendix}
+\lstinputlisting[firstline=168,lastline=196]{listings/smpl.c}
+\OriginalPage{263}{smpl.c}
+\lstinputlisting[firstline=198,lastline=244]{listings/smpl.c}
+\OriginalPage{264}{Appendix}
+\lstinputlisting[firstline=246,lastline=288]{listings/smpl.c}
+\OriginalPage{265}{smpl.c}
+\lstinputlisting[firstline=290,lastline=337]{listings/smpl.c}
+\OriginalPage{266}{Appendix}
+\lstinputlisting[firstline=339,lastline=387]{listings/smpl.c}
+\OriginalPage{267}{smpl.c}
+\lstinputlisting[firstline=389,lastline=433]{listings/smpl.c}
+\OriginalPage{268}{Appendix}
+\lstinputlisting[firstline=435,lastline=476]{listings/smpl.c}
+\OriginalPage{269}{smpl.c}
+\lstinputlisting[firstline=478,lastline=533]{listings/smpl.c}
+\OriginalPage{270}{Appendix}
+\lstinputlisting[firstline=535,lastline=591]{listings/smpl.c}
+\OriginalPage{271}{smpl.c}
+\lstinputlisting[firstline=593,lastline=622]{listings/smpl.c}
+\OriginalPage{272}{Appendix}
+\label{appendix-rand}
+\lstinputlisting[firstline=2,lastline=52]{listings/rand.c}
+\OriginalPage{273}{rand.c}
+\lstinputlisting[firstline=54,lastline=105]{listings/rand.c}
+\OriginalPage{274}{Appendix}
+\lstinputlisting[firstline=107,lastline=149]{listings/rand.c}
+\OriginalPage{275}{smpl.h}
+\lstinputlisting[firstline=151,lastline=167]{listings/rand.c}
+\label{appendix-header}
+\lstinputlisting[firstline=1,lastline=21]{listings/smpl.h}
+\OriginalPage{276}{Appendix}
+\label{appendix-stat}
+\lstinputlisting[firstline=1,lastline=44]{listings/stat.c}
+\endgroup
