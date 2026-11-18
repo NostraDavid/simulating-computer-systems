@@ -24,6 +24,7 @@ in {
       "just"
       {
         attr = "uv";
+        series = "0";
         also = ["uvx"];
       }
       "python312"
